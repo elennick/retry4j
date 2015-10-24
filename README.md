@@ -157,3 +157,27 @@ If the call throws an unexpected exception, the executor will immediately stop a
             .build();
 
 ...and an **UnsupportedOperationException** is thrown, the executor will bubble up the exception and cease to execute.
+
+### Putting it all together with more realistic config examples
+
+This example will execute the callable code up to three times with a delay of 5 seconds in between each try if needed. It will retry wheneve the callable code returns false OR when an IllegalArgumentException is thrown:
+
+    RetryConfig config = new RetryConfigBuilder()
+        .retryOnSpecificExceptions(IllegalArgumentException.class)
+        .withMaxNumberOfTries(3)
+        .withDelayBetweenTries(5)
+        .withFixedBackoff()
+        .build();
+
+    new RetryExecutor(config).execute(callable);
+
+This example will execute the callable code up to five times. It will initially delay for 500 milliseconds before trying again and each subsequent delay will become exponentially longer. Any encountered exceptions will be considered a failure for that try but will not stop the retry executor from continuing. After 5 failed tries, the executor will throw a CallFailureException:
+
+    RetryConfig config = new RetryConfigBuilder()
+        .retryOnAnyException()
+        .withMaxNumberOfTries(5)
+        .withDelayBetweenTries(Duration.of(500, ChronoUnit.MILLIS))
+        .withExponentialBackoff()
+        .build();
+
+    new RetryExecutor(config).execute(callable);
