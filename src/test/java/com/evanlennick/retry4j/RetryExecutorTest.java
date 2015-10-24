@@ -87,7 +87,7 @@ public class RetryExecutorTest {
     }
 
     @Test
-    public void verifyFixedBackoffTiming() throws Exception {
+    public void verifyBackoffTiming_fixed() throws Exception {
         Callable<Boolean> callable = () -> false;
 
         RetryConfig retryConfig = new RetryConfigBuilder()
@@ -110,7 +110,7 @@ public class RetryExecutorTest {
     }
 
     @Test
-    public void verifyExponentialBackoffTiming() throws Exception {
+    public void verifyBackoffTiming_exponential() throws Exception {
         Callable<Boolean> callable = () -> false;
 
         RetryConfig retryConfig = new RetryConfigBuilder()
@@ -130,6 +130,29 @@ public class RetryExecutorTest {
         long elapsed = end - start;
 
         assertThat(elapsed).isCloseTo(290, within(25L));
+    }
+
+    @Test
+    public void verifyBackoffTiming_fibonacci() throws Exception {
+        Callable<Boolean> callable = () -> false;
+
+        RetryConfig retryConfig = new RetryConfigBuilder()
+                .withMaxNumberOfTries(5)
+                .withDelayBetweenTries(10L)
+                .withFibonacciBackoff()
+                .build();
+
+        long start = System.currentTimeMillis();
+
+        try {
+            new RetryExecutor(retryConfig).execute(callable);
+        } catch (CallFailureException | UnexpectedCallFailureException e) {
+        }
+
+        long end = System.currentTimeMillis();
+        long elapsed = end - start;
+
+        assertThat(elapsed).isCloseTo(70, within(25L));
     }
 
     @Test
