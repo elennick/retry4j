@@ -1,5 +1,8 @@
 package com.evanlennick.retry4j;
 
+import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
+import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
+import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
@@ -72,7 +75,7 @@ public class RetryConfigBuilderTest {
                 .withExponentialBackoff()
                 .build();
 
-        assertThat(config.getBackoffStrategy()).isEqualTo(BackoffStrategy.EXPONENTIAL);
+        assertThat(config.getBackoffStrategy()).isInstanceOf(ExponentialBackoffStrategy.class);
     }
 
     @Test
@@ -81,7 +84,16 @@ public class RetryConfigBuilderTest {
                 .withFixedBackoff()
                 .build();
 
-        assertThat(config.getBackoffStrategy()).isEqualTo(BackoffStrategy.FIXED);
+        assertThat(config.getBackoffStrategy()).isInstanceOf(FixedBackoffStrategy.class);
+    }
+
+    @Test
+    public void testSettingBackoffStrategy_fibonacci() {
+        RetryConfig config = new RetryConfigBuilder()
+                .withFibonacciBackoff()
+                .build();
+
+        assertThat(config.getBackoffStrategy()).isInstanceOf(FibonacciBackoffStrategy.class);
     }
 
 }

@@ -66,11 +66,8 @@ public class RetryExecutor {
     }
 
     private void sleep(long millis, int tries) {
-        long millisToSleep = millis;
-
-        if (config.getBackoffStrategy().equals(BackoffStrategy.EXPONENTIAL)) {
-            millisToSleep = (long)(((Math.pow(2, tries) - 1) / 2) * millisToSleep);
-        }
+        Duration duration = Duration.of(millis, ChronoUnit.MILLIS);
+        long millisToSleep = config.getBackoffStrategy().getMillisToWait(tries, duration);
 
         try {
             TimeUnit.MILLISECONDS.sleep(millisToSleep);

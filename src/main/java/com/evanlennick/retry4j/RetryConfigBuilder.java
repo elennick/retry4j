@@ -1,5 +1,10 @@
 package com.evanlennick.retry4j;
 
+import com.evanlennick.retry4j.backoff.BackoffStrategy;
+import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
+import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
+import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -47,12 +52,22 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfigBuilder withFixedBackoff() {
-        config.setBackoffStrategy(BackoffStrategy.FIXED);
+        config.setBackoffStrategy(new FixedBackoffStrategy());
         return this;
     }
 
     public RetryConfigBuilder withExponentialBackoff() {
-        config.setBackoffStrategy(BackoffStrategy.EXPONENTIAL);
+        config.setBackoffStrategy(new ExponentialBackoffStrategy());
+        return this;
+    }
+
+    public RetryConfigBuilder withFibonacciBackoff() {
+        config.setBackoffStrategy(new FibonacciBackoffStrategy());
+        return this;
+    }
+
+    public RetryConfigBuilder withBackoffStrategy(BackoffStrategy backoffStrategy) {
+        config.setBackoffStrategy(backoffStrategy);
         return this;
     }
 

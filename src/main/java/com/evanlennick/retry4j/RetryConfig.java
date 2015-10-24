@@ -1,5 +1,8 @@
 package com.evanlennick.retry4j;
 
+import com.evanlennick.retry4j.backoff.BackoffStrategy;
+import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
@@ -11,7 +14,7 @@ public class RetryConfig {
     private Set<Class<? extends Exception>> retryOnSpecificExceptions = new HashSet<Class<? extends Exception>>();
     private int maxNumberOfTries = 1;
     private Duration durationBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
-    private BackoffStrategy backoffStrategy = BackoffStrategy.FIXED;
+    private BackoffStrategy backoffStrategy = new FixedBackoffStrategy();
 
     public boolean isRetryOnAnyException() {
         return retryOnAnyException;
@@ -59,7 +62,7 @@ public class RetryConfig {
         config.retryOnSpecificExceptions = new HashSet<>();
         config.maxNumberOfTries = 3;
         config.durationBetweenRetries = Duration.of(15, ChronoUnit.SECONDS);
-        config.backoffStrategy = BackoffStrategy.FIXED;
+        config.backoffStrategy = new FixedBackoffStrategy();
         return config;
     }
 
@@ -69,7 +72,7 @@ public class RetryConfig {
         config.retryOnSpecificExceptions = new HashSet<>();
         config.maxNumberOfTries = 5;
         config.durationBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
-        config.backoffStrategy = BackoffStrategy.EXPONENTIAL;
+        config.backoffStrategy = new FixedBackoffStrategy();
         return config;
     }
 }
