@@ -75,4 +75,15 @@ public class RetryConfig {
         config.backoffStrategy = new FixedBackoffStrategy();
         return config;
     }
+
+    @Override
+    public String toString() {
+        return "RetryConfig{" +
+                "retryOnAnyException=" + retryOnAnyException +
+                ", retryOnSpecificExceptions=" + retryOnSpecificExceptions +
+                ", maxNumberOfTries=" + maxNumberOfTries +
+                ", delayBetweenRetries=" + delayBetweenRetries +
+                ", backoffStrategy=" + backoffStrategy +
+                '}';
+    }
 }
