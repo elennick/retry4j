@@ -39,15 +39,16 @@ public class RetryExecutor {
         long end = System.currentTimeMillis();
         long elapsed = end - start;
 
+        RetryResults results = new RetryResults();
+        results.setCallName(callable.toString());
+        results.setTotalTries(tries);
+        results.setTotalDurationElapsed(Duration.of(elapsed, ChronoUnit.MILLIS));
+        results.setSucceeded(true);
+
         if (!success) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
-            throw new CallFailureException(failureMsg);
+            throw new CallFailureException(failureMsg, results);
         } else {
-            RetryResults results = new RetryResults();
-            results.setCallName(callable.toString());
-            results.setTotalTries(tries);
-            results.setTotalDurationElapsed(Duration.of(elapsed, ChronoUnit.MILLIS));
-            results.setSucceeded(true);
             return results;
         }
     }

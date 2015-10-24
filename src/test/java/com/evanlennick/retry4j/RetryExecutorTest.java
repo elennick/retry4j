@@ -19,7 +19,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(5)
-                .withDurationBetweenTries(Duration.of(0, ChronoUnit.SECONDS))
+                .withDurationBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -32,7 +32,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(5)
-                .withDurationBetweenTries(Duration.of(0, ChronoUnit.SECONDS))
+                .withDurationBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -49,7 +49,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(1)
-                .withDurationBetweenTries(Duration.of(0, ChronoUnit.SECONDS))
+                .withDurationBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -65,7 +65,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .retryOnSpecificExceptions(IllegalArgumentException.class)
                 .withMaxNumberOfTries(1)
-                .withDurationBetweenTries(Duration.of(0, ChronoUnit.SECONDS))
+                .withDurationBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -81,7 +81,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .retryOnSpecificExceptions(UnsupportedOperationException.class)
                 .withMaxNumberOfTries(1)
-                .withDurationBetweenTries(Duration.of(0, ChronoUnit.SECONDS))
+                .withDurationBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -94,7 +94,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(3)
-                .withDurationBetweenTries(Duration.of(100, ChronoUnit.MILLIS))
+                .withDurationBetweenTries(100L)
                 .withFixedBackoff()
                 .build();
 
@@ -117,7 +117,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(5)
-                .withDurationBetweenTries(Duration.of(20, ChronoUnit.MILLIS))
+                .withDurationBetweenTries(20L)
                 .withExponentialBackoff()
                 .build();
 
@@ -132,5 +132,44 @@ public class RetryExecutorTest {
         long elapsed = end - start;
 
         assertThat(elapsed).isCloseTo(290, within(25L));
+    }
+
+    @Test
+    public void verifyResultsArePopulatedOnSuccessfulCall() throws Exception {
+        Callable<Boolean> callable = () -> true;
+
+        RetryConfig retryConfig = new RetryConfigBuilder()
+                .withMaxNumberOfTries(5)
+                .withDurationBetweenTries(0)
+                .withFixedBackoff()
+                .build();
+
+        RetryResults results = new RetryExecutor(retryConfig).execute(callable);
+
+        assertThat(results.isSucceeded());
+        assertThat(results.getCallName()).isNotEmpty();
+        assertThat(results.getTotalDurationElapsed().toMillis()).isCloseTo(0, within(25L));
+        assertThat(results.getTotalTries()).isEqualTo(1);
+    }
+
+    @Test
+    public void verifyResultsArePopulatedOnFailedCall() throws Exception {
+        Callable<Boolean> callable = () -> false;
+
+        RetryConfig retryConfig = new RetryConfigBuilder()
+                .withMaxNumberOfTries(5)
+                .withDurationBetweenTries(0)
+                .withFixedBackoff()
+                .build();
+
+        try {
+            new RetryExecutor(retryConfig).execute(callable);
+        } catch (CallFailureException e) {
+            RetryResults results = e.getRetryResults();
+            assertThat(results.isSucceeded());
+            assertThat(results.getCallName()).isNotEmpty();
+            assertThat(results.getTotalDurationElapsed().toMillis()).isCloseTo(0, within(25L));
+            assertThat(results.getTotalTries()).isEqualTo(5);
+        }
     }
 }
