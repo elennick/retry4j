@@ -1,6 +1,6 @@
 ## Synopsis
 
-Retry4j is a simple Java library to assist with retrying transient or unreliable code logic. Code that may rely on connecting to an external resource that is intermittently available (ie: a REST API or external database connection) is one good example of where this type of library is useful.
+Retry4j is a simple Java library to assist with retrying transient or unreliable code logic. Code that may rely on connecting to an external resource that is intermittently available (ie: a REST API or external database connection) is a good example of where this type of library is useful.
 
 ## Basic Code Example
 
@@ -35,7 +35,7 @@ TBD
 
 ### General
 
-Retry4j currently supports simple calls that do not return any complex logic that needs to be handled. It currently only supports synchronous requests and does not handle threading or any sort of asynchronous for you. Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
+Retry4j currently supports simple calls that do not return any complex logic that needs to be handled. It only supports synchronous requests and does not handle threading or asynchronous callbacks for you. Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
 
 ### Exception Handling Config
 
