@@ -37,17 +37,17 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfigBuilder withDurationBetweenTries(Duration duration) {
-        config.setDurationBetweenRetries(duration);
+        config.setDelayBetweenRetries(duration);
         return this;
     }
 
     public RetryConfigBuilder withDurationBetweenTries(int seconds) {
-        config.setDurationBetweenRetries(Duration.of(seconds, ChronoUnit.SECONDS));
+        config.setDelayBetweenRetries(Duration.of(seconds, ChronoUnit.SECONDS));
         return this;
     }
 
     public RetryConfigBuilder withDurationBetweenTries(long millis) {
-        config.setDurationBetweenRetries(Duration.of(millis, ChronoUnit.MILLIS));
+        config.setDelayBetweenRetries(Duration.of(millis, ChronoUnit.MILLIS));
         return this;
     }
 

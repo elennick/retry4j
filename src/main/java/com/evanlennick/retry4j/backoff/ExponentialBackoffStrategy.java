@@ -4,7 +4,7 @@ import java.time.Duration;
 
 public class ExponentialBackoffStrategy implements BackoffStrategy {
     @Override
-    public long getMillisToWait(int numberOfTriesFailed, Duration durationBetweenAttempts) {
-        return (long)(((Math.pow(2, numberOfTriesFailed) - 1) / 2) * durationBetweenAttempts.toMillis());
+    public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
+        return (long)(((Math.pow(2, numberOfTriesFailed) - 1) / 2) * delayBetweenAttempts.toMillis());
     }
 }

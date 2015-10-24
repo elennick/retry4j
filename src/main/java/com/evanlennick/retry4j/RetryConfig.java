@@ -13,7 +13,7 @@ public class RetryConfig {
     private boolean retryOnAnyException = false;
     private Set<Class<? extends Exception>> retryOnSpecificExceptions = new HashSet<Class<? extends Exception>>();
     private int maxNumberOfTries = 1;
-    private Duration durationBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
+    private Duration delayBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
     private BackoffStrategy backoffStrategy = new FixedBackoffStrategy();
 
     public boolean isRetryOnAnyException() {
@@ -40,12 +40,12 @@ public class RetryConfig {
         this.maxNumberOfTries = maxNumberOfTries;
     }
 
-    public Duration getDurationBetweenRetries() {
-        return durationBetweenRetries;
+    public Duration getDelayBetweenRetries() {
+        return delayBetweenRetries;
     }
 
-    public void setDurationBetweenRetries(Duration timeBetweenRetries) {
-        this.durationBetweenRetries = timeBetweenRetries;
+    public void setDelayBetweenRetries(Duration delayBetweenRetries) {
+        this.delayBetweenRetries = delayBetweenRetries;
     }
 
     public BackoffStrategy getBackoffStrategy() {
@@ -61,7 +61,7 @@ public class RetryConfig {
         config.retryOnAnyException = true;
         config.retryOnSpecificExceptions = new HashSet<>();
         config.maxNumberOfTries = 3;
-        config.durationBetweenRetries = Duration.of(15, ChronoUnit.SECONDS);
+        config.delayBetweenRetries = Duration.of(15, ChronoUnit.SECONDS);
         config.backoffStrategy = new FixedBackoffStrategy();
         return config;
     }
@@ -71,7 +71,7 @@ public class RetryConfig {
         config.retryOnAnyException = true;
         config.retryOnSpecificExceptions = new HashSet<>();
         config.maxNumberOfTries = 5;
-        config.durationBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
+        config.delayBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
         config.backoffStrategy = new FixedBackoffStrategy();
         return config;
     }

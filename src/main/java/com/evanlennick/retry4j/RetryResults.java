@@ -41,4 +41,13 @@ public class RetryResults {
         this.totalDurationElapsed = totalDurationElapsed;
     }
 
+    @Override
+    public String toString() {
+        return "RetryResults{" +
+                "callName='" + callName + '\'' +
+                ", succeeded=" + succeeded +
+                ", totalTries=" + totalTries +
+                ", totalDurationElapsed=" + totalDurationElapsed +
+                '}';
+    }
 }

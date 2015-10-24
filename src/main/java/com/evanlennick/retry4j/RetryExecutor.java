@@ -24,7 +24,7 @@ public class RetryExecutor {
         long start = System.currentTimeMillis();
 
         int maxTries = config.getMaxNumberOfTries();
-        long millisBetweenTries = config.getDurationBetweenRetries().toMillis();
+        long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
 
         boolean success = false;
         int tries;
