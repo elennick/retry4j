@@ -142,11 +142,11 @@ or
 
 ### What situations will the executor retry on?
 
-If the call returns false OR throws an expected exception (one specified to retry on by the config) AND and all retries have not yet been exhausted, the executor will delay and retry again.
+If the call does not return true OR throws an expected exception (one specified to retry on by the config) AND and all retries have not yet been exhausted, the executor will delay and retry again.
 
 ### What situations will the executor throw a CallFailureException?
 
-If the call returns false OR throws an expected exception AND all retries have been exhausted, the executor will throw a CallFailureException.
+If the call does not return true OR throws an expected exception AND all retries have been exhausted, the executor will throw a CallFailureException.
 
 ### What situations will the executor throw an UnexpectedCallFailureException
 
@@ -160,7 +160,7 @@ If the call throws an unexpected exception, the executor will immediately stop a
 
 ### Putting it all together with more realistic config examples
 
-This example will execute the callable code up to three times with a delay of 5 seconds in between each try if needed. It will retry wheneve the callable code returns false OR when an IllegalArgumentException is thrown:
+This example will execute the callable code up to three times with a delay of 5 seconds in between each try if needed. It will retry whenever the callable code does not return true OR when an IllegalArgumentException is thrown:
 
     RetryConfig config = new RetryConfigBuilder()
         .retryOnSpecificExceptions(IllegalArgumentException.class)
