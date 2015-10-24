@@ -45,7 +45,7 @@ public class RetryConfigBuilderTest {
         Duration duration = Duration.of(60, ChronoUnit.MINUTES);
 
         RetryConfig config = new RetryConfigBuilder()
-                .withDurationBetweenTries(duration)
+                .withDelayBetweenTries(duration)
                 .build();
 
         assertThat(config.getDelayBetweenRetries()).isEqualTo(duration);
@@ -54,7 +54,7 @@ public class RetryConfigBuilderTest {
     @Test
     public void testSettingDurationBetweenTries_seconds() {
         RetryConfig config = new RetryConfigBuilder()
-                .withDurationBetweenTries(5)
+                .withDelayBetweenTries(5)
                 .build();
 
         assertThat(config.getDelayBetweenRetries().toMillis()).isEqualTo(5000);
@@ -63,7 +63,7 @@ public class RetryConfigBuilderTest {
     @Test
     public void testSettingDurationBetweenTries_millis() {
         RetryConfig config = new RetryConfigBuilder()
-                .withDurationBetweenTries(5000L)
+                .withDelayBetweenTries(5000L)
                 .build();
 
         assertThat(config.getDelayBetweenRetries().toMillis()).isEqualTo(5000);

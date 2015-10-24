@@ -4,8 +4,6 @@ import com.evanlennick.retry4j.exception.CallFailureException;
 import com.evanlennick.retry4j.exception.UnexpectedCallFailureException;
 import org.testng.annotations.Test;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +17,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(5)
-                .withDurationBetweenTries(0)
+                .withDelayBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -32,7 +30,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(5)
-                .withDurationBetweenTries(0)
+                .withDelayBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -49,7 +47,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(1)
-                .withDurationBetweenTries(0)
+                .withDelayBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -65,7 +63,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .retryOnSpecificExceptions(IllegalArgumentException.class)
                 .withMaxNumberOfTries(1)
-                .withDurationBetweenTries(0)
+                .withDelayBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -81,7 +79,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .retryOnSpecificExceptions(UnsupportedOperationException.class)
                 .withMaxNumberOfTries(1)
-                .withDurationBetweenTries(0)
+                .withDelayBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -94,7 +92,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(3)
-                .withDurationBetweenTries(100L)
+                .withDelayBetweenTries(100L)
                 .withFixedBackoff()
                 .build();
 
@@ -117,7 +115,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(5)
-                .withDurationBetweenTries(20L)
+                .withDelayBetweenTries(20L)
                 .withExponentialBackoff()
                 .build();
 
@@ -140,7 +138,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(5)
-                .withDurationBetweenTries(0)
+                .withDelayBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 
@@ -158,7 +156,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder()
                 .withMaxNumberOfTries(5)
-                .withDurationBetweenTries(0)
+                .withDelayBetweenTries(0)
                 .withFixedBackoff()
                 .build();
 

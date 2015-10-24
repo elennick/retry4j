@@ -24,6 +24,12 @@ public class RetryConfigBuilder {
         return this;
     }
 
+    public RetryConfigBuilder failOnAnyException() {
+        config.setRetryOnAnyException(false);
+        config.setRetryOnSpecificExceptions(new HashSet<>());
+        return this;
+    }
+
     @SafeVarargs
     public final RetryConfigBuilder retryOnSpecificExceptions(Class<? extends Exception>... exceptions) {
         Set<Class<? extends Exception>> setOfExceptions = new HashSet<>(Arrays.asList(exceptions));
@@ -36,17 +42,17 @@ public class RetryConfigBuilder {
         return this;
     }
 
-    public RetryConfigBuilder withDurationBetweenTries(Duration duration) {
+    public RetryConfigBuilder withDelayBetweenTries(Duration duration) {
         config.setDelayBetweenRetries(duration);
         return this;
     }
 
-    public RetryConfigBuilder withDurationBetweenTries(int seconds) {
+    public RetryConfigBuilder withDelayBetweenTries(int seconds) {
         config.setDelayBetweenRetries(Duration.of(seconds, ChronoUnit.SECONDS));
         return this;
     }
 
-    public RetryConfigBuilder withDurationBetweenTries(long millis) {
+    public RetryConfigBuilder withDelayBetweenTries(long millis) {
         config.setDelayBetweenRetries(Duration.of(millis, ChronoUnit.MILLIS));
         return this;
     }
