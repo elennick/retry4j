@@ -30,3 +30,7 @@ There are several libraries that have similar capabilities this but I found them
 ## Dependency
 
 TBD
+
+## Requirements
+
+retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
