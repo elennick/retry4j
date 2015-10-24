@@ -1,6 +1,7 @@
 package com.evanlennick.retry4j;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,6 +33,16 @@ public class RetryConfigBuilder {
 
     public RetryConfigBuilder withDurationBetweenTries(Duration duration) {
         config.setDurationBetweenRetries(duration);
+        return this;
+    }
+
+    public RetryConfigBuilder withDurationBetweenTries(int seconds) {
+        config.setDurationBetweenRetries(Duration.of(seconds, ChronoUnit.SECONDS));
+        return this;
+    }
+
+    public RetryConfigBuilder withDurationBetweenTries(long millis) {
+        config.setDurationBetweenRetries(Duration.of(millis, ChronoUnit.MILLIS));
         return this;
     }
 
