@@ -14,7 +14,7 @@ public class FibonacciBackoffStrategy implements BackoffStrategy {
         fibonacciNumbers.add(0);
         fibonacciNumbers.add(1);
 
-        for(int i = 0; i < 20; i++) {
+        for(int i = 0; i < 25; i++) {
             int nextFibNum = fibonacciNumbers.get(i) + fibonacciNumbers.get(i + 1);
             fibonacciNumbers.add(nextFibNum);
         }
