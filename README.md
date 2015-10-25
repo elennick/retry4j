@@ -1,4 +1,4 @@
-![Build Status]https://travis-ci.org/elennick/retry4j.svg?branch=master
+![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master)
 
 ## Retry4j
 
