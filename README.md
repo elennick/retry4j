@@ -13,12 +13,27 @@ Retry4j is a simple Java library to assist with retrying transient situations or
     RetryConfig config = new RetryConfigBuilder()
             .retryOnSpecificExceptions(ConnectException.class)
             .withMaxNumberOfTries(10)
-            .withDurationBetweenTries(Duration.of(30, ChronoUnit.SECONDS))
+            .withDelayBetweenTries(Duration.of(30, ChronoUnit.SECONDS))
             .withExponentialBackoff()
             .build();
             
     try {  
       RetryResults results = new RetryExecutor(config).execute(callable);
+    } catch(CallFailureException cfe) {
+      //the call exhausted all tries without succeeding
+    } catch(UnexpectedCallFailureException ucfe) {
+      //the call threw an unexpected exception that was not specified to retry on
+    }
+
+Or even more simple using one of the predefined config options:
+
+    Callable<Boolean> callable = () -> {
+        //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
+    };
+    
+    try {  
+      RetryExecutor executor = new RetryExecutor(RetryConfig.simpleFixedConfig());
+      RetryResults results = executor.execute(callable);
     } catch(CallFailureException cfe) {
       //the call exhausted all tries without succeeding
     } catch(UnexpectedCallFailureException ucfe) {
@@ -107,6 +122,15 @@ Backoff strategies can also be specified like so:
             .build();
 
 Additionally, this config method can be used to specify custom backoff strategies. Custom backoff strategies can be created by implementing the **com.evanlennick.retry4j.backoff.BackoffStrategy** interface.
+
+### Simple Configs
+
+Retry4j offers a few "simple" configurations right out of the box if specifying all the details isn't important to you. These can be accessed as static members of RetryConfig like so:
+
+      RetryExecutor executor = new RetryExecutor(RetryConfig.simpleFixedConfig());
+      RetryResults results = executor.execute(callable);
+
+**simpleFixedConfig()**, **simpleExponentialConfig()** and **simpleFibonacciConfig()** are all available.
 
 ### RetryExecutor
 
