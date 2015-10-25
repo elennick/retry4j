@@ -35,7 +35,7 @@ public class RetryExecutorTest {
                 .build();
 
         RetryResults results = new RetryExecutor(retryConfig).execute(callable);
-        assertThat(results.isSucceeded());
+        assertThat(results.wasSuccessful());
     }
 
     @Test(expectedExceptions = {CallFailureException.class})
@@ -167,9 +167,9 @@ public class RetryExecutorTest {
 
         RetryResults results = new RetryExecutor(retryConfig).execute(callable);
 
-        assertThat(results.isSucceeded());
+        assertThat(results.wasSuccessful());
         assertThat(results.getCallName()).isNotEmpty();
-        assertThat(results.getTotalDurationElapsed().toMillis()).isCloseTo(0, within(25L));
+        assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
         assertThat(results.getTotalTries()).isEqualTo(1);
     }
 
@@ -187,9 +187,9 @@ public class RetryExecutorTest {
             new RetryExecutor(retryConfig).execute(callable);
         } catch (CallFailureException e) {
             RetryResults results = e.getRetryResults();
-            assertThat(results.isSucceeded()).isFalse();
+            assertThat(results.wasSuccessful()).isFalse();
             assertThat(results.getCallName()).isNotEmpty();
-            assertThat(results.getTotalDurationElapsed().toMillis()).isCloseTo(0, within(25L));
+            assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
             assertThat(results.getTotalTries()).isEqualTo(5);
         }
     }

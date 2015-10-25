@@ -5,9 +5,9 @@ import java.time.Duration;
 public class RetryResults {
 
     private String callName;
-    private boolean succeeded;
+    private boolean wasSuccessful;
     private int totalTries;
-    private Duration totalDurationElapsed;
+    private Duration totalElapsedDuration;
 
     public String getCallName() {
         return callName;
@@ -17,12 +17,12 @@ public class RetryResults {
         this.callName = callName;
     }
 
-    public boolean isSucceeded() {
-        return succeeded;
+    public boolean wasSuccessful() {
+        return wasSuccessful;
     }
 
-    public void setSucceeded(boolean succeeded) {
-        this.succeeded = succeeded;
+    public void setSuccessful(boolean wasSuccessful) {
+        this.wasSuccessful = wasSuccessful;
     }
 
     public int getTotalTries() {
@@ -33,21 +33,30 @@ public class RetryResults {
         this.totalTries = totalTries;
     }
 
-    public Duration getTotalDurationElapsed() {
-        return totalDurationElapsed;
-    }
-
-    public void setTotalDurationElapsed(Duration totalDurationElapsed) {
-        this.totalDurationElapsed = totalDurationElapsed;
-    }
-
     @Override
     public String toString() {
         return "RetryResults{" +
                 "callName='" + callName + '\'' +
-                ", succeeded=" + succeeded +
+                ", wasSuccessful=" + wasSuccessful +
                 ", totalTries=" + totalTries +
-                ", totalDurationElapsed=" + totalDurationElapsed +
+                ", totalElapsedDuration=" + totalElapsedDuration +
                 '}';
     }
+
+    public boolean isWasSuccessful() {
+        return wasSuccessful;
+    }
+
+    public void setWasSuccessful(boolean wasSuccessful) {
+        this.wasSuccessful = wasSuccessful;
+    }
+
+    public Duration getTotalElapsedDuration() {
+        return totalElapsedDuration;
+    }
+
+    public void setTotalElapsedDuration(Duration totalElapsedDuration) {
+        this.totalElapsedDuration = totalElapsedDuration;
+    }
+
 }
