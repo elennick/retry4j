@@ -1,6 +1,8 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.backoff.BackoffStrategy;
+import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
+import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
 import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
 
 import java.time.Duration;
@@ -60,8 +62,8 @@ public class RetryConfig {
         RetryConfig config = new RetryConfig();
         config.retryOnAnyException = true;
         config.retryOnSpecificExceptions = new HashSet<>();
-        config.maxNumberOfTries = 3;
-        config.delayBetweenRetries = Duration.of(15, ChronoUnit.SECONDS);
+        config.maxNumberOfTries = 5;
+        config.delayBetweenRetries = Duration.of(10, ChronoUnit.SECONDS);
         config.backoffStrategy = new FixedBackoffStrategy();
         return config;
     }
@@ -72,7 +74,17 @@ public class RetryConfig {
         config.retryOnSpecificExceptions = new HashSet<>();
         config.maxNumberOfTries = 5;
         config.delayBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
-        config.backoffStrategy = new FixedBackoffStrategy();
+        config.backoffStrategy = new ExponentialBackoffStrategy();
+        return config;
+    }
+
+    public static RetryConfig simpleFibonacciConfig() {
+        RetryConfig config = new RetryConfig();
+        config.retryOnAnyException = true;
+        config.retryOnSpecificExceptions = new HashSet<>();
+        config.maxNumberOfTries = 7;
+        config.delayBetweenRetries = Duration.of(7, ChronoUnit.SECONDS);
+        config.backoffStrategy = new FibonacciBackoffStrategy();
         return config;
     }
 

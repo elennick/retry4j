@@ -33,16 +33,6 @@ public class RetryResults {
         this.totalTries = totalTries;
     }
 
-    @Override
-    public String toString() {
-        return "RetryResults{" +
-                "callName='" + callName + '\'' +
-                ", wasSuccessful=" + wasSuccessful +
-                ", totalTries=" + totalTries +
-                ", totalElapsedDuration=" + totalElapsedDuration +
-                '}';
-    }
-
     public boolean isWasSuccessful() {
         return wasSuccessful;
     }
@@ -57,6 +47,16 @@ public class RetryResults {
 
     public void setTotalElapsedDuration(Duration totalElapsedDuration) {
         this.totalElapsedDuration = totalElapsedDuration;
+    }
+
+    @Override
+    public String toString() {
+        return "RetryResults{" +
+                "callName='" + callName + '\'' +
+                ", wasSuccessful=" + wasSuccessful +
+                ", totalTries=" + totalTries +
+                ", totalElapsedDuration=" + totalElapsedDuration +
+                '}';
     }
 
 }
