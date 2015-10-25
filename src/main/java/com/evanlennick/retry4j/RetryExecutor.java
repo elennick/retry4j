@@ -43,7 +43,7 @@ public class RetryExecutor {
         results.setCallName(callable.toString());
         results.setTotalTries(tries);
         results.setTotalDurationElapsed(Duration.of(elapsed, ChronoUnit.MILLIS));
-        results.setSucceeded(true);
+        results.setSucceeded(success);
 
         if (!success) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
