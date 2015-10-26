@@ -2,6 +2,8 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.CallFailureException;
 import com.evanlennick.retry4j.exception.UnexpectedCallFailureException;
+import com.evanlennick.retry4j.handlers.Listener;
+import com.evanlennick.retry4j.handlers.RetryListener;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -12,8 +14,12 @@ public class RetryExecutor {
 
     private RetryConfig config;
 
+    private RetryListener retryListener;
+
+    private RetryResults results = new RetryResults();
+
     public RetryExecutor() {
-        this.config = RetryConfig.simpleFixedConfig();
+        this(RetryConfig.simpleFixedConfig());
     }
 
     public RetryExecutor(RetryConfig config) {
@@ -22,9 +28,11 @@ public class RetryExecutor {
 
     public RetryResults execute(Callable<Boolean> callable) throws CallFailureException, UnexpectedCallFailureException {
         long start = System.currentTimeMillis();
+        results.setStartTime(start);
 
         int maxTries = config.getMaxNumberOfTries();
         long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
+        this.results.setCallName(callable.toString());
 
         boolean success = false;
         int tries;
@@ -32,18 +40,11 @@ public class RetryExecutor {
             success = tryCall(callable);
 
             if (!success) {
-                sleep(millisBetweenTries, tries);
+                handleRetry(millisBetweenTries, tries);
             }
         }
 
-        long end = System.currentTimeMillis();
-        long elapsed = end - start;
-
-        RetryResults results = new RetryResults();
-        results.setCallName(callable.toString());
-        results.setTotalTries(tries);
-        results.setTotalElapsedDuration(Duration.of(elapsed, ChronoUnit.MILLIS));
-        results.setSuccessful(success);
+        refreshRetryResults(success, tries);
 
         if (!success) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
@@ -63,6 +64,29 @@ public class RetryExecutor {
             }
         }
         return success;
+    }
+
+    private void handleRetry(long millisBetweenTries, int tries) {
+        refreshRetryResults(false, tries);
+
+        if(null != retryListener) {
+            retryListener.immediatelyAfterFailedTry(results);
+        }
+
+        sleep(millisBetweenTries, tries);
+
+        if(null != retryListener) {
+            retryListener.immediatelyBeforeNextTry(results);
+        }
+    }
+
+    private void refreshRetryResults(boolean success, int tries) {
+        long currentTime = System.currentTimeMillis();
+        long elapsed = currentTime - results.getStartTime();
+
+        results.setTotalTries(tries);
+        results.setTotalElapsedDuration(Duration.of(elapsed, ChronoUnit.MILLIS));
+        results.setSuccessful(success);
     }
 
     private void sleep(long millis, int tries) {
@@ -87,5 +111,9 @@ public class RetryExecutor {
         }
 
         return true;
+    }
+
+    public void registerRetryListener(RetryListener listener) {
+        this.retryListener = listener;
     }
 }

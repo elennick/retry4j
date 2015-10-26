@@ -4,6 +4,25 @@ import java.time.Duration;
 
 public class RetryResults {
 
+    private long startTime;
+    private long endTime;
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
     private String callName;
     private boolean wasSuccessful;
     private int totalTries;
@@ -52,7 +71,9 @@ public class RetryResults {
     @Override
     public String toString() {
         return "RetryResults{" +
-                "callName='" + callName + '\'' +
+                "startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", callName='" + callName + '\'' +
                 ", wasSuccessful=" + wasSuccessful +
                 ", totalTries=" + totalTries +
                 ", totalElapsedDuration=" + totalElapsedDuration +
