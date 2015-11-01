@@ -1,7 +1,7 @@
 package com.evanlennick.retry4j;
 
-import com.evanlennick.retry4j.exception.CallFailureException;
-import com.evanlennick.retry4j.exception.UnexpectedCallFailureException;
+import com.evanlennick.retry4j.exception.RetriesExhaustedException;
+import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.handlers.AfterFailedTryListener;
 import com.evanlennick.retry4j.handlers.BeforeNextTryListener;
 import com.evanlennick.retry4j.handlers.RetryListener;
@@ -30,7 +30,7 @@ public class RetryExecutor {
         this.config = config;
     }
 
-    public CallResults execute(Callable<?> callable) throws CallFailureException, UnexpectedCallFailureException {
+    public CallResults execute(Callable<?> callable) throws RetriesExhaustedException, UnexpectedException {
         long start = System.currentTimeMillis();
         results.setStartTime(start);
 
@@ -53,20 +53,20 @@ public class RetryExecutor {
 
         if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
-            throw new CallFailureException(failureMsg, results);
+            throw new RetriesExhaustedException(failureMsg, results);
         } else {
             results.setResult(result.get());
             return results;
         }
     }
 
-    private Optional<Object> tryCall(Callable<?> callable) throws UnexpectedCallFailureException {
+    private Optional<Object> tryCall(Callable<?> callable) throws UnexpectedException {
         try {
             Object result = callable.call();
             return Optional.of(result);
         } catch (Exception e) {
             if (shouldThrowException(e)) {
-                throw new UnexpectedCallFailureException(e);
+                throw new UnexpectedException(e);
             } else {
                 return Optional.empty();
             }

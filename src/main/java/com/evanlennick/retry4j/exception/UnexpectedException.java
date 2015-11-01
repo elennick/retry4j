@@ -5,20 +5,20 @@ import java.util.concurrent.ExecutionException;
 /**
  * This exception represents when a call throws an exception that was not specified as one to retry on in the RetryConfig.
  */
-public class UnexpectedCallFailureException extends ExecutionException {
-    protected UnexpectedCallFailureException() {
+public class UnexpectedException extends ExecutionException {
+    protected UnexpectedException() {
         super();
     }
 
-    protected UnexpectedCallFailureException(String message) {
+    protected UnexpectedException(String message) {
         super(message);
     }
 
-    public UnexpectedCallFailureException(String message, Throwable cause) {
+    public UnexpectedException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public UnexpectedCallFailureException(Throwable cause) {
+    public UnexpectedException(Throwable cause) {
         super(cause);
     }
 }

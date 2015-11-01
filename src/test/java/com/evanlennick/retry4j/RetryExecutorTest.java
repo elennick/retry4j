@@ -1,7 +1,7 @@
 package com.evanlennick.retry4j;
 
-import com.evanlennick.retry4j.exception.CallFailureException;
-import com.evanlennick.retry4j.exception.UnexpectedCallFailureException;
+import com.evanlennick.retry4j.exception.RetriesExhaustedException;
+import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.Callable;
@@ -25,7 +25,7 @@ public class RetryExecutorTest {
         assertThat(results.wasSuccessful());
     }
 
-    @Test(expectedExceptions = {CallFailureException.class})
+    @Test(expectedExceptions = {RetriesExhaustedException.class})
     public void verifyExceptionFromCallThrowsCallFailureException() throws Exception {
         Callable<Boolean> callable = () -> {
             throw new RuntimeException();
@@ -41,7 +41,7 @@ public class RetryExecutorTest {
         new RetryExecutor(retryConfig).execute(callable);
     }
 
-    @Test(expectedExceptions = {CallFailureException.class})
+    @Test(expectedExceptions = {RetriesExhaustedException.class})
     public void verifySpecificExceptionFromCallThrowsCallFailureException() throws Exception {
         Callable<Boolean> callable = () -> {
             throw new IllegalArgumentException();
@@ -57,7 +57,7 @@ public class RetryExecutorTest {
         new RetryExecutor(retryConfig).execute(callable);
     }
 
-    @Test(expectedExceptions = {UnexpectedCallFailureException.class})
+    @Test(expectedExceptions = {UnexpectedException.class})
     public void verifyUnspecifiedExceptionCausesUnexpectedCallFailureException() throws Exception {
         Callable<Boolean> callable = () -> {
             throw new IllegalArgumentException();
@@ -104,7 +104,7 @@ public class RetryExecutorTest {
 
         try {
             new RetryExecutor(retryConfig).execute(callable);
-        } catch (CallFailureException e) {
+        } catch (RetriesExhaustedException e) {
             CallResults results = e.getCallResults();
             assertThat(results.getResult()).isNull();
             assertThat(results.wasSuccessful()).isFalse();

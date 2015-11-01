@@ -7,16 +7,16 @@ import java.util.concurrent.ExecutionException;
 /**
  * This exception represents a call execution that never succeeded after exhausting all retries.
  */
-public class CallFailureException extends ExecutionException {
+public class RetriesExhaustedException extends ExecutionException {
 
     private CallResults results;
 
-    public CallFailureException(CallResults results) {
+    public RetriesExhaustedException(CallResults results) {
         super();
         this.results = results;
     }
 
-    public CallFailureException(String message, CallResults results) {
+    public RetriesExhaustedException(String message, CallResults results) {
         super(message);
         this.results = results;
     }
