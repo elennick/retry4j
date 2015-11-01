@@ -19,7 +19,7 @@ public class RetryListenerTest {
                 .withDelayBetweenTries(0)
                 .build();
 
-        RetryExecutor executor = new RetryExecutor(retryConfig);
+        CallExecutor executor = new CallExecutor(retryConfig);
         executor.registerRetryListener((AfterFailedTryListener) results -> {
 
         });
@@ -37,7 +37,7 @@ public class RetryListenerTest {
                 .withDelayBetweenTries(0)
                 .build();
 
-        RetryExecutor executor = new RetryExecutor(retryConfig);
+        CallExecutor executor = new CallExecutor(retryConfig);
         executor.registerRetryListener((BeforeNextTryListener) results -> {
 
         });

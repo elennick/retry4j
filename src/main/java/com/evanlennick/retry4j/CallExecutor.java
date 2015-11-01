@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-public class RetryExecutor {
+public class CallExecutor {
 
     private RetryConfig config;
 
@@ -22,11 +22,11 @@ public class RetryExecutor {
 
     private CallResults results = new CallResults();
 
-    public RetryExecutor() {
+    public CallExecutor() {
         this(RetryConfig.simpleFixedConfig());
     }
 
-    public RetryExecutor(RetryConfig config) {
+    public CallExecutor(RetryConfig config) {
         this.config = config;
     }
 

@@ -21,7 +21,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults results = new RetryExecutor(retryConfig).execute(callable);
+        CallResults results = new CallExecutor(retryConfig).execute(callable);
         assertThat(results.wasSuccessful());
     }
 
@@ -38,7 +38,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new RetryExecutor(retryConfig).execute(callable);
+        new CallExecutor(retryConfig).execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -54,7 +54,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new RetryExecutor(retryConfig).execute(callable);
+        new CallExecutor(retryConfig).execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -70,7 +70,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new RetryExecutor(retryConfig).execute(callable);
+        new CallExecutor(retryConfig).execute(callable);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults results = new RetryExecutor(retryConfig).execute(callable);
+        CallResults results = new CallExecutor(retryConfig).execute(callable);
 
         assertThat(results.getResult()).isNotNull();
         assertThat(results.wasSuccessful());
@@ -103,7 +103,7 @@ public class RetryExecutorTest {
                 .build();
 
         try {
-            new RetryExecutor(retryConfig).execute(callable);
+            new CallExecutor(retryConfig).execute(callable);
         } catch (RetriesExhaustedException e) {
             CallResults results = e.getCallResults();
             assertThat(results.getResult()).isNull();
@@ -123,7 +123,7 @@ public class RetryExecutorTest {
                 .withDelayBetweenTries(0)
                 .build();
 
-        CallResults results = new RetryExecutor(retryConfig).execute(callable);
+        CallResults results = new CallExecutor(retryConfig).execute(callable);
 
         assertThat(results.getResult()).isEqualTo("test");
     }
