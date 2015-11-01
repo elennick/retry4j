@@ -11,21 +11,8 @@ import static org.assertj.core.api.Assertions.within;
 
 public class RetryExecutorTest {
 
-    @Test(expectedExceptions = {CallFailureException.class})
-    public void verifyReturningFalseFromCallFails() throws Exception {
-        Callable<Boolean> callable = () -> false;
-
-        RetryConfig retryConfig = new RetryConfigBuilder()
-                .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(0)
-                .withFixedBackoff()
-                .build();
-
-        new RetryExecutor(retryConfig).execute(callable);
-    }
-
     @Test
-    public void verifyReturningTrueFromCallSucceeds() throws Exception {
+    public void verifyReturningObjectFromCallSucceeds() throws Exception {
         Callable<Boolean> callable = () -> true;
 
         RetryConfig retryConfig = new RetryConfigBuilder()
@@ -98,6 +85,7 @@ public class RetryExecutorTest {
 
         RetryResults results = new RetryExecutor(retryConfig).execute(callable);
 
+        assertThat(results.getResult()).isNotNull();
         assertThat(results.wasSuccessful());
         assertThat(results.getCallName()).isNotEmpty();
         assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
@@ -118,10 +106,25 @@ public class RetryExecutorTest {
             new RetryExecutor(retryConfig).execute(callable);
         } catch (CallFailureException e) {
             RetryResults results = e.getRetryResults();
+            assertThat(results.getResult()).isNull();
             assertThat(results.wasSuccessful()).isFalse();
             assertThat(results.getCallName()).isNotEmpty();
             assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
             assertThat(results.getTotalTries()).isEqualTo(5);
         }
+    }
+
+    @Test
+    public void verifyReturningObjectFromCallable() throws Exception {
+        Callable<String> callable = () -> "test";
+
+        RetryConfig retryConfig = new RetryConfigBuilder()
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(0)
+                .build();
+
+        RetryResults results = new RetryExecutor(retryConfig).execute(callable);
+
+        assertThat(results.getResult()).isEqualTo("test");
     }
 }

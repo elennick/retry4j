@@ -2,10 +2,15 @@ package com.evanlennick.retry4j;
 
 import java.time.Duration;
 
-public class RetryResults {
+public class RetryResults<T> {
 
     private long startTime;
     private long endTime;
+    private String callName;
+    private boolean wasSuccessful;
+    private int totalTries;
+    private Duration totalElapsedDuration;
+    private T result;
 
     public long getStartTime() {
         return startTime;
@@ -22,11 +27,6 @@ public class RetryResults {
     public void setEndTime(long endTime) {
         this.endTime = endTime;
     }
-
-    private String callName;
-    private boolean wasSuccessful;
-    private int totalTries;
-    private Duration totalElapsedDuration;
 
     public String getCallName() {
         return callName;
@@ -66,6 +66,14 @@ public class RetryResults {
 
     public void setTotalElapsedDuration(Duration totalElapsedDuration) {
         this.totalElapsedDuration = totalElapsedDuration;
+    }
+
+    public T getResult() {
+        return result;
+    }
+
+    public void setResult(T result) {
+        this.result = result;
     }
 
     @Override

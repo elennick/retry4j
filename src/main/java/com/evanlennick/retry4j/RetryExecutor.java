@@ -7,6 +7,7 @@ import com.evanlennick.retry4j.handlers.RetryListener;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +27,7 @@ public class RetryExecutor {
         this.config = config;
     }
 
-    public RetryResults execute(Callable<Boolean> callable) throws CallFailureException, UnexpectedCallFailureException {
+    public RetryResults execute(Callable<?> callable) throws CallFailureException, UnexpectedCallFailureException {
         long start = System.currentTimeMillis();
         results.setStartTime(start);
 
@@ -34,36 +35,39 @@ public class RetryExecutor {
         long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
         this.results.setCallName(callable.toString());
 
-        boolean success = false;
+        Optional<Object> result = Optional.empty();
         int tries;
-        for (tries = 0; tries < maxTries && !success; tries++) {
-            success = tryCall(callable);
 
-            if (!success) {
+        for (tries = 0; tries < maxTries && !result.isPresent(); tries++) {
+            result = tryCall(callable);
+
+            if (!result.isPresent()) {
                 handleRetry(millisBetweenTries, tries);
             }
         }
 
-        refreshRetryResults(success, tries);
+        refreshRetryResults(result.isPresent(), tries);
 
-        if (!success) {
+        if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
             throw new CallFailureException(failureMsg, results);
         } else {
+            results.setResult(result.get());
             return results;
         }
     }
 
-    private boolean tryCall(Callable<Boolean> callable) throws UnexpectedCallFailureException {
-        boolean success = false;
+    private Optional<Object> tryCall(Callable<?> callable) throws UnexpectedCallFailureException {
         try {
-            success = callable.call();
+            Object result = callable.call();
+            return Optional.of(result);
         } catch (Exception e) {
             if (shouldThrowException(e)) {
                 throw new UnexpectedCallFailureException(e);
+            } else {
+                return Optional.empty();
             }
         }
-        return success;
     }
 
     private void handleRetry(long millisBetweenTries, int tries) {
