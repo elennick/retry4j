@@ -2,7 +2,8 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.CallFailureException;
 import com.evanlennick.retry4j.exception.UnexpectedCallFailureException;
-import com.evanlennick.retry4j.handlers.Listener;
+import com.evanlennick.retry4j.handlers.AfterFailedTryListener;
+import com.evanlennick.retry4j.handlers.BeforeNextTryListener;
 import com.evanlennick.retry4j.handlers.RetryListener;
 
 import java.time.Duration;
@@ -15,9 +16,11 @@ public class RetryExecutor {
 
     private RetryConfig config;
 
-    private RetryListener retryListener;
+    private AfterFailedTryListener afterFailedTryListener;
 
-    private RetryResults results = new RetryResults();
+    private BeforeNextTryListener beforeNextTryListener;
+
+    private CallResults results = new CallResults();
 
     public RetryExecutor() {
         this(RetryConfig.simpleFixedConfig());
@@ -27,7 +30,7 @@ public class RetryExecutor {
         this.config = config;
     }
 
-    public RetryResults execute(Callable<?> callable) throws CallFailureException, UnexpectedCallFailureException {
+    public CallResults execute(Callable<?> callable) throws CallFailureException, UnexpectedCallFailureException {
         long start = System.currentTimeMillis();
         results.setStartTime(start);
 
@@ -73,14 +76,14 @@ public class RetryExecutor {
     private void handleRetry(long millisBetweenTries, int tries) {
         refreshRetryResults(false, tries);
 
-        if(null != retryListener) {
-            retryListener.immediatelyAfterFailedTry(results);
+        if(null != afterFailedTryListener) {
+            afterFailedTryListener.immediatelyAfterFailedTry(results);
         }
 
         sleep(millisBetweenTries, tries);
 
-        if(null != retryListener) {
-            retryListener.immediatelyBeforeNextTry(results);
+        if(null != beforeNextTryListener) {
+            beforeNextTryListener.immediatelyBeforeNextTry(results);
         }
     }
 
@@ -118,6 +121,12 @@ public class RetryExecutor {
     }
 
     public void registerRetryListener(RetryListener listener) {
-        this.retryListener = listener;
+        if(listener instanceof AfterFailedTryListener) {
+            this.afterFailedTryListener = (AfterFailedTryListener)listener;
+        } else if(listener instanceof BeforeNextTryListener) {
+            this.beforeNextTryListener = (BeforeNextTryListener)listener;
+        } else {
+            throw new IllegalArgumentException("Tried to register an unrecognized RetryListener!");
+        }
     }
 }

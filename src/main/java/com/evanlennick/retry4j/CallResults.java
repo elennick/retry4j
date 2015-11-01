@@ -2,7 +2,7 @@ package com.evanlennick.retry4j;
 
 import java.time.Duration;
 
-public class RetryResults<T> {
+public class CallResults<T> {
 
     private long startTime;
     private long endTime;

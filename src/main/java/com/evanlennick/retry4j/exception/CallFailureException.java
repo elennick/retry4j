@@ -1,6 +1,6 @@
 package com.evanlennick.retry4j.exception;
 
-import com.evanlennick.retry4j.RetryResults;
+import com.evanlennick.retry4j.CallResults;
 
 import java.util.concurrent.ExecutionException;
 
@@ -9,19 +9,19 @@ import java.util.concurrent.ExecutionException;
  */
 public class CallFailureException extends ExecutionException {
 
-    private RetryResults results;
+    private CallResults results;
 
-    public CallFailureException(RetryResults results) {
+    public CallFailureException(CallResults results) {
         super();
         this.results = results;
     }
 
-    public CallFailureException(String message, RetryResults results) {
+    public CallFailureException(String message, CallResults results) {
         super(message);
         this.results = results;
     }
 
-    public RetryResults getRetryResults() {
+    public CallResults getCallResults() {
         return results;
     }
 }

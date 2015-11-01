@@ -21,7 +21,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        RetryResults results = new RetryExecutor(retryConfig).execute(callable);
+        CallResults results = new RetryExecutor(retryConfig).execute(callable);
         assertThat(results.wasSuccessful());
     }
 
@@ -83,7 +83,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        RetryResults results = new RetryExecutor(retryConfig).execute(callable);
+        CallResults results = new RetryExecutor(retryConfig).execute(callable);
 
         assertThat(results.getResult()).isNotNull();
         assertThat(results.wasSuccessful());
@@ -105,7 +105,7 @@ public class RetryExecutorTest {
         try {
             new RetryExecutor(retryConfig).execute(callable);
         } catch (CallFailureException e) {
-            RetryResults results = e.getRetryResults();
+            CallResults results = e.getCallResults();
             assertThat(results.getResult()).isNull();
             assertThat(results.wasSuccessful()).isFalse();
             assertThat(results.getCallName()).isNotEmpty();
@@ -123,7 +123,7 @@ public class RetryExecutorTest {
                 .withDelayBetweenTries(0)
                 .build();
 
-        RetryResults results = new RetryExecutor(retryConfig).execute(callable);
+        CallResults results = new RetryExecutor(retryConfig).execute(callable);
 
         assertThat(results.getResult()).isEqualTo("test");
     }
