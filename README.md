@@ -48,12 +48,12 @@ Or even more simple using one of the predefined config options:
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.3.0-SNAPSHOT</version>
+        <version>0.2.0</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.3.0-SNAPSHOT"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.2.0"
 
 ## Motivation
 
