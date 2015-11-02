@@ -41,6 +41,20 @@ Or even more simple using one of the predefined config options:
       //the call threw an unexpected exception that was not specified to retry on
     }
 
+## Dependencies
+
+### Maven
+
+    <dependency>
+        <groupId>com.evanlennick</groupId>
+        <artifactId>retry4j</artifactId>
+        <version>0.3.0-SNAPSHOT</version>
+    </dependency>
+
+### SBT
+
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.3.0-SNAPSHOT"
+
 ## Motivation
 
 There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
