@@ -6,7 +6,7 @@ Retry4j is a simple Java library to assist with retrying transient situations or
 
 ## Basic Code Example
 
-    Callable<Boolean> callable = () -> {
+    Callable<Object> callable = () -> {
         //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
     };
 
@@ -18,47 +18,48 @@ Retry4j is a simple Java library to assist with retrying transient situations or
             .build();
             
     try {  
-      RetryResults results = new RetryExecutor(config).execute(callable);
-    } catch(CallFailureException cfe) {
+      CallResults<Object> results = new CallExecutor(config).execute(callable);
+      Object object = results.getResult(); //the 
+    } catch(RetriesExhaustedException ree) {
       //the call exhausted all tries without succeeding
-    } catch(UnexpectedCallFailureException ucfe) {
+    } catch(UnexpectedException ue) {
       //the call threw an unexpected exception that was not specified to retry on
     }
 
 Or even more simple using one of the predefined config options:
 
-    Callable<Boolean> callable = () -> {
+    Callable<Object> callable = () -> {
         //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
     };
     
     try {  
-      RetryExecutor executor = new RetryExecutor(RetryConfig.simpleFixedConfig());
-      RetryResults results = executor.execute(callable);
-    } catch(CallFailureException cfe) {
+      CallExecutor executor = new CallExecutor(RetryConfig.simpleFixedConfig());
+      CallResults<Object> results = executor.execute(callable);
+    } catch(RetriesExhaustedException ree) {
       //the call exhausted all tries without succeeding
-    } catch(UnexpectedCallFailureException ucfe) {
+    } catch(UnexpectedException ue) {
       //the call threw an unexpected exception that was not specified to retry on
     }
 
 ## Motivation
 
-There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be simple, readable and to be well documented.
+There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
 
 ## Documentation
 
 ### General
 
-Retry4j currently supports simple calls that do not return any complex logic that needs to be handled. It only supports synchronous requests and does not handle threading or asynchronous callbacks for you. Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
+Retry4j only supports synchronous requests and does not handle threading or asynchronous callbacks for you. Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
 
 ### Exception Handling Config
 
-If you do not specify how exceptions should be handled or explicitly say **failOnAnyException()**, the RetryExecutor will fail and throw an **UnexpectedCallFailureException**. Use this configuration if you want the executor to cease its work when it runs into any exception at all.
+If you do not specify how exceptions should be handled or explicitly say **failOnAnyException()**, the CallExecutor will fail and throw an **UnexpectedException**. Use this configuration if you want the executor to cease its work when it runs into any exception at all.
 
     RetryConfig config = new RetryConfigBuilder()
             .failOnAnyException()
             .build();
 
-If you want to specify specific exceptions that should cause the executor to continue and retry on encountering, specify them using the **retryOnSpecificExceptions()** config method. This method can accept any number of exceptions if there is more than one that should indicate the executor should continue retrying. All other unspecified exceptions will immediately interupt the executor and throw an **UnexpectedCallFailureException**.
+If you want to specify specific exceptions that should cause the executor to continue and retry on encountering, specify them using the **retryOnSpecificExceptions()** config method. This method can accept any number of exceptions if there is more than one that should indicate the executor should continue retrying. All other unspecified exceptions will immediately interupt the executor and throw an **UnexpectedException**.
 
     RetryConfig config = new RetryConfigBuilder()
             .retryOnSpecificExceptions(ConnectException.class, TimeoutException.class)
@@ -94,7 +95,6 @@ To specify the delay in between each try, use the **withDelayBetweenTries()** co
     RetryConfig config = new RetryConfigBuilder()
             .withDelayBetweenTries(Duration.of(2, ChronoUnit.MINUTES))
             .build();
-            
 
 ### Config Backoff Strategy
 
@@ -115,6 +115,24 @@ Retry4j supports several backoff strategies. They can be specified like so:
             .withFibonacciBackoff()
             .build();
 
+    //backoff strategy that retries with no delay
+    //**NOTE:** any value specified in the config for "withDelayBetweenTries()" will be ignored if you use this strategy
+    RetryConfig config = new RetryConfigBuilder()
+            .withNoWaitBackoff()
+            .build();
+
+    //backoff strategy that randomly multiplies the delay specified on each retry
+    //useful if you want to force multiple threads not to retry at the same rate
+    RetryConfig config = new RetryConfigBuilder()
+            .withRandomBackoff()
+            .build();
+
+    //backoff strategy that delays at a slowing rate and also randomly multiplies the delay
+    //combination of Exponential Backoff Strategy and Random Backoff Strategy
+    RetryConfig config = new RetryConfigBuilder()
+            .withRandomExponentialBackoff()
+            .build();
+
 Backoff strategies can also be specified like so:
 
     RetryConfig config = new RetryConfigBuilder()
@@ -127,24 +145,24 @@ Additionally, this config method can be used to specify custom backoff strategie
 
 Retry4j offers a few "simple" configurations right out of the box if specifying all the details isn't important to you. These can be accessed as static members of RetryConfig like so:
 
-      RetryExecutor executor = new RetryExecutor(RetryConfig.simpleFixedConfig());
-      RetryResults results = executor.execute(callable);
+      CallExecutor executor = new CallExecutor(RetryConfig.simpleFixedConfig());
+      CallResults results = executor.execute(callable);
 
 **simpleFixedConfig()**, **simpleExponentialConfig()** and **simpleFibonacciConfig()** are all available.
 
-### RetryExecutor
+### CallExecutor
 
-Executing your code with retry logic is as simple as instantiating a **RetryExecutor** with your configuration and then calling execute:
+Executing your code with retry logic is as simple as instantiating a **CallExecutor** with your configuration and then calling execute:
 
-    new RetryExecutor(config).execute(callable);
+    new CallExecutor(config).execute(callable);
     
-The RetryExecutor expects that your logic is wrapped in a **java.util.concurrent.Callable<Boolean>**.
+The CallExecutor expects that your logic is wrapped in a **java.util.concurrent.Callable**.
 
-### Retry Results
+### CallResults
 
-After the executor successfully completes or throws a CallFailureException, a **RetryResults** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
+After the executor successfully completes or throws a CallFailureException, a **CallResults** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
 
-    RetryResults results = new RetryExecutor(config).execute(callable);
+    CallResults results = new CallExecutor(config).execute(callable);
     System.out.println(results.isSucceeded());
     System.out.println(results.getCallName());
     System.out.println(results.getTotalDurationElapsed());
@@ -153,53 +171,25 @@ After the executor successfully completes or throws a CallFailureException, a **
 or
 
     try {  
-        RetryResults results = new RetryExecutor(config).execute(callable);
-    } catch(CallFailureException cfe) {
-        RetryResults results = cfe.getRetryResults();
+        new CallExecutor(config).execute(callable);
+    } catch(RetriesExhaustedException cfe) {
+        CallResults results = cfe.getCallResults();
         System.out.println(results.isSucceeded());
         System.out.println(results.getCallName());
         System.out.println(results.getTotalDurationElapsed());
         System.out.println(results.getTotalTries());
     }
 
-### What situations will the executor retry on?
+### RetryListener's
 
-If the call does not return true OR throws an expected exception (one specified to retry on by the config) AND and all retries have not yet been exhausted, the executor will delay and retry again.
+Two RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
 
-### What situations will the executor throw a CallFailureException?
-
-If the call does not return true OR throws an expected exception AND all retries have been exhausted, the executor will throw a CallFailureException.
-
-### What situations will the executor throw an UnexpectedCallFailureException
-
-If the call throws an unexpected exception, the executor will immediately stop and throw an UnexpectedCallFailureException. For example, if this is the config:
-
-    RetryConfig config = new RetryConfigBuilder()
-            .retryOnSpecificExceptions(ConnectException.class)
-            .build();
-
-...and an **UnsupportedOperationException** is thrown, the executor will bubble up the exception and cease to execute.
-
-### Putting it all together with more realistic config examples
-
-This example will execute the callable code up to three times with a delay of 5 seconds in between each try if needed. It will retry whenever the callable code does not return true OR when an IllegalArgumentException is thrown:
-
-    RetryConfig config = new RetryConfigBuilder()
-        .retryOnSpecificExceptions(IllegalArgumentException.class)
-        .withMaxNumberOfTries(3)
-        .withDelayBetweenTries(5)
-        .withFixedBackoff()
-        .build();
-
-    new RetryExecutor(config).execute(callable);
-
-This example will execute the callable code up to five times. It will initially delay for 500 milliseconds before trying again and each subsequent delay will become exponentially longer. Any encountered exceptions will be considered a failure for that try but will not stop the retry executor from continuing. After 5 failed tries, the executor will throw a CallFailureException:
-
-    RetryConfig config = new RetryConfigBuilder()
-        .retryOnAnyException()
-        .withMaxNumberOfTries(5)
-        .withDelayBetweenTries(Duration.of(500, ChronoUnit.MILLIS))
-        .withExponentialBackoff()
-        .build();
-
-    new RetryExecutor(config).execute(callable);
+        CallExecutor executor = new CallExecutor(config);
+        
+        executor.registerRetryListener((AfterFailedTryListener) results -> {
+            //whatever logic you want to execute after a failed try
+        });
+        
+        executor.registerRetryListener((BeforeNextTryListener) results -> {
+            //whatever logic you want to execute before the next try
+        }
