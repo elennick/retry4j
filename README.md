@@ -163,6 +163,7 @@ The CallExecutor expects that your logic is wrapped in a **java.util.concurrent.
 After the executor successfully completes or throws a CallFailureException, a **CallResults** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
 
     CallResults results = new CallExecutor(config).execute(callable);
+    System.out.println(results.getResult()); //this will be populated if your callable returns a value
     System.out.println(results.isSucceeded());
     System.out.println(results.getCallName());
     System.out.println(results.getTotalDurationElapsed());
