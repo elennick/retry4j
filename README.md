@@ -116,7 +116,7 @@ Retry4j supports several backoff strategies. They can be specified like so:
             .build();
 
     //backoff strategy that retries with no delay
-    //**NOTE:** any value specified in the config for "withDelayBetweenTries()" will be ignored if you use this strategy
+    //NOTE: any value specified in the config for "withDelayBetweenTries()" will be ignored if you use this strategy
     RetryConfig config = new RetryConfigBuilder()
             .withNoWaitBackoff()
             .build();
