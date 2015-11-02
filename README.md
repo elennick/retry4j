@@ -87,7 +87,7 @@ If you want the executor to continue to retry on all encountered exceptions, spe
 
 ### Timing Config
 
-To specify the maximum number of tries that should be attempted, specify an integer value in the config using the **withMaxNumberOfTries()** method. The executor will attempt to execute the call the number of times specified and if it does not succeed after all tries have been exhausted, it will throw a **CallFailureException**.
+To specify the maximum number of tries that should be attempted, specify an integer value in the config using the **withMaxNumberOfTries()** method. The executor will attempt to execute the call the number of times specified and if it does not succeed after all tries have been exhausted, it will throw a **RetriesExhaustedException**.
 
     RetryConfig config = new RetryConfigBuilder()
             .withMaxNumberOfTries(5)
@@ -174,7 +174,7 @@ The CallExecutor expects that your logic is wrapped in a **java.util.concurrent.
 
 ### CallResults
 
-After the executor successfully completes or throws a CallFailureException, a **CallResults** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
+After the executor successfully completes or throws a RetriesExhaustedException, a **CallResults** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
 
     CallResults results = new CallExecutor(config).execute(callable);
     System.out.println(results.getResult()); //this will be populated if your callable returns a value
