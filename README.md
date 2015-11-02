@@ -110,7 +110,7 @@ To specify the delay in between each try, use the **withDelayBetweenTries()** co
             .withDelayBetweenTries(Duration.of(2, ChronoUnit.MINUTES))
             .build();
 
-### Config Backoff Strategy
+### Backoff Strategy Config
 
 Retry4j supports several backoff strategies. They can be specified like so:
 
@@ -197,7 +197,7 @@ or
 
 ### RetryListener
 
-Two RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
+RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
 
         CallExecutor executor = new CallExecutor(config);
         
