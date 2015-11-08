@@ -2,9 +2,9 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
-import com.evanlennick.retry4j.handlers.AfterFailedTryListener;
-import com.evanlennick.retry4j.handlers.BeforeNextTryListener;
-import com.evanlennick.retry4j.handlers.RetryListener;
+import com.evanlennick.retry4j.listener.AfterFailedTryListener;
+import com.evanlennick.retry4j.listener.BeforeNextTryListener;
+import com.evanlennick.retry4j.listener.RetryListener;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

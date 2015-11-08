@@ -1,4 +1,4 @@
-package com.evanlennick.retry4j.handlers;
+package com.evanlennick.retry4j.listener;
 
 abstract public interface RetryListener {
 }
