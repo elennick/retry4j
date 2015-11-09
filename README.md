@@ -55,6 +55,10 @@ Or even more simple using one of the predefined config options:
 
     libraryDependencies += "com.evanlennick" % "retry4j" % "0.3.0"
 
+### Gradle
+
+    compile "com.evanlennick:retry4j:0.3.0"
+    
 ## Motivation
 
 There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
