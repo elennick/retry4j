@@ -114,6 +114,11 @@ To specify the delay in between each try, use the **withDelayBetweenTries()** co
             .withDelayBetweenTries(Duration.of(2, ChronoUnit.MINUTES))
             .build();
 
+    //250 millis, using Java 8 Duration
+    RetryConfig config = new RetryConfigBuilder()
+            .withDelayBetweenTries(Duration.ofMillis(250))
+            .build();
+
 ### Backoff Strategy Config
 
 Retry4j supports several backoff strategies. They can be specified like so:
