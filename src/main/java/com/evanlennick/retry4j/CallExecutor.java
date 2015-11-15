@@ -45,11 +45,12 @@ public class CallExecutor {
             result = tryCall(callable);
 
             if (!result.isPresent()) {
-                handleRetry(millisBetweenTries, tries);
+                handleRetry(millisBetweenTries, tries + 1);
             }
         }
 
         refreshRetryResults(result.isPresent(), tries);
+        results.setEndTime(System.currentTimeMillis());
 
         if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
