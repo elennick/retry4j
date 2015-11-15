@@ -217,3 +217,11 @@ RetryListener's are offered in case you want to be able to add logic that will e
         executor.registerRetryListener((BeforeNextTryListener) results -> {
             //whatever logic you want to execute before the next try
         }
+
+### Retry4jException
+
+Retry4j has the potential throw several unique exceptions when building a config, when executing retries or upon completing execution (if unsuccessful). All Retry4j exceptions are unchecked. You do not have to explicitly catch them if you wish to let them bubble up cleanly to some other exception handling mechanism. The types of **Retry4jException**'s are:
+
+* **UnexpectedException** - Occurs when an exception is thrown from the callable code. Only happens if the exception thrown was not one specified by the *retryOnSpecificExceptions()* method in the config or if the *retryOnAnyException()* option was not specified as part of the config.
+* **RetriesExhaustedException** - This indicates the callable code was retried the maximum number of times specified in the config via *withMaxNumberOfTries()* and failed all tries.
+* **InvalidRetryConfigException** - This exception is thrown when the RetryConfigBuilder detects that the invoker attempted to build an invalid config object. This will come with a specific error message indicating the problem. Common issues might be trying to specify more than one backoff strategy (or specifying none), specifying more than one exceptions strategy or forgetting to specify something mandatory such as the maximum number of tries.
