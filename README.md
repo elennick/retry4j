@@ -220,7 +220,7 @@ Retry4j has the potential throw several unique exceptions when building a config
 * **RetriesExhaustedException** - This indicates the callable code was retried the maximum number of times specified in the config via *withMaxNumberOfTries()* and failed all tries.
 * **InvalidRetryConfigException** - This exception is thrown when the RetryConfigBuilder detects that the invoker attempted to build an invalid config object. This will come with a specific error message indicating the problem. Common issues might be trying to specify more than one backoff strategy (or specifying none), specifying more than one exceptions strategy or forgetting to specify something mandatory such as the maximum number of tries.
 
-***NOTE:*** Validation on the RetryConfigBuilder can be disabled to prevent InvalidRetryConfigException's from ever being thrown. This is not recommended in application code but may be useful when writing test code. Examples of how to disable it:
+***NOTE:*** Validation on the **RetryConfigBuilder** can be disabled to prevent **InvalidRetryConfigException**'s from ever being thrown. This is not recommended in application code but may be useful when writing test code. Examples of how to disable it:
 
     new RetryConfigBuilder().setValidationEnabled(false).build()
     
