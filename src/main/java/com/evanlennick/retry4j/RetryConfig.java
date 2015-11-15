@@ -12,13 +12,13 @@ import java.util.Set;
 
 public class RetryConfig {
 
-    private boolean retryOnAnyException = false;
+    private Boolean retryOnAnyException = false;
     private Set<Class<? extends Exception>> retryOnSpecificExceptions = new HashSet<Class<? extends Exception>>();
-    private int maxNumberOfTries = 1;
-    private Duration delayBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
-    private BackoffStrategy backoffStrategy = new FixedBackoffStrategy();
+    private Integer maxNumberOfTries;
+    private Duration delayBetweenRetries;
+    private BackoffStrategy backoffStrategy;
 
-    public boolean isRetryOnAnyException() {
+    public Boolean isRetryOnAnyException() {
         return retryOnAnyException;
     }
 
@@ -34,7 +34,7 @@ public class RetryConfig {
         this.retryOnSpecificExceptions = retryOnSpecificExceptions;
     }
 
-    public int getMaxNumberOfTries() {
+    public Integer getMaxNumberOfTries() {
         return maxNumberOfTries;
     }
 

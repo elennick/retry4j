@@ -16,7 +16,7 @@ public class RetryListenerTest {
     public void verifyAfterFailedTryListener() throws Exception {
         Callable<String> callable = () -> "test";
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = new RetryConfigBuilder(false)
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0)
                 .build();
@@ -34,7 +34,7 @@ public class RetryListenerTest {
     public void verifyBeforeNextTryListener() throws Exception {
         Callable<String> callable = () -> "test";
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = new RetryConfigBuilder(false)
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0)
                 .build();

@@ -3,6 +3,8 @@ package com.evanlennick.retry4j;
 import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
 import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
 import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
@@ -10,11 +12,19 @@ import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RetryConfigBuilderTest {
+public class RetryConfigBuilderTest_ValidationDisabled {
+
+    private RetryConfigBuilder retryConfigBuilder;
+
+    @BeforeMethod
+    public void setup() {
+        retryConfigBuilder = new RetryConfigBuilder();
+        retryConfigBuilder.setValidationEnabled(false);
+    }
 
     @Test
     public void testSettingRetryOnAnyException() {
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .retryOnAnyException()
                 .build();
 
@@ -23,7 +33,7 @@ public class RetryConfigBuilderTest {
 
     @Test
     public void testSettingRetryOnSpecificExceptions() {
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .retryOnSpecificExceptions(IllegalArgumentException.class, UnsupportedOperationException.class)
                 .build();
 
@@ -33,7 +43,7 @@ public class RetryConfigBuilderTest {
 
     @Test
     public void testSettingMaxTries() {
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .withMaxNumberOfTries(99)
                 .build();
 
@@ -44,7 +54,7 @@ public class RetryConfigBuilderTest {
     public void testSettingDurationBetweenTries_duration() {
         Duration duration = Duration.of(60, ChronoUnit.MINUTES);
 
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .withDelayBetweenTries(duration)
                 .build();
 
@@ -53,7 +63,7 @@ public class RetryConfigBuilderTest {
 
     @Test
     public void testSettingDurationBetweenTries_seconds() {
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .withDelayBetweenTries(5)
                 .build();
 
@@ -62,7 +72,7 @@ public class RetryConfigBuilderTest {
 
     @Test
     public void testSettingDurationBetweenTries_millis() {
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .withDelayBetweenTries(5000L)
                 .build();
 
@@ -71,7 +81,7 @@ public class RetryConfigBuilderTest {
 
     @Test
     public void testSettingBackoffStrategy_exponential() {
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .withExponentialBackoff()
                 .build();
 
@@ -80,7 +90,7 @@ public class RetryConfigBuilderTest {
 
     @Test
     public void testSettingBackoffStrategy_fixed() {
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .withFixedBackoff()
                 .build();
 
@@ -89,7 +99,7 @@ public class RetryConfigBuilderTest {
 
     @Test
     public void testSettingBackoffStrategy_fibonacci() {
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = retryConfigBuilder
                 .withFibonacciBackoff()
                 .build();
 

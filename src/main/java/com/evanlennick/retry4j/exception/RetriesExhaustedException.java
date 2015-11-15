@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * This exception represents a call execution that never succeeded after exhausting all retries.
  */
-public class RetriesExhaustedException extends ExecutionException {
+public class RetriesExhaustedException extends Retry4jException {
 
     private CallResults results;
 

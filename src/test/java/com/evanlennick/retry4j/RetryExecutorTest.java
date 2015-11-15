@@ -2,6 +2,7 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.Callable;
@@ -11,11 +12,19 @@ import static org.assertj.core.api.Assertions.within;
 
 public class RetryExecutorTest {
 
+    private RetryConfigBuilder retryConfigBuilder;
+
+    @BeforeMethod
+    public void setup() {
+        boolean configValidationEnabled = false;
+        this.retryConfigBuilder = new RetryConfigBuilder(configValidationEnabled);
+    }
+
     @Test
     public void verifyReturningObjectFromCallSucceeds() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(0)
                 .withFixedBackoff()
@@ -31,7 +40,7 @@ public class RetryExecutorTest {
             throw new RuntimeException();
         };
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = retryConfigBuilder
                 .retryOnAnyException()
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0)
@@ -47,7 +56,7 @@ public class RetryExecutorTest {
             throw new IllegalArgumentException();
         };
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = retryConfigBuilder
                 .retryOnSpecificExceptions(IllegalArgumentException.class)
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0)
@@ -63,7 +72,7 @@ public class RetryExecutorTest {
             throw new IllegalArgumentException();
         };
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = retryConfigBuilder
                 .retryOnSpecificExceptions(UnsupportedOperationException.class)
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0)
@@ -77,7 +86,7 @@ public class RetryExecutorTest {
     public void verifyResultsArePopulatedOnSuccessfulCall() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(0)
                 .withFixedBackoff()
@@ -96,7 +105,7 @@ public class RetryExecutorTest {
     public void verifyResultsArePopulatedOnFailedCall() throws Exception {
         Callable<Boolean> callable = () -> false;
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(0)
                 .withFixedBackoff()
@@ -118,7 +127,7 @@ public class RetryExecutorTest {
     public void verifyReturningObjectFromCallable() throws Exception {
         Callable<String> callable = () -> "test";
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0)
                 .build();
