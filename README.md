@@ -26,20 +26,14 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
       //the call threw an unexpected exception that was not specified to retry on
     }
 
-Or even more simple using one of the predefined config options:
+Or even more simple using one of the predefined config options and not checking exceptions:
 
     Callable<Object> callable = () -> {
         //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
     };
-    
-    try {  
-      CallExecutor executor = new CallExecutor(RetryConfig.simpleFixedConfig());
-      CallResults<Object> results = executor.execute(callable);
-    } catch(RetriesExhaustedException ree) {
-      //the call exhausted all tries without succeeding
-    } catch(UnexpectedException ue) {
-      //the call threw an unexpected exception that was not specified to retry on
-    }
+
+    CallExecutor executor = new CallExecutor(RetryConfig.simpleFixedConfig());
+    CallResults<Object> results = executor.execute(callable);
 
 ## Dependencies
 
@@ -71,7 +65,7 @@ Retry4j only supports synchronous requests and does not handle threading or asyn
 
 ### Exception Handling Config
 
-If you do not specify how exceptions should be handled or explicitly say **failOnAnyException()**, the CallExecutor will fail and throw an **UnexpectedException**. Use this configuration if you want the executor to cease its work when it runs into any exception at all.
+If you do not specify how exceptions should be handled or explicitly say **failOnAnyException()**, the CallExecutor will fail and throw an **UnexpectedException** when encountering exceptions while running. Use this configuration if you want the executor to cease its work when it runs into any exception at all.
 
     RetryConfig config = new RetryConfigBuilder()
             .failOnAnyException()
@@ -225,3 +219,11 @@ Retry4j has the potential throw several unique exceptions when building a config
 * **UnexpectedException** - Occurs when an exception is thrown from the callable code. Only happens if the exception thrown was not one specified by the *retryOnSpecificExceptions()* method in the config or if the *retryOnAnyException()* option was not specified as part of the config.
 * **RetriesExhaustedException** - This indicates the callable code was retried the maximum number of times specified in the config via *withMaxNumberOfTries()* and failed all tries.
 * **InvalidRetryConfigException** - This exception is thrown when the RetryConfigBuilder detects that the invoker attempted to build an invalid config object. This will come with a specific error message indicating the problem. Common issues might be trying to specify more than one backoff strategy (or specifying none), specifying more than one exceptions strategy or forgetting to specify something mandatory such as the maximum number of tries.
+
+***NOTE:*** Validation on the RetryConfigBuilder can be disabled to prevent InvalidRetryConfigException's from ever being thrown. This is not recommended in application code but may be useful when writing test code. Examples of how to disable it:
+
+    new RetryConfigBuilder().setValidationEnabled(false).build()
+    
+or
+
+    new RetryConfigBuilder(false);
