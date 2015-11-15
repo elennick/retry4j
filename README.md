@@ -1,4 +1,4 @@
-![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master) ![License](https://img.shields.io/packagist/l/doctrine/orm.svg) ![Latest Version](http://img.shields.io/badge/latest-0.2.0-brightgreen.svg)
+![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master) ![License](https://img.shields.io/packagist/l/doctrine/orm.svg) ![Latest Version](http://img.shields.io/badge/latest-0.4.0-brightgreen.svg)
 
 ## Retry4j
 
@@ -48,16 +48,16 @@ Or even more simple using one of the predefined config options:
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.3.0</version>
+        <version>0.4.0</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.3.0"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.4.0"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.3.0"
+    compile "com.evanlennick:retry4j:0.4.0"
     
 ## Motivation
 
