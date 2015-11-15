@@ -29,7 +29,7 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
 Or even more simple using one of the predefined config options and not checking exceptions:
 
     Callable<Object> callable = () -> {
-        //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
+        //code that you want to retry
     };
 
     CallExecutor executor = new CallExecutor(RetryConfig.simpleFixedConfig());
