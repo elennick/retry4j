@@ -40,7 +40,7 @@ public class RetryConfig {
 
     public void setMaxNumberOfTries(int maxNumberOfTries) {
         if (maxNumberOfTries < 0) {
-            throw new IllegalArgumentException("Must be non-negative number.");
+            throw new IllegalArgumentException("Must be a non-negative number.");
         }
 
         this.maxNumberOfTries = maxNumberOfTries;
@@ -52,7 +52,7 @@ public class RetryConfig {
 
     public void setDelayBetweenRetries(Duration delayBetweenRetries) {
         if (delayBetweenRetries.isNegative()) {
-            throw new IllegalArgumentException("Must be non-negative Duration.");
+            throw new IllegalArgumentException("Must be a non-negative Duration.");
         }
 
         this.delayBetweenRetries = delayBetweenRetries;
