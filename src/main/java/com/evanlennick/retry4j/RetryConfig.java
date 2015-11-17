@@ -39,6 +39,10 @@ public class RetryConfig {
     }
 
     public void setMaxNumberOfTries(int maxNumberOfTries) {
+        if (maxNumberOfTries < 0) {
+            throw new IllegalArgumentException("Must be non-negative number.");
+        }
+
         this.maxNumberOfTries = maxNumberOfTries;
     }
 
@@ -47,6 +51,10 @@ public class RetryConfig {
     }
 
     public void setDelayBetweenRetries(Duration delayBetweenRetries) {
+        if (delayBetweenRetries.isNegative()) {
+            throw new IllegalArgumentException("Must be non-negative Duration.");
+        }
+
         this.delayBetweenRetries = delayBetweenRetries;
     }
 
@@ -60,31 +68,31 @@ public class RetryConfig {
 
     public static RetryConfig simpleFixedConfig() {
         RetryConfig config = new RetryConfig();
-        config.retryOnAnyException = true;
-        config.retryOnSpecificExceptions = new HashSet<>();
-        config.maxNumberOfTries = 5;
-        config.delayBetweenRetries = Duration.of(10, ChronoUnit.SECONDS);
-        config.backoffStrategy = new FixedBackoffStrategy();
+        config.setRetryOnAnyException(true);
+        config.setRetryOnSpecificExceptions(new HashSet<>());
+        config.setMaxNumberOfTries(5);
+        config.setDelayBetweenRetries(Duration.of(10, ChronoUnit.SECONDS));
+        config.setBackoffStrategy(new FixedBackoffStrategy());
         return config;
     }
 
     public static RetryConfig simpleExponentialConfig() {
         RetryConfig config = new RetryConfig();
-        config.retryOnAnyException = true;
-        config.retryOnSpecificExceptions = new HashSet<>();
-        config.maxNumberOfTries = 5;
-        config.delayBetweenRetries = Duration.of(5, ChronoUnit.SECONDS);
-        config.backoffStrategy = new ExponentialBackoffStrategy();
+        config.setRetryOnAnyException(true);
+        config.setRetryOnSpecificExceptions(new HashSet<>());
+        config.setMaxNumberOfTries(5);
+        config.setDelayBetweenRetries(Duration.of(5, ChronoUnit.SECONDS));
+        config.setBackoffStrategy(new ExponentialBackoffStrategy());
         return config;
     }
 
     public static RetryConfig simpleFibonacciConfig() {
         RetryConfig config = new RetryConfig();
-        config.retryOnAnyException = true;
-        config.retryOnSpecificExceptions = new HashSet<>();
-        config.maxNumberOfTries = 7;
-        config.delayBetweenRetries = Duration.of(7, ChronoUnit.SECONDS);
-        config.backoffStrategy = new FibonacciBackoffStrategy();
+        config.setRetryOnAnyException(true);
+        config.setRetryOnSpecificExceptions(new HashSet<>());
+        config.setMaxNumberOfTries(7);
+        config.setDelayBetweenRetries(Duration.of(7, ChronoUnit.SECONDS));
+        config.setBackoffStrategy(new FibonacciBackoffStrategy());
         return config;
     }
 
