@@ -5,7 +5,6 @@ import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -86,7 +85,7 @@ public class RetryConfigBuilder {
         return this;
     }
 
-    public RetryConfigBuilder withDelayBetweenTries(long amount, TemporalUnit time) {
+    public RetryConfigBuilder withDelayBetweenTries(long amount, ChronoUnit time) {
         config.setDelayBetweenRetries(Duration.of(amount, time));
         return this;
     }
