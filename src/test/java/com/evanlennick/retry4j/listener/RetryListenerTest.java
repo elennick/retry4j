@@ -7,6 +7,7 @@ import com.evanlennick.retry4j.RetryConfigBuilder;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.testng.annotations.Test;
 
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
 public class RetryListenerTest {
@@ -18,7 +19,7 @@ public class RetryListenerTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder(false)
                 .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .build();
 
         CallExecutor executor = new CallExecutor(retryConfig);
@@ -36,7 +37,7 @@ public class RetryListenerTest {
 
         RetryConfig retryConfig = new RetryConfigBuilder(false)
                 .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .build();
 
         CallExecutor executor = new CallExecutor(retryConfig);
