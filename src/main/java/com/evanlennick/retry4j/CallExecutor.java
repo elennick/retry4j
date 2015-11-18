@@ -23,7 +23,7 @@ public class CallExecutor {
     private CallResults results = new CallResults();
 
     public CallExecutor() {
-        this(RetryConfig.simpleFixedConfig());
+        this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
     }
 
     public CallExecutor(RetryConfig config) {

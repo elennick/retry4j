@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.time.temporal.ChronoUnit.*;
+
 public class RetryConfigBuilder {
 
     private boolean exceptionStrategySpecified;
@@ -175,4 +177,37 @@ public class RetryConfigBuilder {
             throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
         }
     }
+
+    public RetryConfigBuilder fixedBackoff5Tries10Sec() {
+        return new RetryConfigBuilder()
+                .retryOnAnyException()
+                .withMaxNumberOfTries(5)
+                .withDelayBetweenTries(10, SECONDS)
+                .withFixedBackoff();
+    }
+
+    public RetryConfigBuilder exponentialBackoff5Tries5Sec() {
+        return new RetryConfigBuilder()
+                .retryOnAnyException()
+                .withMaxNumberOfTries(5)
+                .withDelayBetweenTries(5, SECONDS)
+                .withExponentialBackoff();
+    }
+
+    public RetryConfigBuilder fiboBackoff7Tries5Sec() {
+        return new RetryConfigBuilder()
+                .retryOnAnyException()
+                .withMaxNumberOfTries(7)
+                .withDelayBetweenTries(5, SECONDS)
+                .withFibonacciBackoff();
+    }
+
+    public RetryConfigBuilder randomExpBackoff10Tries60Sec() {
+        return new RetryConfigBuilder()
+                .retryOnAnyException()
+                .withMaxNumberOfTries(10)
+                .withDelayBetweenTries(60, SECONDS)
+                .withRandomExponentialBackoff();
+    }
+
 }

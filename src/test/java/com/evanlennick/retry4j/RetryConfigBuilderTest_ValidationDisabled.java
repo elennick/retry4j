@@ -73,7 +73,7 @@ public class RetryConfigBuilderTest_ValidationDisabled {
     @Test
     public void testSettingDurationBetweenTries_millis() {
         RetryConfig config = retryConfigBuilder
-                .withDelayBetweenTries(5, ChronoUnit.MILLIS)
+                .withDelayBetweenTries(5000, ChronoUnit.MILLIS)
                 .build();
 
         assertThat(config.getDelayBetweenRetries().toMillis()).isEqualTo(5000);

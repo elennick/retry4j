@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.AssertJUnit.fail;
 
-public class RetryConfigBuilderTest_Validation {
+public class RetryConfigBuilderTest_WithValidation {
 
     private RetryConfigBuilder retryConfigBuilder;
 
