@@ -85,13 +85,8 @@ public class RetryConfigBuilder {
         return this;
     }
 
-    public RetryConfigBuilder withDelayBetweenTries(int seconds) {
-        config.setDelayBetweenRetries(Duration.of(seconds, ChronoUnit.SECONDS));
-        return this;
-    }
-
-    public RetryConfigBuilder withDelayBetweenTries(long millis) {
-        config.setDelayBetweenRetries(Duration.of(millis, ChronoUnit.MILLIS));
+    public RetryConfigBuilder withDelayBetweenTries(long amount, ChronoUnit time) {
+        config.setDelayBetweenRetries(Duration.of(amount, time));
         return this;
     }
 

@@ -5,6 +5,7 @@ import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +27,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
@@ -43,7 +44,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = retryConfigBuilder
                 .retryOnAnyException()
                 .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
@@ -59,7 +60,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = retryConfigBuilder
                 .retryOnSpecificExceptions(IllegalArgumentException.class)
                 .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
@@ -75,7 +76,7 @@ public class RetryExecutorTest {
         RetryConfig retryConfig = retryConfigBuilder
                 .retryOnSpecificExceptions(UnsupportedOperationException.class)
                 .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
@@ -88,7 +89,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
@@ -107,7 +108,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
@@ -129,7 +130,7 @@ public class RetryExecutorTest {
 
         RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .build();
 
         CallResults results = new CallExecutor(retryConfig).execute(callable);

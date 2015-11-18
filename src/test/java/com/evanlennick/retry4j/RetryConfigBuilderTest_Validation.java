@@ -5,6 +5,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.net.ConnectException;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.AssertJUnit.fail;
@@ -24,7 +25,7 @@ public class RetryConfigBuilderTest_Validation {
         try {
             retryConfigBuilder
                     .withMaxNumberOfTries(1)
-                    .withDelayBetweenTries(1)
+                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
                     .build();
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch(InvalidRetryConfigException e) {
@@ -38,7 +39,7 @@ public class RetryConfigBuilderTest_Validation {
         try {
             retryConfigBuilder
                     .withMaxNumberOfTries(1)
-                    .withDelayBetweenTries(1)
+                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
                     .withExponentialBackoff()
                     .withFibonacciBackoff()
                     .build();
@@ -67,7 +68,7 @@ public class RetryConfigBuilderTest_Validation {
     public void verifyNoMaxTriesThrowsException() {
         try {
             retryConfigBuilder
-                    .withDelayBetweenTries(1)
+                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
                     .withExponentialBackoff()
                     .build();
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
@@ -82,7 +83,7 @@ public class RetryConfigBuilderTest_Validation {
         try {
             retryConfigBuilder
                     .withMaxNumberOfTries(1)
-                    .withDelayBetweenTries(1)
+                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
                     .withExponentialBackoff()
                     .failOnAnyException()
                     .retryOnSpecificExceptions(ConnectException.class)
