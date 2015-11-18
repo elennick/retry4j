@@ -13,7 +13,7 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
     RetryConfig config = new RetryConfigBuilder()
             .retryOnSpecificExceptions(ConnectException.class)
             .withMaxNumberOfTries(10)
-            .withDelayBetweenTries(Duration.of(30, ChronoUnit.SECONDS))
+            .withDelayBetweenTries(30, ChronoUnit.SECONDS))
             .withExponentialBackoff()
             .build();
             
@@ -32,7 +32,11 @@ Or even more simple using one of the predefined config options and not checking 
         //code that you want to retry
     };
 
-    CallExecutor executor = new CallExecutor(RetryConfig.simpleFixedConfig());
+    RetryConfig config = new RetryConfigBuilder()
+        .exponentialBackoff5Tries5Sec()
+        .build();
+
+    CallExecutor executor = new CallExecutor(config);
     CallResults<Object> results = executor.execute(callable);
 
 ## Dependencies
@@ -42,16 +46,16 @@ Or even more simple using one of the predefined config options and not checking 
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.4.0</version>
+        <version>0.5.0</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.4.0"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.5.0"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.4.0"
+    compile "com.evanlennick:retry4j:0.5.0"
     
 ## Motivation
 
@@ -91,24 +95,19 @@ To specify the maximum number of tries that should be attempted, specify an inte
             .withMaxNumberOfTries(5)
             .build();
 
-To specify the delay in between each try, use the **withDelayBetweenTries()** config method. This method will accept an integer value (specifying seconds), a long value (specifying milliseconds) or a Java 8 Duration object.
+To specify the delay in between each try, use the **withDelayBetweenTries()** config method. This method will accept a Java 8 Duration object or an integer combined with a ChronoUnit.
 
     //5 seconds
     RetryConfig config = new RetryConfigBuilder()
-            .withDelayBetweenTries(5)
+            .withDelayBetweenTries(5, ChronoUnit.SECONDS)
             .build();
 
-    //500 millis
-    RetryConfig config = new RetryConfigBuilder()
-            .withDelayBetweenTries(500L)
-            .build();
-
-    //2 minutes, using Java 8 Duration
+    //2 minutes
     RetryConfig config = new RetryConfigBuilder()
             .withDelayBetweenTries(Duration.of(2, ChronoUnit.MINUTES))
             .build();
 
-    //250 millis, using Java 8 Duration
+    //250 millis
     RetryConfig config = new RetryConfigBuilder()
             .withDelayBetweenTries(Duration.ofMillis(250))
             .build();
@@ -160,12 +159,23 @@ Additionally, this config method can be used to specify custom backoff strategie
 
 ### Simple Configs
 
-Retry4j offers a few "simple" configurations right out of the box if specifying all the details isn't important to you. These can be accessed as static members of RetryConfig like so:
+Retry4j offers some predefined configurations if you just want to get rolling and worry about tweaking later. These configs can be utilized like so:
 
-      CallExecutor executor = new CallExecutor(RetryConfig.simpleFixedConfig());
-      CallResults results = executor.execute(callable);
+    new RetryConfigBuilder()
+        .fixedBackoff5Tries10Sec()
+        .build();
 
-**simpleFixedConfig()**, **simpleExponentialConfig()** and **simpleFibonacciConfig()** are all available.
+    new RetryConfigBuilder()
+        .exponentialBackoff5Tries5Sec()
+        .build();
+
+    new RetryConfigBuilder()
+        .fiboBackoff7Tries5Sec()
+        .build();
+
+    new RetryConfigBuilder()
+        .randomExpBackoff10Tries60Sec()
+        .build();
 
 ### CallExecutor
 
