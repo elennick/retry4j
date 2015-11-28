@@ -272,7 +272,7 @@ These listeners can be used during normal, synchronous execution. They become cr
 
 Using the ```executeAsync()``` method will execute the passed call in an asynchronous, nonblocking fashion.
 
-***NOTE:*** If no ExecutorService is specified, the CallExecutor will be default use a fixed thread pool with 10 threads. If you want to specify an ExecutorService initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService()```. For example:
+***NOTE:*** If no ```java.util.concurrent.ExecutorService``` is specified, the Retry4j CallExecutor will default to using a fixed thread pool with 10 threads. If you want to specify an ExecutorService that is initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService(executorService)```. For example:
 
         ExecutorService customExecutorService = Executors.newScheduledThreadPool(10);
         
