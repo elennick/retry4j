@@ -30,7 +30,7 @@ There are several libraries that have similar capabilities this but I found them
       //the call threw an unexpected exception that was not specified to retry on
     }
 
-Or even more simple using one of the predefined config options and not checking exceptions:
+Or more simple using one of the predefined config options and not checking exceptions:
 
     Callable<Object> callable = () -> {
         //code that you want to retry
