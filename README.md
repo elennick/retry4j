@@ -4,6 +4,10 @@
 
 Retry4j is a simple Java library to assist with retrying transient failure situations or unreliable code. Code that relies on connecting to an external resource that is intermittently available (ie: a REST API or external database connection) is a good example of where this type of logic is useful.
 
+## Motivation
+
+There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
+
 ## Basic Code Example
 
     Callable<Object> callable = () -> {
@@ -55,10 +59,10 @@ Or even more simple using one of the predefined config options and not checking 
 ### Gradle
 
     compile "com.evanlennick:retry4j:0.5.0"
-    
-## Motivation
 
-There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
+### Javadocs
+
+http://www.javadoc.io/doc/com.evanlennick/retry4j/0.5.0
 
 ## Documentation
 
