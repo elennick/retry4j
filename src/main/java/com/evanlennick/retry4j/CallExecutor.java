@@ -2,14 +2,14 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
-import com.evanlennick.retry4j.listener.AfterFailedTryListener;
-import com.evanlennick.retry4j.listener.BeforeNextTryListener;
-import com.evanlennick.retry4j.listener.RetryListener;
+import com.evanlennick.retry4j.listener.*;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class CallExecutor {
@@ -19,6 +19,12 @@ public class CallExecutor {
     private AfterFailedTryListener afterFailedTryListener;
 
     private BeforeNextTryListener beforeNextTryListener;
+
+    private OnFailureListener onFailureListener;
+
+    private OnSuccessListener onSuccessListener;
+
+    private ExecutorService executorService;
 
     private CallResults results = new CallResults();
 
@@ -54,11 +60,25 @@ public class CallExecutor {
 
         if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
+            if(null != onFailureListener) {
+                onFailureListener.onFailure(results);
+            }
             throw new RetriesExhaustedException(failureMsg, results);
         } else {
             results.setResult(result.get());
+            if(null != onSuccessListener) {
+                onSuccessListener.onSuccess(results);
+            }
             return results;
         }
+    }
+
+    public void executeAsync(Callable<?> callable) {
+        if(null == executorService) {
+            executorService = Executors.newFixedThreadPool(10);
+        }
+        Runnable runnable = () -> execute(callable);
+        executorService.execute(runnable);
     }
 
     private Optional<Object> tryCall(Callable<?> callable) throws UnexpectedException {
@@ -77,13 +97,13 @@ public class CallExecutor {
     private void handleRetry(long millisBetweenTries, int tries) {
         refreshRetryResults(false, tries);
 
-        if(null != afterFailedTryListener) {
+        if (null != afterFailedTryListener) {
             afterFailedTryListener.immediatelyAfterFailedTry(results);
         }
 
         sleep(millisBetweenTries, tries);
 
-        if(null != beforeNextTryListener) {
+        if (null != beforeNextTryListener) {
             beforeNextTryListener.immediatelyBeforeNextTry(results);
         }
     }
@@ -103,8 +123,7 @@ public class CallExecutor {
 
         try {
             TimeUnit.MILLISECONDS.sleep(millisToSleep);
-        } catch (InterruptedException ignored) {
-        }
+        } catch (InterruptedException ignored) {}
     }
 
     private boolean shouldThrowException(Exception e) {
@@ -122,10 +141,14 @@ public class CallExecutor {
     }
 
     public void registerRetryListener(RetryListener listener) {
-        if(listener instanceof AfterFailedTryListener) {
-            this.afterFailedTryListener = (AfterFailedTryListener)listener;
-        } else if(listener instanceof BeforeNextTryListener) {
-            this.beforeNextTryListener = (BeforeNextTryListener)listener;
+        if (listener instanceof AfterFailedTryListener) {
+            this.afterFailedTryListener = (AfterFailedTryListener) listener;
+        } else if (listener instanceof BeforeNextTryListener) {
+            this.beforeNextTryListener = (BeforeNextTryListener) listener;
+        } else if (listener instanceof OnSuccessListener) {
+            this.onSuccessListener = (OnSuccessListener) listener;
+        } else if (listener instanceof OnFailureListener) {
+            this.onFailureListener = (OnFailureListener) listener;
         } else {
             throw new IllegalArgumentException("Tried to register an unrecognized RetryListener!");
         }
