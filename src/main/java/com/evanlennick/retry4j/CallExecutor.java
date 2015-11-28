@@ -155,4 +155,12 @@ public class CallExecutor {
             throw new IllegalArgumentException("Tried to register an unrecognized RetryListener!");
         }
     }
+
+    public void setConfig(RetryConfig config) {
+        this.config = config;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }
