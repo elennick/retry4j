@@ -1,4 +1,4 @@
-![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master) ![License](https://img.shields.io/packagist/l/doctrine/orm.svg) ![Latest Version](http://img.shields.io/badge/latest-0.5.0-brightgreen.svg)
+![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master) ![License](https://img.shields.io/packagist/l/doctrine/orm.svg) ![Latest Version](http://img.shields.io/badge/latest-0.6.0-brightgreen.svg)
 
 ## Retry4j
 
@@ -67,22 +67,22 @@ Or even more simple using one of the predefined config options and not checking 
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.5.0</version>
+        <version>0.6.0</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.5.0"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.6.0"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.5.0"
+    compile "com.evanlennick:retry4j:0.6.0"
 
 ## Documentation
 
 ### General
 
-Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.5.0.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.6.0.
 
 ### Exception Handling Config
 
