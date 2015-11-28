@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RetryConfigBuilderTest_SimpleDefaults {
+public class RetryConfigBuilderTest_SimpleDefaultsTest {
 
     private RetryConfigBuilder retryConfigBuilder;
 

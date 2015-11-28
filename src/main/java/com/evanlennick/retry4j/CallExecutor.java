@@ -26,7 +26,7 @@ public class CallExecutor {
 
     private ExecutorService executorService;
 
-    private CallResults results = new CallResults();
+    private CallResults<Object> results = new CallResults<>();
 
     public CallExecutor() {
         this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
@@ -36,7 +36,7 @@ public class CallExecutor {
         this.config = config;
     }
 
-    public CallResults execute(Callable<?> callable) throws RetriesExhaustedException, UnexpectedException {
+    public CallResults<Object> execute(Callable<?> callable) throws RetriesExhaustedException, UnexpectedException {
         long start = System.currentTimeMillis();
         results.setStartTime(start);
 
@@ -58,6 +58,12 @@ public class CallExecutor {
         refreshRetryResults(result.isPresent(), tries);
         results.setEndTime(System.currentTimeMillis());
 
+        postExecutionCleanup(callable, maxTries, result);
+
+        return results;
+    }
+
+    private void postExecutionCleanup(Callable<?> callable, int maxTries, Optional<Object> result) {
         if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
             if(null != onFailureListener) {
@@ -71,15 +77,13 @@ public class CallExecutor {
                 onSuccessListener.onSuccess(results);
             }
         }
-
-        return results;
     }
 
     public void executeAsync(Callable<?> callable) {
         if(null == executorService) {
             executorService = Executors.newFixedThreadPool(10);
         }
-        Runnable runnable = () -> execute(callable);
+        Runnable runnable = () -> this.execute(callable);
         executorService.execute(runnable);
     }
 
