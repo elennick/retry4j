@@ -54,8 +54,8 @@ Or more simple using one of the predefined config options and not checking excep
 
     CallExecutor executor = new CallExecutor(config);
     
-    executor.registerRetryListener((OnFailureListener) results -> { //some code to execute on failure });
-    executor.registerRetryListener((OnSuccessListener) results -> { //some code to execute on success });
+    executor.registerRetryListener((OnFailureListener) results -> { /** some code to execute on failure **/ });
+    executor.registerRetryListener((OnSuccessListener) results -> { /** some code to execute on success **/ });
     executor.executeAsync(callable);
 
 ## Dependencies
