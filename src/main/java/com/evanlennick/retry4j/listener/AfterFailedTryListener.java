@@ -4,6 +4,6 @@ import com.evanlennick.retry4j.CallResults;
 
 public interface AfterFailedTryListener extends RetryListener {
 
-    abstract public void immediatelyAfterFailedTry(CallResults results);
+    void immediatelyAfterFailedTry(CallResults results);
 
 }

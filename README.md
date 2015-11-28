@@ -4,7 +4,13 @@
 
 Retry4j is a simple Java library to assist with retrying transient failure situations or unreliable code. Code that relies on connecting to an external resource that is intermittently available (ie: a REST API or external database connection) is a good example of where this type of logic is useful.
 
-## Basic Code Example
+## Motivation
+
+There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
+
+## Basic Code Examples
+
+### Synchronous
 
     Callable<Object> callable = () -> {
         //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
@@ -36,8 +42,23 @@ Or even more simple using one of the predefined config options and not checking 
         .exponentialBackoff5Tries5Sec()
         .build();
 
+    CallResults<Object> results = new CallExecutor(config).execute(callable);
+
+### Asynchronous
+
+    Callable<Object> callable = () -> {
+        //code that you want to retry
+    };
+
+    RetryConfig config = new RetryConfigBuilder()
+        .exponentialBackoff5Tries5Sec()
+        .build();
+
     CallExecutor executor = new CallExecutor(config);
-    CallResults<Object> results = executor.execute(callable);
+    
+    executor.registerRetryListener((OnFailureListener) results -> { //some code to execute on failure });
+    executor.registerRetryListener((OnSuccessListener) results -> { //some code to execute on success });
+    executor.executeAsync(callable);
 
 ## Dependencies
 
@@ -56,16 +77,12 @@ Or even more simple using one of the predefined config options and not checking 
 ### Gradle
 
     compile "com.evanlennick:retry4j:0.5.0"
-    
-## Motivation
-
-There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
 
 ## Documentation
 
 ### General
 
-Retry4j only supports synchronous requests and does not handle threading or asynchronous callbacks for you. Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.5.0.
 
 ### Exception Handling Config
 
@@ -208,20 +225,6 @@ or
         System.out.println(results.getTotalTries());
     }
 
-### RetryListener
-
-RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
-
-        CallExecutor executor = new CallExecutor(config);
-        
-        executor.registerRetryListener((AfterFailedTryListener) results -> {
-            //whatever logic you want to execute after a failed try
-        });
-        
-        executor.registerRetryListener((BeforeNextTryListener) results -> {
-            //whatever logic you want to execute before the next try
-        }
-
 ### Retry4jException
 
 Retry4j has the potential throw several unique exceptions when building a config, when executing retries or upon completing execution (if unsuccessful). All Retry4j exceptions are unchecked. You do not have to explicitly catch them if you wish to let them bubble up cleanly to some other exception handling mechanism. The types of **Retry4jException**'s are:
@@ -237,3 +240,45 @@ Retry4j has the potential throw several unique exceptions when building a config
 or
 
     new RetryConfigBuilder(false);
+
+### Listeners and Async Support
+
+RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
+
+        CallExecutor executor = new CallExecutor(config);
+        
+        executor.registerRetryListener((AfterFailedTryListener) results -> {
+            //whatever logic you want to execute after a failed try
+        });
+        
+        executor.registerRetryListener((BeforeNextTryListener) results -> {
+            //whatever logic you want to execute before the next try
+        });
+
+Two additional listeners are also offered to indicate when a series of retries has succeed or failed. They can be specified like so:
+
+        executor.registerRetryListener((OnSuccessListener) results -> {
+            //whatever logic you want to execute after retry execution has completed successfully
+        });
+        
+        executor.registerRetryListener((OnFailureListener) results -> {
+            //whatever logic you want to execute after retry execution has exhausted all retries
+        });
+
+**NOTE:** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
+
+These listeners can be used during normal, synchronous execution. They become critical, however, in situations where you are executing the call (or many calls) asynchronously. Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor:
+
+        CallExecutor executor = new CallExecutor(config);
+        executor.executeAsync(callable);
+
+Using the ```executeAsync()``` method will execute the passed call in an asynchronous, nonblocking fashion.
+
+NOTE: If no ExecutorService is specified, the CallExecutor will be default use a fixed thread pool with 10 threads. If you want to specify an ExecutorService initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService()```. For example:
+
+        ExecutorService customExecutorService = Executors.newScheduledThreadPool(10);
+        
+        CallExecutor callExecutor = new CallExecutor(config);
+        callExecutor.setExecutorService(customExecutorService);
+        
+        callExecutor.executeAsync(callable);

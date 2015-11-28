@@ -12,7 +12,7 @@ import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RetryConfigBuilderTest_ValidationDisabled {
+public class RetryConfigBuilderTest_ValidationDisabledTest {
 
     private RetryConfigBuilder retryConfigBuilder;
 
