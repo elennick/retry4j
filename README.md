@@ -254,7 +254,7 @@ These listeners can be used during normal, synchronous execution. They become cr
         CallExecutor executor = new CallExecutor(config);
         executor.executeAsync(callable);
 
-Using the ```executeAsync()``` method will execute the passed call in an asynchrnous, nonblocking fashion.
+Using the ```executeAsync()``` method will execute the passed call in an asynchronous, nonblocking fashion.
 
 NOTE: If no ExecutorService is specified, the CallExecutor will be default use a fixed thread pool with 10 threads. If you want to specify an ExecutorService initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService()```. For example:
 
