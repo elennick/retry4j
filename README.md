@@ -263,7 +263,7 @@ Two additional listeners are also offered to indicate when a series of retries h
             //whatever logic you want to execute after retry execution has exhausted all retries
         });
 
-**NOTE:** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
+***NOTE:*** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
 
 These listeners can be used during normal, synchronous execution. They become critical, however, in situations where you are executing the call (or many calls) asynchronously. Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor:
 
@@ -272,7 +272,7 @@ These listeners can be used during normal, synchronous execution. They become cr
 
 Using the ```executeAsync()``` method will execute the passed call in an asynchronous, nonblocking fashion.
 
-NOTE: If no ExecutorService is specified, the CallExecutor will be default use a fixed thread pool with 10 threads. If you want to specify an ExecutorService initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService()```. For example:
+***NOTE:*** If no ExecutorService is specified, the CallExecutor will be default use a fixed thread pool with 10 threads. If you want to specify an ExecutorService initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService()```. For example:
 
         ExecutorService customExecutorService = Executors.newScheduledThreadPool(10);
         
