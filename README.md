@@ -36,8 +36,7 @@ Or even more simple using one of the predefined config options and not checking 
         .exponentialBackoff5Tries5Sec()
         .build();
 
-    CallExecutor executor = new CallExecutor(config);
-    CallResults<Object> results = executor.execute(callable);
+    CallResults<Object> results = new CallExecutor(config).execute(callable);
 
 ## Dependencies
 
@@ -65,7 +64,7 @@ There are several libraries that have similar capabilities this but I found them
 
 ### General
 
-Retry4j only supports synchronous requests and does not handle threading or asynchronous callbacks for you. Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
 
 ### Exception Handling Config
 
@@ -208,20 +207,6 @@ or
         System.out.println(results.getTotalTries());
     }
 
-### RetryListener
-
-RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
-
-        CallExecutor executor = new CallExecutor(config);
-        
-        executor.registerRetryListener((AfterFailedTryListener) results -> {
-            //whatever logic you want to execute after a failed try
-        });
-        
-        executor.registerRetryListener((BeforeNextTryListener) results -> {
-            //whatever logic you want to execute before the next try
-        }
-
 ### Retry4jException
 
 Retry4j has the potential throw several unique exceptions when building a config, when executing retries or upon completing execution (if unsuccessful). All Retry4j exceptions are unchecked. You do not have to explicitly catch them if you wish to let them bubble up cleanly to some other exception handling mechanism. The types of **Retry4jException**'s are:
@@ -237,3 +222,36 @@ Retry4j has the potential throw several unique exceptions when building a config
 or
 
     new RetryConfigBuilder(false);
+
+### Listeners and Async Support
+
+RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
+
+        CallExecutor executor = new CallExecutor(config);
+        
+        executor.registerRetryListener((AfterFailedTryListener) results -> {
+            //whatever logic you want to execute after a failed try
+        });
+        
+        executor.registerRetryListener((BeforeNextTryListener) results -> {
+            //whatever logic you want to execute before the next try
+        });
+
+Two additional listeners are also offered to indicate when a series of retries has succeed or failed. They can be specified like so:
+
+        executor.registerRetryListener((OnSuccessListener) results -> {
+            //whatever logic you want to execute after retry execution has completed successfully
+        });
+        
+        executor.registerRetryListener((OnFailureListener) results -> {
+            //whatever logic you want to execute after retry executuon has exhausted all retries
+        });
+
+**NOTE:** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of RetriesExhaustedException's. Handling a failure after retries are exhausted will be left up to the listener.
+
+These listeners can be used during normal, synchronous execution. They become critical, however, in situations where you are executing the call (or many calls) asynchronously. Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor:
+
+        CallExecutor executor = new CallExecutor(config);
+        executor.executeAsync(callable);
+
+Using the ```executeAsync()``` method will execute the passed call in an asynchrnous, nonblocking fashion.
