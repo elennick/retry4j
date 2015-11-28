@@ -8,7 +8,9 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
 
 There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
 
-## Basic Code Example
+## Basic Code Examples
+
+### Synchronous
 
     Callable<Object> callable = () -> {
         //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
@@ -41,6 +43,22 @@ Or even more simple using one of the predefined config options and not checking 
         .build();
 
     CallResults<Object> results = new CallExecutor(config).execute(callable);
+
+### Asynchronous
+
+    Callable<Object> callable = () -> {
+        //code that you want to retry
+    };
+
+    RetryConfig config = new RetryConfigBuilder()
+        .exponentialBackoff5Tries5Sec()
+        .build();
+
+    CallExecutor executor = new CallExecutor(config);
+    
+    executor.registerRetryListener((OnFailureListener) results -> { //some code to execute on failure });
+    executor.registerRetryListener((OnSuccessListener) results -> { //some code to execute on success });
+    executor.executeAsync(callable);
 
 ## Dependencies
 
@@ -244,10 +262,10 @@ Two additional listeners are also offered to indicate when a series of retries h
         });
         
         executor.registerRetryListener((OnFailureListener) results -> {
-            //whatever logic you want to execute after retry executuon has exhausted all retries
+            //whatever logic you want to execute after retry execution has exhausted all retries
         });
 
-**NOTE:** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of RetriesExhaustedException's. Handling a failure after retries are exhausted will be left up to the listener.
+**NOTE:** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
 
 These listeners can be used during normal, synchronous execution. They become critical, however, in situations where you are executing the call (or many calls) asynchronously. Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor:
 
