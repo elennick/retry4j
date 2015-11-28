@@ -62,15 +62,17 @@ public class CallExecutor {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
             if(null != onFailureListener) {
                 onFailureListener.onFailure(results);
+            } else {
+                throw new RetriesExhaustedException(failureMsg, results);
             }
-            throw new RetriesExhaustedException(failureMsg, results);
         } else {
             results.setResult(result.get());
             if(null != onSuccessListener) {
                 onSuccessListener.onSuccess(results);
             }
-            return results;
         }
+
+        return results;
     }
 
     public void executeAsync(Callable<?> callable) {
