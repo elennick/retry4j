@@ -60,15 +60,11 @@ Or even more simple using one of the predefined config options and not checking 
 
     compile "com.evanlennick:retry4j:0.5.0"
 
-### Javadocs
-
-http://www.javadoc.io/doc/com.evanlennick/retry4j/0.5.0
-
 ## Documentation
 
 ### General
 
-Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.5.0.
 
 ### Exception Handling Config
 
