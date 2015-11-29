@@ -52,14 +52,6 @@ public class CallResults<T> {
         this.totalTries = totalTries;
     }
 
-    public boolean isWasSuccessful() {
-        return wasSuccessful;
-    }
-
-    public void setWasSuccessful(boolean wasSuccessful) {
-        this.wasSuccessful = wasSuccessful;
-    }
-
     public Duration getTotalElapsedDuration() {
         return totalElapsedDuration;
     }

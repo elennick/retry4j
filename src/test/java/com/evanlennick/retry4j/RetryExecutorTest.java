@@ -97,6 +97,7 @@ public class RetryExecutorTest {
 
         assertThat(results.getResult()).isNotNull();
         assertThat(results.wasSuccessful());
+        assertThat(results.getEndTime()).isNotNegative();
         assertThat(results.getCallName()).isNotEmpty();
         assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
         assertThat(results.getTotalTries()).isEqualTo(1);
@@ -118,6 +119,7 @@ public class RetryExecutorTest {
             CallResults results = e.getCallResults();
             assertThat(results.getResult()).isNull();
             assertThat(results.wasSuccessful()).isFalse();
+            assertThat(results.getEndTime()).isNotNegative();
             assertThat(results.getCallName()).isNotEmpty();
             assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
             assertThat(results.getTotalTries()).isEqualTo(5);

@@ -131,4 +131,20 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
         assertThat(config.getBackoffStrategy()).isInstanceOf(RandomExponentialBackoffStrategy.class);
     }
 
+    @Test
+    public void testSettingBackoffStrategy_manualSetting() {
+        RetryConfig config = retryConfigBuilder
+                .withBackoffStrategy(new TestBackoffStrategy())
+                .build();
+
+        assertThat(config.getBackoffStrategy()).isInstanceOf(TestBackoffStrategy.class);
+    }
+
+    private class TestBackoffStrategy implements BackoffStrategy {
+        @Override
+        public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
+            return 0;
+        }
+    }
+
 }
