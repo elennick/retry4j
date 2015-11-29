@@ -1,4 +1,4 @@
-![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master) ![License](https://img.shields.io/packagist/l/doctrine/orm.svg) ![Latest Version](http://img.shields.io/badge/latest-0.6.0-brightgreen.svg)
+![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master) ![License](https://img.shields.io/packagist/l/doctrine/orm.svg) ![Maven Central](https://img.shields.io/maven-central/v/com.evanlennick/retry4j.svg)
 
 ## Retry4j
 
