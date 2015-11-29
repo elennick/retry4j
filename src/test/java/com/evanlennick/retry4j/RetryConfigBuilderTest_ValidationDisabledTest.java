@@ -1,8 +1,6 @@
 package com.evanlennick.retry4j;
 
-import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
-import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
-import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
+import com.evanlennick.retry4j.backoff.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -104,6 +102,33 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
                 .build();
 
         assertThat(config.getBackoffStrategy()).isInstanceOf(FibonacciBackoffStrategy.class);
+    }
+
+    @Test
+    public void testSettingBackoffStrategy_noWait() {
+        RetryConfig config = retryConfigBuilder
+                .withNoWaitBackoff()
+                .build();
+
+        assertThat(config.getBackoffStrategy()).isInstanceOf(NoWaitBackoffStrategy.class);
+    }
+
+    @Test
+    public void testSettingBackoffStrategy_random() {
+        RetryConfig config = retryConfigBuilder
+                .withRandomBackoff()
+                .build();
+
+        assertThat(config.getBackoffStrategy()).isInstanceOf(RandomBackoffStrategy.class);
+    }
+
+    @Test
+    public void testSettingBackoffStrategy_randomExponential() {
+        RetryConfig config = retryConfigBuilder
+                .withRandomExponentialBackoff()
+                .build();
+
+        assertThat(config.getBackoffStrategy()).isInstanceOf(RandomExponentialBackoffStrategy.class);
     }
 
 }
