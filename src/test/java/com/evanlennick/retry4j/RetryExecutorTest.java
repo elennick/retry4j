@@ -2,6 +2,7 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
+import com.evanlennick.retry4j.listener.OnSuccessListener;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -124,19 +125,5 @@ public class RetryExecutorTest {
             assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
             assertThat(results.getTotalTries()).isEqualTo(5);
         }
-    }
-
-    @Test
-    public void verifyReturningObjectFromCallable() throws Exception {
-        Callable<String> callable = () -> "test";
-
-        RetryConfig retryConfig = retryConfigBuilder
-                .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .build();
-
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
-
-        assertThat(results.getResult()).isEqualTo("test");
     }
 }

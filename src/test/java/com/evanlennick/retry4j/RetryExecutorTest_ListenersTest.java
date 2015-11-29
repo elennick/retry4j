@@ -90,6 +90,17 @@ public class RetryExecutorTest_ListenersTest {
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis();
     }
 
+    @Test
+    public void verifySimpleAsyncCall() throws Exception {
+        when(dummyMock.callableCallThis())
+                .thenReturn("success!");
+
+        executor.registerRetryListener((OnSuccessListener) results -> dummyMock.listenersCallThis());
+        executor.executeAsync(callable);
+
+        verify(dummyMock, timeout(1000).times(1)).listenersCallThis();
+    }
+
     private class DummyMock {
         public String listenersCallThis() {
             return "this is to use to verify listeners call the mock";
