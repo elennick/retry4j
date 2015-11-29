@@ -26,7 +26,7 @@ public class CallExecutor {
 
     private ExecutorService executorService;
 
-    private CallResults<Object> results = new CallResults<>();
+    private ThreadLocal<CallResults<Object>> results;
 
     public CallExecutor() {
         this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
@@ -37,12 +37,14 @@ public class CallExecutor {
     }
 
     public CallResults<Object> execute(Callable<?> callable) throws RetriesExhaustedException, UnexpectedException {
+        initCallResultsForThisThread();
+
         long start = System.currentTimeMillis();
-        results.setStartTime(start);
+        results.get().setStartTime(start);
 
         int maxTries = config.getMaxNumberOfTries();
         long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
-        this.results.setCallName(callable.toString());
+        this.results.get().setCallName(callable.toString());
 
         Optional<Object> result = Optional.empty();
         int tries;
@@ -56,25 +58,30 @@ public class CallExecutor {
         }
 
         refreshRetryResults(result.isPresent(), tries);
-        results.setEndTime(System.currentTimeMillis());
+        results.get().setEndTime(System.currentTimeMillis());
 
         postExecutionCleanup(callable, maxTries, result);
 
-        return results;
+        return results.get();
+    }
+
+    private void initCallResultsForThisThread() {
+        this.results = new ThreadLocal<>();
+        this.results.set(new CallResults<>());
     }
 
     private void postExecutionCleanup(Callable<?> callable, int maxTries, Optional<Object> result) {
         if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
             if(null != onFailureListener) {
-                onFailureListener.onFailure(results);
+                onFailureListener.onFailure(results.get());
             } else {
-                throw new RetriesExhaustedException(failureMsg, results);
+                throw new RetriesExhaustedException(failureMsg, results.get());
             }
         } else {
-            results.setResult(result.get());
+            results.get().setResult(result.get());
             if(null != onSuccessListener) {
-                onSuccessListener.onSuccess(results);
+                onSuccessListener.onSuccess(results.get());
             }
         }
     }
@@ -104,23 +111,23 @@ public class CallExecutor {
         refreshRetryResults(false, tries);
 
         if (null != afterFailedTryListener) {
-            afterFailedTryListener.immediatelyAfterFailedTry(results);
+            afterFailedTryListener.immediatelyAfterFailedTry(results.get());
         }
 
         sleep(millisBetweenTries, tries);
 
         if (null != beforeNextTryListener) {
-            beforeNextTryListener.immediatelyBeforeNextTry(results);
+            beforeNextTryListener.immediatelyBeforeNextTry(results.get());
         }
     }
 
     private void refreshRetryResults(boolean success, int tries) {
         long currentTime = System.currentTimeMillis();
-        long elapsed = currentTime - results.getStartTime();
+        long elapsed = currentTime - results.get().getStartTime();
 
-        results.setTotalTries(tries);
-        results.setTotalElapsedDuration(Duration.of(elapsed, ChronoUnit.MILLIS));
-        results.setSuccessful(success);
+        results.get().setTotalTries(tries);
+        results.get().setTotalElapsedDuration(Duration.of(elapsed, ChronoUnit.MILLIS));
+        results.get().setSuccessful(success);
     }
 
     private void sleep(long millis, int tries) {
