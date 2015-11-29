@@ -8,8 +8,6 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class CallExecutor {
@@ -24,9 +22,7 @@ public class CallExecutor {
 
     private OnSuccessListener onSuccessListener;
 
-    private ExecutorService executorService;
-
-    private ThreadLocal<CallResults<Object>> results;
+    private CallResults<Object> results = new CallResults<>();
 
     public CallExecutor() {
         this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
@@ -36,15 +32,18 @@ public class CallExecutor {
         this.config = config;
     }
 
-    public CallResults<Object> execute(Callable<?> callable) throws RetriesExhaustedException, UnexpectedException {
-        initCallResultsForThisThread();
+    public CallResults<Object> execute(Callable<?> callable, RetryConfig config) {
+        this.config = config;
+        return execute(callable);
+    }
 
+    public CallResults<Object> execute(Callable<?> callable) throws RetriesExhaustedException, UnexpectedException {
         long start = System.currentTimeMillis();
-        results.get().setStartTime(start);
+        results.setStartTime(start);
 
         int maxTries = config.getMaxNumberOfTries();
         long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
-        this.results.get().setCallName(callable.toString());
+        this.results.setCallName(callable.toString());
 
         Optional<Object> result = Optional.empty();
         int tries;
@@ -58,40 +57,27 @@ public class CallExecutor {
         }
 
         refreshRetryResults(result.isPresent(), tries);
-        results.get().setEndTime(System.currentTimeMillis());
+        results.setEndTime(System.currentTimeMillis());
 
         postExecutionCleanup(callable, maxTries, result);
 
-        return results.get();
+        return results;
     }
 
-    private void initCallResultsForThisThread() {
-        this.results = new ThreadLocal<>();
-        this.results.set(new CallResults<>());
-    }
-
-    private void postExecutionCleanup(Callable<?> callable, int maxTries, Optional<Object> result) {
-        if (!result.isPresent()) {
+    private void postExecutionCleanup(Callable<?> callable, int maxTries, Optional<Object> callResult) {
+        if (!callResult.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
-            if(null != onFailureListener) {
-                onFailureListener.onFailure(results.get());
+            if (null != onFailureListener) {
+                onFailureListener.onFailure(results);
             } else {
-                throw new RetriesExhaustedException(failureMsg, results.get());
+                throw new RetriesExhaustedException(failureMsg, results);
             }
         } else {
-            results.get().setResult(result.get());
-            if(null != onSuccessListener) {
-                onSuccessListener.onSuccess(results.get());
+            results.setResult(callResult.get());
+            if (null != onSuccessListener) {
+                onSuccessListener.onSuccess(results);
             }
         }
-    }
-
-    public void executeAsync(Callable<?> callable) {
-        if(null == executorService) {
-            executorService = Executors.newFixedThreadPool(10);
-        }
-        Runnable runnable = () -> this.execute(callable);
-        executorService.execute(runnable);
     }
 
     private Optional<Object> tryCall(Callable<?> callable) throws UnexpectedException {
@@ -111,23 +97,23 @@ public class CallExecutor {
         refreshRetryResults(false, tries);
 
         if (null != afterFailedTryListener) {
-            afterFailedTryListener.immediatelyAfterFailedTry(results.get());
+            afterFailedTryListener.immediatelyAfterFailedTry(results);
         }
 
         sleep(millisBetweenTries, tries);
 
         if (null != beforeNextTryListener) {
-            beforeNextTryListener.immediatelyBeforeNextTry(results.get());
+            beforeNextTryListener.immediatelyBeforeNextTry(results);
         }
     }
 
     private void refreshRetryResults(boolean success, int tries) {
         long currentTime = System.currentTimeMillis();
-        long elapsed = currentTime - results.get().getStartTime();
+        long elapsed = currentTime - results.getStartTime();
 
-        results.get().setTotalTries(tries);
-        results.get().setTotalElapsedDuration(Duration.of(elapsed, ChronoUnit.MILLIS));
-        results.get().setSuccessful(success);
+        results.setTotalTries(tries);
+        results.setTotalElapsedDuration(Duration.of(elapsed, ChronoUnit.MILLIS));
+        results.setSuccessful(success);
     }
 
     private void sleep(long millis, int tries) {
@@ -136,7 +122,8 @@ public class CallExecutor {
 
         try {
             TimeUnit.MILLISECONDS.sleep(millisToSleep);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private boolean shouldThrowException(Exception e) {
@@ -167,11 +154,7 @@ public class CallExecutor {
         }
     }
 
-    public void setConfig(RetryConfig config) {
-        this.config = config;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
+    public RetryConfig getConfig() {
+        return config;
     }
 }
