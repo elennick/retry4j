@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
 
 import static org.mockito.Mockito.*;
 
-public class RetryExecutorTest_ListenersTest {
+public class RetryExecutorTest_AsyncAndListenersTest {
 
     @Mock
     private DummyMock dummyMock;
