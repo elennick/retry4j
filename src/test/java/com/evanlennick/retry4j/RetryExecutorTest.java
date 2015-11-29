@@ -3,6 +3,7 @@ package com.evanlennick.retry4j;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.listener.OnSuccessListener;
+import com.evanlennick.retry4j.listener.RetryListener;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -126,4 +127,22 @@ public class RetryExecutorTest {
             assertThat(results.getTotalTries()).isEqualTo(5);
         }
     }
+
+    @Test
+    public void verifyDefaultConfigWhenConstructingCallExecutor() {
+        Callable<Boolean> callable = () -> true;
+
+        CallResults<Object> results = new CallExecutor().execute(callable);
+
+        assertThat(results.wasSuccessful()).isTrue();
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Tried to register an unrecognized RetryListener!")
+    public void verifyThatRegisteringAnUnrecognizedListenerFails() {
+        CallExecutor executor = new CallExecutor();
+        executor.registerRetryListener(new TestRetryListener());
+    }
+
+    private class TestRetryListener implements RetryListener {}
 }
