@@ -33,8 +33,10 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
+        CallResults<Boolean> results = new CallExecutor<Boolean>(retryConfig).execute(callable);
+        Boolean value = results.getResult();
         assertThat(results.wasSuccessful());
+        assertThat(value).isEqualTo(true);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})

@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-public class CallExecutor {
+public class CallExecutor<T> {
 
     private RetryConfig config;
 
@@ -22,7 +22,7 @@ public class CallExecutor {
 
     private OnSuccessListener onSuccessListener;
 
-    private CallResults<Object> results = new CallResults<>();
+    private CallResults<T> results = new CallResults<>();
 
     public CallExecutor() {
         this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
@@ -32,12 +32,12 @@ public class CallExecutor {
         this.config = config;
     }
 
-    public CallResults<Object> execute(Callable<?> callable, RetryConfig config) {
+    public CallResults<T> execute(Callable<T> callable, RetryConfig config) {
         this.config = config;
         return execute(callable);
     }
 
-    public CallResults<Object> execute(Callable<?> callable) throws RetriesExhaustedException, UnexpectedException {
+    public CallResults<T> execute(Callable<T> callable) throws RetriesExhaustedException, UnexpectedException {
         long start = System.currentTimeMillis();
         results.setStartTime(start);
 
@@ -45,7 +45,7 @@ public class CallExecutor {
         long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
         this.results.setCallName(callable.toString());
 
-        Optional<Object> result = Optional.empty();
+        Optional<T> result = Optional.empty();
         int tries;
 
         for (tries = 0; tries < maxTries && !result.isPresent(); tries++) {
@@ -64,7 +64,7 @@ public class CallExecutor {
         return results;
     }
 
-    private void postExecutionCleanup(Callable<?> callable, int maxTries, Optional<Object> callResult) {
+    private void postExecutionCleanup(Callable<T> callable, int maxTries, Optional<T> callResult) {
         if (!callResult.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
             if (null != onFailureListener) {
@@ -80,9 +80,9 @@ public class CallExecutor {
         }
     }
 
-    private Optional<Object> tryCall(Callable<?> callable) throws UnexpectedException {
+    private Optional<T> tryCall(Callable<T> callable) throws UnexpectedException {
         try {
-            Object result = callable.call();
+            T result = callable.call();
             return Optional.of(result);
         } catch (Exception e) {
             if (shouldThrowException(e)) {
