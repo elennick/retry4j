@@ -267,7 +267,7 @@ Two additional listeners are also offered to indicate when a series of retries h
 
 ### Async Support
 
-Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor. Right now this support is very beta and has known issues, especially when attempting to execute more than one call asynchonously at the same time. These issues should be cleaned up in the next release and the API related to asynchronous calls will likely change.
+Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor. Right now this support is very beta and has known issues, especially when attempting to execute more than one call asynchonously at the same time. These issues should be cleaned up in the 0.7.0 release and the API related to asynchronous calls will likely change.
 
         CallExecutor executor = new CallExecutor(config);
         executor.executeAsync(callable);
