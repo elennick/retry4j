@@ -239,7 +239,7 @@ or
 
     new RetryConfigBuilder(false);
 
-### Listeners and Async Support
+### Listeners
 
 RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
 
@@ -265,7 +265,9 @@ Two additional listeners are also offered to indicate when a series of retries h
 
 ***NOTE:*** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
 
-These listeners can be used during normal, synchronous execution. They become critical, however, in situations where you are executing the call (or many calls) asynchronously. Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor:
+### Async Support
+
+Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor. Right now this support is very beta and has known issues, especially when attempting to execute more than one call asynchonously at the same time. These issues should be cleaned up in the next release and the API related to asynchronous calls will likely change.
 
         CallExecutor executor = new CallExecutor(config);
         executor.executeAsync(callable);
