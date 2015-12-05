@@ -17,7 +17,7 @@ There are several libraries that have similar capabilities this but I found them
     RetryConfig config = new RetryConfigBuilder()
             .retryOnSpecificExceptions(ConnectException.class)
             .withMaxNumberOfTries(10)
-            .withDelayBetweenTries(30, ChronoUnit.SECONDS))
+            .withDelayBetweenTries(30, ChronoUnit.SECONDS)
             .withExponentialBackoff()
             .build();
             
