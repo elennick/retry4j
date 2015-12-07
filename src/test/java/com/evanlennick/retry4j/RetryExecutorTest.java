@@ -2,6 +2,7 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
+import com.evanlennick.retry4j.listener.CallExecutorBuilder;
 import com.evanlennick.retry4j.listener.OnSuccessListener;
 import com.evanlennick.retry4j.listener.RetryListener;
 import org.testng.annotations.BeforeMethod;
@@ -144,6 +145,20 @@ public class RetryExecutorTest {
     public void verifyThatRegisteringAnUnrecognizedListenerFails() {
         CallExecutor executor = new CallExecutor();
         executor.registerRetryListener(new TestRetryListener());
+    }
+
+    @Test
+    public void verifyReturningObjectFromCallExecutorBuilderSucceeds() throws Exception {
+        Callable<Boolean> callable = () -> true;
+
+        RetryConfig retryConfig = new RetryConfigBuilder()
+                .withMaxNumberOfTries(5)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+                .withFixedBackoff()
+                .build();
+
+        CallResults<Boolean> results = CallExecutorBuilder.<Boolean>newSyncCall(callable).withConfig(retryConfig).execute();
+        assertThat(results.wasSuccessful());
     }
 
     private class TestRetryListener implements RetryListener {}
