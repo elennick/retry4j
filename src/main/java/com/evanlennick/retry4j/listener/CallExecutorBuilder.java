@@ -50,7 +50,7 @@ public class CallExecutorBuilder<T> {
         return this;
     }
 
-    public CallResults<T> call() {
+    public CallResults<T> execute() {
         CallExecutor<T> callExecutor = new CallExecutor<>(config);
         retryListeners.stream().forEach(callExecutor::registerRetryListener);
         return callExecutor.execute(this.callable);
