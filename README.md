@@ -80,7 +80,7 @@ Or more simple using one of the predefined config options and not checking excep
 
 ### General
 
-Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.6.0.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.6.1.
 
 ### Exception Handling Config
 
