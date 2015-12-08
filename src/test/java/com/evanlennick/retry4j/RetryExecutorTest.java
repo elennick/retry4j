@@ -21,7 +21,7 @@ public class RetryExecutorTest {
     @BeforeMethod
     public void setup() {
         boolean configValidationEnabled = false;
-        this.retryConfigBuilder = new RetryConfigBuilder(configValidationEnabled);
+        this.retryConfigBuilder = RetryConfigBuilder.newConfig(configValidationEnabled);
     }
 
     @Test
@@ -151,7 +151,7 @@ public class RetryExecutorTest {
     public void verifyReturningObjectFromCallExecutorBuilderSucceeds() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        RetryConfig retryConfig = new RetryConfigBuilder()
+        RetryConfig retryConfig = RetryConfigBuilder.newConfig()
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()

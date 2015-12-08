@@ -17,7 +17,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
     @BeforeMethod
     public void setup() {
         boolean isValidationEnabled = true;
-        retryConfigBuilder = new RetryConfigBuilder(isValidationEnabled);
+        retryConfigBuilder = RetryConfigBuilder.newConfig(isValidationEnabled);
     }
 
     @Test

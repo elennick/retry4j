@@ -29,7 +29,7 @@ public class RetryExecutorTest_AsyncAndListenersTest {
 
         callable = () -> dummyMock.callableCallThis();
 
-        RetryConfig config = new RetryConfigBuilder()
+        RetryConfig config = RetryConfigBuilder.newConfig()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)

@@ -25,7 +25,7 @@ public class CallExecutor<T> {
     private CallResults<T> results = new CallResults<>();
 
     public CallExecutor() {
-        this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
+        this(RetryConfigBuilder.newConfig().fixedBackoff5Tries10Sec().build());
     }
 
     public CallExecutor(RetryConfig config) {

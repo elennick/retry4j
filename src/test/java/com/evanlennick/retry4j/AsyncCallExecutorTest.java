@@ -32,7 +32,7 @@ public class AsyncCallExecutorTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        config = new RetryConfigBuilder()
+        config = RetryConfigBuilder.newConfig()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(1, MILLIS)

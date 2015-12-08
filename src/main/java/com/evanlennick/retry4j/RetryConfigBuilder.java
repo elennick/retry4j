@@ -28,13 +28,21 @@ public class RetryConfigBuilder {
     public final static String CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG
             = "Retry config cannot specify more than one exception strategy!";
 
-    public RetryConfigBuilder() {
+    public static RetryConfigBuilder newConfig() {
+        return new RetryConfigBuilder();
+    }
+
+    public static RetryConfigBuilder newConfig(boolean validationEnabled) {
+        return new RetryConfigBuilder(validationEnabled);
+    }
+
+    private RetryConfigBuilder() {
         this.config = new RetryConfig();
         this.exceptionStrategySpecified = false;
         this.validationEnabled = true;
     }
 
-    public RetryConfigBuilder(boolean validationEnabled) {
+    private RetryConfigBuilder(boolean validationEnabled) {
         this();
         this.validationEnabled = validationEnabled;
     }

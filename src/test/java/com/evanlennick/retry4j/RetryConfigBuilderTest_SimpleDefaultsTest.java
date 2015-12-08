@@ -13,7 +13,7 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
 
     @BeforeMethod
     public void setup() {
-        retryConfigBuilder = new RetryConfigBuilder();
+        retryConfigBuilder = RetryConfigBuilder.newConfig();
         retryConfigBuilder.setValidationEnabled(true);
     }
 
