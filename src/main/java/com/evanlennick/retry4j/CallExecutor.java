@@ -26,6 +26,8 @@ public class CallExecutor {
 
     private ExecutorService executorService;
 
+    private Exception lastKnownExceptionThatCausedRetry;
+
     private CallResults<Object> results = new CallResults<>();
 
     public CallExecutor() {
@@ -95,6 +97,7 @@ public class CallExecutor {
             if (shouldThrowException(e)) {
                 throw new UnexpectedException(e);
             } else {
+                lastKnownExceptionThatCausedRetry = e;
                 return Optional.empty();
             }
         }
@@ -104,7 +107,7 @@ public class CallExecutor {
         refreshRetryResults(false, tries);
 
         if (null != afterFailedTryListener) {
-            afterFailedTryListener.immediatelyAfterFailedTry(results);
+            afterFailedTryListener.immediatelyAfterFailedTry(results, lastKnownExceptionThatCausedRetry);
         }
 
         sleep(millisBetweenTries, tries);
