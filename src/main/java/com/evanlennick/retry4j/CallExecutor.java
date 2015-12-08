@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class CallExecutor<T> {
@@ -21,6 +22,10 @@ public class CallExecutor<T> {
     private OnFailureListener onFailureListener;
 
     private OnSuccessListener onSuccessListener;
+
+    private ExecutorService executorService;
+
+    private Exception lastKnownExceptionThatCausedRetry;
 
     private CallResults<T> results = new CallResults<>();
 
@@ -88,6 +93,7 @@ public class CallExecutor<T> {
             if (shouldThrowException(e)) {
                 throw new UnexpectedException(e);
             } else {
+                lastKnownExceptionThatCausedRetry = e;
                 return Optional.empty();
             }
         }
@@ -97,7 +103,7 @@ public class CallExecutor<T> {
         refreshRetryResults(false, tries);
 
         if (null != afterFailedTryListener) {
-            afterFailedTryListener.immediatelyAfterFailedTry(results);
+            afterFailedTryListener.immediatelyAfterFailedTry(results, lastKnownExceptionThatCausedRetry);
         }
 
         sleep(millisBetweenTries, tries);

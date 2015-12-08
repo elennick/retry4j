@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.net.ConnectException;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
@@ -46,10 +47,24 @@ public class RetryExecutorTest_AsyncAndListenersTest {
                 .thenThrow(new RuntimeException())
                 .thenReturn("success!");
 
-        executor.registerRetryListener((AfterFailedTryListener) results -> dummyMock.listenersCallThis());
+        executor.registerRetryListener((AfterFailedTryListener) (results, exceptionThatCausedRetry)
+                -> dummyMock.listenersCallThis());
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
+    }
+
+    @Test
+    public void verifyAfterFailedListener_populatesException() {
+        when(dummyMock.callableCallThis())
+                .thenThrow(new IllegalArgumentException())
+                .thenReturn("success!");
+
+        executor.registerRetryListener((AfterFailedTryListener) (results, exceptionThatCausedRetry)
+                -> dummyMock.listenersCallThis(exceptionThatCausedRetry));
+        executor.execute(callable);
+
+        verify(dummyMock, timeout(1000).times(1)).listenersCallThis(isA(IllegalArgumentException.class));
     }
 
     @Test
@@ -93,6 +108,10 @@ public class RetryExecutorTest_AsyncAndListenersTest {
     private class DummyMock {
         public String listenersCallThis() {
             return "this is to use to verify listeners call the mock";
+        }
+
+        public String listenersCallThis(Exception e) {
+            return "this is to verify exceptions in the after failed call listener";
         }
 
         public String callableCallThis() {
