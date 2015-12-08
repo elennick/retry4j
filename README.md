@@ -65,16 +65,16 @@ Or more simple using one of the predefined config options and not checking excep
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.6.0"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.6.1"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.6.0"
+    compile "com.evanlennick:retry4j:0.6.1"
 
 ## Documentation
 
@@ -245,8 +245,9 @@ RetryListener's are offered in case you want to be able to add logic that will e
 
         CallExecutor executor = new CallExecutor(config);
         
-        executor.registerRetryListener((AfterFailedTryListener) results -> {
+        executor.registerRetryListener((AfterFailedTryListener) (results, exception) -> {
             //whatever logic you want to execute after a failed try
+            //this listener passes in the exception that caused the retry
         });
         
         executor.registerRetryListener((BeforeNextTryListener) results -> {
