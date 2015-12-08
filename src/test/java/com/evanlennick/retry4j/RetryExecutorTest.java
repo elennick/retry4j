@@ -2,8 +2,7 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
-import com.evanlennick.retry4j.listener.CallExecutorBuilder;
-import com.evanlennick.retry4j.listener.OnSuccessListener;
+import com.evanlennick.retry4j.listener.SyncCallExecutorBuilder;
 import com.evanlennick.retry4j.listener.RetryListener;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -157,7 +156,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults<Boolean> results = CallExecutorBuilder.<Boolean>newSyncCall(callable).withConfig(retryConfig).execute();
+        CallResults<Boolean> results = SyncCallExecutorBuilder.<Boolean>newSyncCall(callable).withConfig(retryConfig).execute();
         assertThat(results.wasSuccessful());
     }
 
