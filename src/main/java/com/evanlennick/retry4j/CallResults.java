@@ -1,7 +1,5 @@
 package com.evanlennick.retry4j;
 
-import com.sun.istack.internal.Nullable;
-
 import java.time.Duration;
 
 public class CallResults<T> {
@@ -71,7 +69,7 @@ public class CallResults<T> {
         this.totalElapsedDuration = totalElapsedDuration;
     }
 
-    public @Nullable T getResult() {
+    public T getResult() {
         return result;
     }
 
@@ -79,7 +77,7 @@ public class CallResults<T> {
         this.result = result;
     }
 
-    public @Nullable Exception getLastExceptionThatCausedRetry() {
+    public Exception getLastExceptionThatCausedRetry() {
         return lastExceptionThatCausedRetry;
     }
 
