@@ -7,9 +7,9 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.concurrent.Callable;
 
+import static com.evanlennick.retry4j.listener.SyncCallExecutorBuilder.*;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -39,17 +39,17 @@ public class AsyncCallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        asyncCallExecutor = new AsyncCallExecutor();
-
         onSuccessListener = callResults -> dummyMock.onSuccessListenersCallThis();
         onFailureListener = callResults -> dummyMock.onFaliureListenersCallThis();
+
+        asyncCallExecutor = AsyncCallExecutor.newAsyncCallExecutor(newSyncCallExecutorBuilder().onSuccess(onSuccessListener).onFailure(onFailureListener).build());
     }
 
     @Test
     public void verifySimpleAsyncCall_success() {
         Callable<Boolean> callable = () -> true;
 
-        asyncCallExecutor.execute(callable, config, Arrays.asList(onSuccessListener, onFailureListener));
+        asyncCallExecutor.execute(callable, config);
 
         verify(dummyMock, timeout(500).times(1)).onSuccessListenersCallThis();
         verify(dummyMock, never()).onFaliureListenersCallThis();
@@ -61,7 +61,7 @@ public class AsyncCallExecutorTest {
             throw new RuntimeException();
         };
 
-        asyncCallExecutor.execute(callable, config, Arrays.asList(onSuccessListener, onFailureListener));
+        asyncCallExecutor.execute(callable, config);
 
         verify(dummyMock, never()).onSuccessListenersCallThis();
         verify(dummyMock, timeout(500).times(1)).onFaliureListenersCallThis();

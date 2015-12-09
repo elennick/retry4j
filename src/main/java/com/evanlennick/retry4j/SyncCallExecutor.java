@@ -10,26 +10,14 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-public class SyncCallExecutor<T> {
-
-    private RetryConfig config;
-
-    private AfterFailedTryListener afterFailedTryListener;
-
-    private BeforeNextTryListener beforeNextTryListener;
-
-    private OnFailureListener onFailureListener;
-
-    private OnSuccessListener onSuccessListener;
-
-    private CallResults<T> results = new CallResults<>();
+public class SyncCallExecutor<T> extends AbstractCallExecutor<CallResults<T>, T> {
 
     public SyncCallExecutor() {
-        this(RetryConfigBuilder.newConfig().fixedBackoff5Tries10Sec().build());
+        super();
     }
 
     public SyncCallExecutor(RetryConfig config) {
-        this.config = config;
+        super(config);
     }
 
     public CallResults<T> execute(Callable<T> callable, RetryConfig config) {
