@@ -1,6 +1,6 @@
 package com.evanlennick.retry4j.listener;
 
-import com.evanlennick.retry4j.CallExecutor;
+import com.evanlennick.retry4j.SyncCallExecutor;
 import com.evanlennick.retry4j.CallResults;
 import com.evanlennick.retry4j.RetryConfig;
 
@@ -51,7 +51,7 @@ public class SyncCallExecutorBuilder<T> {
     }
 
     public CallResults<T> execute() {
-        CallExecutor<T> callExecutor = new CallExecutor<>(config);
+        SyncCallExecutor<T> callExecutor = new SyncCallExecutor<>(config);
         retryListeners.stream().forEach(callExecutor::registerRetryListener);
         return callExecutor.execute(this.callable);
     }

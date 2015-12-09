@@ -25,7 +25,7 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
                 .exponentialBackoff5Tries5Sec()
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
+        CallResults results = new SyncCallExecutor(retryConfig).execute(callable);
         assertThat(results.wasSuccessful());
     }
 
@@ -37,7 +37,7 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
                 .fiboBackoff7Tries5Sec()
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
+        CallResults results = new SyncCallExecutor(retryConfig).execute(callable);
         assertThat(results.wasSuccessful());
     }
 
@@ -49,7 +49,7 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
                 .randomExpBackoff10Tries60Sec()
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
+        CallResults results = new SyncCallExecutor(retryConfig).execute(callable);
         assertThat(results.wasSuccessful());
     }
 
@@ -61,7 +61,7 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
                 .fixedBackoff5Tries10Sec()
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
+        CallResults results = new SyncCallExecutor(retryConfig).execute(callable);
         assertThat(results.wasSuccessful());
     }
 }

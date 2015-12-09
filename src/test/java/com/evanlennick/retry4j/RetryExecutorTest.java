@@ -33,7 +33,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults<Boolean> results = new CallExecutor<Boolean>(retryConfig).execute(callable);
+        CallResults<Boolean> results = new SyncCallExecutor<Boolean>(retryConfig).execute(callable);
         Boolean value = results.getResult();
         assertThat(results.wasSuccessful());
         assertThat(value).isEqualTo(true);
@@ -52,7 +52,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new SyncCallExecutor(retryConfig).execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -68,7 +68,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new SyncCallExecutor(retryConfig).execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -84,7 +84,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new SyncCallExecutor(retryConfig).execute(callable);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
+        CallResults results = new SyncCallExecutor(retryConfig).execute(callable);
 
         assertThat(results.getResult()).isNotNull();
         assertThat(results.wasSuccessful());
@@ -118,7 +118,7 @@ public class RetryExecutorTest {
                 .build();
 
         try {
-            new CallExecutor(retryConfig).execute(callable);
+            new SyncCallExecutor(retryConfig).execute(callable);
         } catch (RetriesExhaustedException e) {
             CallResults results = e.getCallResults();
             assertThat(results.getResult()).isNull();
@@ -134,7 +134,7 @@ public class RetryExecutorTest {
     public void verifyDefaultConfigWhenConstructingCallExecutor() {
         Callable<Boolean> callable = () -> true;
 
-        CallResults<Object> results = new CallExecutor().execute(callable);
+        CallResults<Object> results = new SyncCallExecutor().execute(callable);
 
         assertThat(results.wasSuccessful()).isTrue();
     }
@@ -142,7 +142,7 @@ public class RetryExecutorTest {
     @Test(expectedExceptions = IllegalArgumentException.class,
             expectedExceptionsMessageRegExp = "Tried to register an unrecognized RetryListener!")
     public void verifyThatRegisteringAnUnrecognizedListenerFails() {
-        CallExecutor executor = new CallExecutor();
+        SyncCallExecutor executor = new SyncCallExecutor();
         executor.registerRetryListener(new TestRetryListener());
     }
 

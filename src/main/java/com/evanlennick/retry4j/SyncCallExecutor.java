@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-public class CallExecutor<T> {
+public class SyncCallExecutor<T> {
 
     private RetryConfig config;
 
@@ -24,11 +24,11 @@ public class CallExecutor<T> {
 
     private CallResults<T> results = new CallResults<>();
 
-    public CallExecutor() {
+    public SyncCallExecutor() {
         this(RetryConfigBuilder.newConfig().fixedBackoff5Tries10Sec().build());
     }
 
-    public CallExecutor(RetryConfig config) {
+    public SyncCallExecutor(RetryConfig config) {
         this.config = config;
     }
 

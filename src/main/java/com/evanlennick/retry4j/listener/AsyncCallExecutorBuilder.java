@@ -1,8 +1,6 @@
 package com.evanlennick.retry4j.listener;
 
 import com.evanlennick.retry4j.AsyncCallExecutor;
-import com.evanlennick.retry4j.CallExecutor;
-import com.evanlennick.retry4j.CallResults;
 import com.evanlennick.retry4j.RetryConfig;
 
 import java.util.ArrayList;

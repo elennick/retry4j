@@ -25,7 +25,7 @@ public class AsyncCallExecutor {
     }
 
     public void execute(Callable<?> callable, RetryConfig config, List<RetryListener> listeners) {
-        CallExecutor retry4JCallExecutor = new CallExecutor(config);
+        SyncCallExecutor retry4JCallExecutor = new SyncCallExecutor(config);
         listeners.stream().forEach(retry4JCallExecutor::registerRetryListener);
 
         Runnable runnable = () -> retry4JCallExecutor.execute(callable);

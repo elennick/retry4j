@@ -19,7 +19,7 @@ public class RetryExecutorTest_AsyncAndListenersTest {
     @Mock
     private DummyMock dummyMock;
 
-    private CallExecutor executor;
+    private SyncCallExecutor executor;
 
     private Callable<String> callable;
 
@@ -36,7 +36,7 @@ public class RetryExecutorTest_AsyncAndListenersTest {
                 .withFixedBackoff()
                 .build();
 
-        executor = new CallExecutor(config);
+        executor = new SyncCallExecutor(config);
     }
 
     @Test
