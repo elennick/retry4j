@@ -1,5 +1,7 @@
 package com.evanlennick.retry4j;
 
+import com.sun.istack.internal.Nullable;
+
 import java.time.Duration;
 
 public class CallResults<T> {
@@ -11,6 +13,7 @@ public class CallResults<T> {
     private int totalTries;
     private Duration totalElapsedDuration;
     private T result;
+    private Exception lastExceptionThatCausedRetry;
 
     public long getStartTime() {
         return startTime;
@@ -68,12 +71,20 @@ public class CallResults<T> {
         this.totalElapsedDuration = totalElapsedDuration;
     }
 
-    public T getResult() {
+    public @Nullable T getResult() {
         return result;
     }
 
     public void setResult(T result) {
         this.result = result;
+    }
+
+    public @Nullable Exception getLastExceptionThatCausedRetry() {
+        return lastExceptionThatCausedRetry;
+    }
+
+    public void setLastExceptionThatCausedRetry(Exception lastExceptionThatCausedRetry) {
+        this.lastExceptionThatCausedRetry = lastExceptionThatCausedRetry;
     }
 
     @Override
@@ -86,6 +97,7 @@ public class CallResults<T> {
                 ", totalTries=" + totalTries +
                 ", totalElapsedDuration=" + totalElapsedDuration +
                 ", result=" + result +
+                ", lastExceptionThatCausedRetry=" + lastExceptionThatCausedRetry +
                 '}';
     }
 

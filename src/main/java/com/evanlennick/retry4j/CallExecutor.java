@@ -107,7 +107,7 @@ public class CallExecutor {
         refreshRetryResults(false, tries);
 
         if (null != afterFailedTryListener) {
-            afterFailedTryListener.immediatelyAfterFailedTry(results, lastKnownExceptionThatCausedRetry);
+            afterFailedTryListener.immediatelyAfterFailedTry(results);
         }
 
         sleep(millisBetweenTries, tries);
@@ -124,6 +124,7 @@ public class CallExecutor {
         results.setTotalTries(tries);
         results.setTotalElapsedDuration(Duration.of(elapsed, ChronoUnit.MILLIS));
         results.setSuccessful(success);
+        results.setLastExceptionThatCausedRetry(lastKnownExceptionThatCausedRetry);
     }
 
     private void sleep(long millis, int tries) {

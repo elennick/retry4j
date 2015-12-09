@@ -9,7 +9,6 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.ConnectException;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
@@ -47,7 +46,7 @@ public class RetryExecutorTest_ListenersTest {
                 .thenThrow(new RuntimeException())
                 .thenReturn("success!");
 
-        executor.registerRetryListener((AfterFailedTryListener) (results, exceptionThatCausedRetry)
+        executor.registerRetryListener((AfterFailedTryListener) results
                 -> dummyMock.listenersCallThis());
         executor.execute(callable);
 
@@ -60,8 +59,8 @@ public class RetryExecutorTest_ListenersTest {
                 .thenThrow(new IllegalArgumentException())
                 .thenReturn("success!");
 
-        executor.registerRetryListener((AfterFailedTryListener) (results, exceptionThatCausedRetry)
-                -> dummyMock.listenersCallThis(exceptionThatCausedRetry));
+        executor.registerRetryListener((AfterFailedTryListener) results
+                -> dummyMock.listenersCallThis(results.getLastExceptionThatCausedRetry()));
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis(isA(IllegalArgumentException.class));
@@ -103,6 +102,19 @@ public class RetryExecutorTest_ListenersTest {
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis();
+    }
+
+    @Test
+    public void verifyOnFailureListener_populatesException() {
+        when(dummyMock.callableCallThis())
+                .thenThrow(new RuntimeException())
+                .thenThrow(new IllegalArgumentException());
+
+        executor.registerRetryListener((OnFailureListener) results
+                -> dummyMock.listenersCallThis(results.getLastExceptionThatCausedRetry()));
+        executor.execute(callable);
+
+        verify(dummyMock, timeout(1000)).listenersCallThis(isA(IllegalArgumentException.class));
     }
 
     private class DummyMock {
