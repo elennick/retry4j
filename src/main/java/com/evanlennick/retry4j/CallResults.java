@@ -11,6 +11,7 @@ public class CallResults<T> {
     private int totalTries;
     private Duration totalElapsedDuration;
     private T result;
+    private Exception lastExceptionThatCausedRetry;
 
     public long getStartTime() {
         return startTime;
@@ -68,6 +69,14 @@ public class CallResults<T> {
         this.result = result;
     }
 
+    public Exception getLastExceptionThatCausedRetry() {
+        return lastExceptionThatCausedRetry;
+    }
+
+    public void setLastExceptionThatCausedRetry(Exception lastExceptionThatCausedRetry) {
+        this.lastExceptionThatCausedRetry = lastExceptionThatCausedRetry;
+    }
+
     @Override
     public String toString() {
         return "CallResults{" +
@@ -78,6 +87,7 @@ public class CallResults<T> {
                 ", totalTries=" + totalTries +
                 ", totalElapsedDuration=" + totalElapsedDuration +
                 ", result=" + result +
+                ", lastExceptionThatCausedRetry=" + lastExceptionThatCausedRetry +
                 '}';
     }
 

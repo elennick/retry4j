@@ -46,10 +46,24 @@ public class RetryExecutorTest_AsyncAndListenersTest {
                 .thenThrow(new RuntimeException())
                 .thenReturn("success!");
 
-        executor.registerRetryListener((AfterFailedTryListener) results -> dummyMock.listenersCallThis());
+        executor.registerRetryListener((AfterFailedTryListener) results
+                -> dummyMock.listenersCallThis());
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
+    }
+
+    @Test
+    public void verifyAfterFailedListener_populatesException() {
+        when(dummyMock.callableCallThis())
+                .thenThrow(new IllegalArgumentException())
+                .thenReturn("success!");
+
+        executor.registerRetryListener((AfterFailedTryListener) results
+                -> dummyMock.listenersCallThis(results.getLastExceptionThatCausedRetry()));
+        executor.execute(callable);
+
+        verify(dummyMock, timeout(1000).times(1)).listenersCallThis(isA(IllegalArgumentException.class));
     }
 
     @Test
@@ -90,9 +104,26 @@ public class RetryExecutorTest_AsyncAndListenersTest {
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis();
     }
 
+    @Test
+    public void verifyOnFailureListener_populatesException() {
+        when(dummyMock.callableCallThis())
+                .thenThrow(new RuntimeException())
+                .thenThrow(new IllegalArgumentException());
+
+        executor.registerRetryListener((OnFailureListener) results
+                -> dummyMock.listenersCallThis(results.getLastExceptionThatCausedRetry()));
+        executor.execute(callable);
+
+        verify(dummyMock, timeout(1000)).listenersCallThis(isA(IllegalArgumentException.class));
+    }
+
     private class DummyMock {
         public String listenersCallThis() {
             return "this is to use to verify listeners call the mock";
+        }
+
+        public String listenersCallThis(Exception e) {
+            return "this is to verify exceptions in the after failed call listener";
         }
 
         public String callableCallThis() {
