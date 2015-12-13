@@ -156,7 +156,7 @@ public class RetryExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults<Boolean> results = SyncCallExecutorBuilder.<Boolean>newSyncCallExecutorBuilder().build().execute(callable, retryConfig);
+        CallResults<Boolean> results = SyncCallExecutorBuilder.newSyncCallExecutorBuilder().<Boolean>build().execute(callable, retryConfig);
         assertThat(results.wasSuccessful());
     }
 

@@ -4,7 +4,7 @@ import com.evanlennick.retry4j.SyncCallExecutor;
 
 import java.util.ArrayList;
 
-public class SyncCallExecutorBuilder<T> {
+public class SyncCallExecutorBuilder {
 
     private ArrayList<RetryListener> retryListeners = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class SyncCallExecutorBuilder<T> {
         return this;
     }
 
-    public SyncCallExecutor<T> build() {
+    public <T> SyncCallExecutor<T> build() {
         SyncCallExecutor<T> callExecutor = new SyncCallExecutor<>();
         retryListeners.stream().forEach(callExecutor::registerRetryListener);
         return callExecutor;
