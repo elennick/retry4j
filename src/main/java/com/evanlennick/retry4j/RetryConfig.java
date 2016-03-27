@@ -64,12 +64,13 @@ public class RetryConfig {
 
     @Override
     public String toString() {
-        return "RetryConfig{" +
-            "retryOnAnyException=" + retryOnAnyException +
-            ", retryOnSpecificExceptions=" + retryOnSpecificExceptions +
-            ", maxNumberOfTries=" + maxNumberOfTries +
-            ", delayBetweenRetries=" + delayBetweenRetries +
-            ", backoffStrategy=" + backoffStrategy +
-            '}';
+        final StringBuilder sb = new StringBuilder("RetryConfig{");
+        sb.append("retryOnAnyException=").append(retryOnAnyException);
+        sb.append(", retryOnSpecificExceptions=").append(retryOnSpecificExceptions);
+        sb.append(", maxNumberOfTries=").append(maxNumberOfTries);
+        sb.append(", delayBetweenRetries=").append(delayBetweenRetries);
+        sb.append(", backoffStrategy=").append(backoffStrategy);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -87,16 +87,17 @@ public class CallResults<T> {
 
     @Override
     public String toString() {
-        return "CallResults{" +
-            "startTime=" + startTime +
-            ", endTime=" + endTime +
-            ", callName='" + callName + '\'' +
-            ", wasSuccessful=" + wasSuccessful +
-            ", totalTries=" + totalTries +
-            ", totalElapsedDuration=" + totalElapsedDuration +
-            ", result=" + result +
-            ", lastExceptionThatCausedRetry=" + lastExceptionThatCausedRetry +
-            '}';
+        final StringBuilder sb = new StringBuilder("CallResults{");
+        sb.append("startTime=").append(startTime);
+        sb.append(", endTime=").append(endTime);
+        sb.append(", callName='").append(callName).append('\'');
+        sb.append(", wasSuccessful=").append(wasSuccessful);
+        sb.append(", totalTries=").append(totalTries);
+        sb.append(", totalElapsedDuration=").append(totalElapsedDuration);
+        sb.append(", result=").append(result);
+        sb.append(", lastExceptionThatCausedRetry=").append(lastExceptionThatCausedRetry);
+        sb.append('}');
+        return sb.toString();
     }
 
 }

@@ -36,6 +36,21 @@
     </developers>
 
     <dependencies>
+        <!-- third party dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.19</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.19</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- test dependencies -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -138,6 +153,12 @@
                 <version>2.19</version>
                 <configuration>
                     <parallel>methods</parallel>
+                    <systemPropertyVariables>
+                        <org.slf4j.simpleLogger.defaultLogLevel>DEBUG
+                        </org.slf4j.simpleLogger.defaultLogLevel>
+                        <org.slf4j.simpleLogger.showDateTime>true
+                        </org.slf4j.simpleLogger.showDateTime>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
