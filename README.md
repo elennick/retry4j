@@ -1,10 +1,8 @@
-![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master) ![License](https://img.shields.io/packagist/l/doctrine/orm.svg) ![Latest Version](http://img.shields.io/badge/latest-0.5.0-brightgreen.svg)
+![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master&link=https://travis-ci.org/elennick/retry4j&link=https://travis-ci.org/elennick/retry4j) ![License](https://img.shields.io/packagist/l/doctrine/orm.svg) ![Maven Central](https://img.shields.io/maven-central/v/com.evanlennick/retry4j.svg)
 
 ## Retry4j
 
 Retry4j is a simple Java library to assist with retrying transient failure situations or unreliable code. Code that relies on connecting to an external resource that is intermittently available (ie: a REST API or external database connection) is a good example of where this type of logic is useful.
-
-## Motivation
 
 There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
 
@@ -19,7 +17,7 @@ There are several libraries that have similar capabilities this but I found them
     RetryConfig config = new RetryConfigBuilder()
             .retryOnSpecificExceptions(ConnectException.class)
             .withMaxNumberOfTries(10)
-            .withDelayBetweenTries(30, ChronoUnit.SECONDS))
+            .withDelayBetweenTries(30, ChronoUnit.SECONDS)
             .withExponentialBackoff()
             .build();
             
@@ -32,7 +30,7 @@ There are several libraries that have similar capabilities this but I found them
       //the call threw an unexpected exception that was not specified to retry on
     }
 
-Or even more simple using one of the predefined config options and not checking exceptions:
+Or more simple using one of the predefined config options and not checking exceptions:
 
     Callable<Object> callable = () -> {
         //code that you want to retry
@@ -56,33 +54,41 @@ Or even more simple using one of the predefined config options and not checking 
 
     CallExecutor executor = new CallExecutor(config);
     
-    executor.registerRetryListener((OnFailureListener) results -> { //some code to execute on failure });
-    executor.registerRetryListener((OnSuccessListener) results -> { //some code to execute on success });
+    executor.registerRetryListener((OnFailureListener) results -> { /** some code to execute on failure **/ });
+    executor.registerRetryListener((OnSuccessListener) results -> { /** some code to execute on success **/ });
     executor.executeAsync(callable);
 
 ## Dependencies
 
-### Maven
+### Maven (Latest Stable Release)
 
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.5.0</version>
+        <version>0.6.2</version>
+    </dependency>
+    
+### Maven (Latest Snapshot)
+
+    <dependency>
+        <groupId>com.evanlennick</groupId>
+        <artifactId>retry4j</artifactId>
+        <version>0.7.0-SNAPSHOT</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.5.0"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.6.2"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.5.0"
+    compile "com.evanlennick:retry4j:0.6.2"
 
 ## Documentation
 
 ### General
 
-Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.5.0.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.6.2.
 
 ### Exception Handling Config
 
@@ -212,6 +218,7 @@ After the executor successfully completes or throws a RetriesExhaustedException,
     System.out.println(results.getCallName());
     System.out.println(results.getTotalDurationElapsed());
     System.out.println(results.getTotalTries());
+    System.out.println(results.getLastExceptionThatCausedRetry());
     
 or
 
@@ -223,6 +230,7 @@ or
         System.out.println(results.getCallName());
         System.out.println(results.getTotalDurationElapsed());
         System.out.println(results.getTotalTries());
+        System.out.println(results.getLastExceptionThatCausedRetry());
     }
 
 ### Retry4jException
@@ -241,7 +249,7 @@ or
 
     new RetryConfigBuilder(false);
 
-### Listeners and Async Support
+### Listeners
 
 RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
 
@@ -265,16 +273,18 @@ Two additional listeners are also offered to indicate when a series of retries h
             //whatever logic you want to execute after retry execution has exhausted all retries
         });
 
-**NOTE:** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
+***NOTE:*** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
 
-These listeners can be used during normal, synchronous execution. They become critical, however, in situations where you are executing the call (or many calls) asynchronously. Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor:
+### Async Support
+
+Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor. Right now this support is very beta and has known issues, especially when attempting to execute more than one call asynchonously at the same time. These issues should be cleaned up in the 0.7.0 release and the API related to asynchronous calls will likely change.
 
         CallExecutor executor = new CallExecutor(config);
         executor.executeAsync(callable);
 
 Using the ```executeAsync()``` method will execute the passed call in an asynchronous, nonblocking fashion.
 
-NOTE: If no ExecutorService is specified, the CallExecutor will be default use a fixed thread pool with 10 threads. If you want to specify an ExecutorService initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService()```. For example:
+***NOTE:*** If no ```java.util.concurrent.ExecutorService``` is specified, the Retry4j CallExecutor will default to using a fixed thread pool with 10 threads. If you want to specify an ExecutorService that is initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService(executorService)```. For example:
 
         ExecutorService customExecutorService = Executors.newScheduledThreadPool(10);
         
