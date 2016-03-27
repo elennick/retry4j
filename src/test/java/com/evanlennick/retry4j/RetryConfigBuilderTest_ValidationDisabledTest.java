@@ -3,7 +3,6 @@ package com.evanlennick.retry4j;
 import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
 import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
 import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -25,8 +24,8 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
     @Test
     public void testSettingRetryOnAnyException() {
         RetryConfig config = retryConfigBuilder
-                .retryOnAnyException()
-                .build();
+            .retryOnAnyException()
+            .build();
 
         assertThat(config.isRetryOnAnyException());
     }
@@ -34,18 +33,18 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
     @Test
     public void testSettingRetryOnSpecificExceptions() {
         RetryConfig config = retryConfigBuilder
-                .retryOnSpecificExceptions(IllegalArgumentException.class, UnsupportedOperationException.class)
-                .build();
+            .retryOnSpecificExceptions(IllegalArgumentException.class, UnsupportedOperationException.class)
+            .build();
 
         assertThat(config.getRetryOnSpecificExceptions())
-                .containsOnly(IllegalArgumentException.class, UnsupportedOperationException.class);
+            .containsOnly(IllegalArgumentException.class, UnsupportedOperationException.class);
     }
 
     @Test
     public void testSettingMaxTries() {
         RetryConfig config = retryConfigBuilder
-                .withMaxNumberOfTries(99)
-                .build();
+            .withMaxNumberOfTries(99)
+            .build();
 
         assertThat(config.getMaxNumberOfTries()).isEqualTo(99);
     }
@@ -55,8 +54,8 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
         Duration duration = Duration.of(60, ChronoUnit.MINUTES);
 
         RetryConfig config = retryConfigBuilder
-                .withDelayBetweenTries(duration)
-                .build();
+            .withDelayBetweenTries(duration)
+            .build();
 
         assertThat(config.getDelayBetweenRetries()).isEqualTo(duration);
     }
@@ -64,8 +63,8 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
     @Test
     public void testSettingDurationBetweenTries_seconds() {
         RetryConfig config = retryConfigBuilder
-                .withDelayBetweenTries(5, ChronoUnit.SECONDS)
-                .build();
+            .withDelayBetweenTries(5, ChronoUnit.SECONDS)
+            .build();
 
         assertThat(config.getDelayBetweenRetries().toMillis()).isEqualTo(5000);
     }
@@ -73,8 +72,8 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
     @Test
     public void testSettingDurationBetweenTries_millis() {
         RetryConfig config = retryConfigBuilder
-                .withDelayBetweenTries(5000, ChronoUnit.MILLIS)
-                .build();
+            .withDelayBetweenTries(5000, ChronoUnit.MILLIS)
+            .build();
 
         assertThat(config.getDelayBetweenRetries().toMillis()).isEqualTo(5000);
     }
@@ -82,8 +81,8 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
     @Test
     public void testSettingBackoffStrategy_exponential() {
         RetryConfig config = retryConfigBuilder
-                .withExponentialBackoff()
-                .build();
+            .withExponentialBackoff()
+            .build();
 
         assertThat(config.getBackoffStrategy()).isInstanceOf(ExponentialBackoffStrategy.class);
     }
@@ -91,8 +90,8 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
     @Test
     public void testSettingBackoffStrategy_fixed() {
         RetryConfig config = retryConfigBuilder
-                .withFixedBackoff()
-                .build();
+            .withFixedBackoff()
+            .build();
 
         assertThat(config.getBackoffStrategy()).isInstanceOf(FixedBackoffStrategy.class);
     }
@@ -100,8 +99,8 @@ public class RetryConfigBuilderTest_ValidationDisabledTest {
     @Test
     public void testSettingBackoffStrategy_fibonacci() {
         RetryConfig config = retryConfigBuilder
-                .withFibonacciBackoff()
-                .build();
+            .withFibonacciBackoff()
+            .build();
 
         assertThat(config.getBackoffStrategy()).isInstanceOf(FibonacciBackoffStrategy.class);
     }

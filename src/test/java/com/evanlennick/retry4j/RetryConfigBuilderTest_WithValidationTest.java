@@ -24,11 +24,11 @@ public class RetryConfigBuilderTest_WithValidationTest {
     public void verifyNoBackoffStrategyThrowsException() {
         try {
             retryConfigBuilder
-                    .withMaxNumberOfTries(1)
-                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
-                    .build();
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(1, ChronoUnit.SECONDS)
+                .build();
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
-        } catch(InvalidRetryConfigException e) {
+        } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
                 .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_BACKOFF__ERROR_MSG);
         }
@@ -38,13 +38,13 @@ public class RetryConfigBuilderTest_WithValidationTest {
     public void verifyTwoBackoffStrategiesThrowsException() {
         try {
             retryConfigBuilder
-                    .withMaxNumberOfTries(1)
-                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
-                    .withExponentialBackoff()
-                    .withFibonacciBackoff()
-                    .build();
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(1, ChronoUnit.SECONDS)
+                .withExponentialBackoff()
+                .withFibonacciBackoff()
+                .build();
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
-        } catch(InvalidRetryConfigException e) {
+        } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
                 .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_BACKOFF_STRAT__ERROR_MSG);
         }
@@ -54,13 +54,13 @@ public class RetryConfigBuilderTest_WithValidationTest {
     public void verifyNoDelayThrowsException() {
         try {
             retryConfigBuilder
-                    .withMaxNumberOfTries(1)
-                    .withExponentialBackoff()
-                    .build();
+                .withMaxNumberOfTries(1)
+                .withExponentialBackoff()
+                .build();
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
-        } catch(InvalidRetryConfigException e) {
+        } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_DELAY__ERROR_MSG);
+                .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_DELAY__ERROR_MSG);
         }
     }
 
@@ -68,13 +68,13 @@ public class RetryConfigBuilderTest_WithValidationTest {
     public void verifyNoMaxTriesThrowsException() {
         try {
             retryConfigBuilder
-                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
-                    .withExponentialBackoff()
-                    .build();
+                .withDelayBetweenTries(1, ChronoUnit.SECONDS)
+                .withExponentialBackoff()
+                .build();
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
-        } catch(InvalidRetryConfigException e) {
+        } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
+                .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
         }
     }
 
@@ -82,16 +82,16 @@ public class RetryConfigBuilderTest_WithValidationTest {
     public void verifyTwoExceptionStrategiesThrowsException() {
         try {
             retryConfigBuilder
-                    .withMaxNumberOfTries(1)
-                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
-                    .withExponentialBackoff()
-                    .failOnAnyException()
-                    .retryOnSpecificExceptions(ConnectException.class)
-                    .build();
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(1, ChronoUnit.SECONDS)
+                .withExponentialBackoff()
+                .failOnAnyException()
+                .retryOnSpecificExceptions(ConnectException.class)
+                .build();
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
-        } catch(InvalidRetryConfigException e) {
+        } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
+                .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
         }
     }
 }

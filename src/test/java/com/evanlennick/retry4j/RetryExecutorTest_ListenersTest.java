@@ -12,7 +12,10 @@ import org.testng.annotations.Test;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class RetryExecutorTest_ListenersTest {
 
@@ -30,11 +33,11 @@ public class RetryExecutorTest_ListenersTest {
         callable = () -> dummyMock.callableCallThis();
 
         RetryConfig config = new RetryConfigBuilder()
-                .retryOnAnyException()
-                .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
+            .retryOnAnyException()
+            .withMaxNumberOfTries(5)
+            .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+            .withFixedBackoff()
+            .build();
 
         executor = new CallExecutor(config);
     }
@@ -42,12 +45,12 @@ public class RetryExecutorTest_ListenersTest {
     @Test
     public void verifyAfterFailedListener() {
         when(dummyMock.callableCallThis())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new RuntimeException())
-                .thenReturn("success!");
+            .thenThrow(new RuntimeException())
+            .thenThrow(new RuntimeException())
+            .thenReturn("success!");
 
         executor.registerRetryListener((AfterFailedTryListener) results
-                -> dummyMock.listenersCallThis());
+            -> dummyMock.listenersCallThis());
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
@@ -56,11 +59,11 @@ public class RetryExecutorTest_ListenersTest {
     @Test
     public void verifyAfterFailedListener_populatesException() {
         when(dummyMock.callableCallThis())
-                .thenThrow(new IllegalArgumentException())
-                .thenReturn("success!");
+            .thenThrow(new IllegalArgumentException())
+            .thenReturn("success!");
 
         executor.registerRetryListener((AfterFailedTryListener) results
-                -> dummyMock.listenersCallThis(results.getLastExceptionThatCausedRetry()));
+            -> dummyMock.listenersCallThis(results.getLastExceptionThatCausedRetry()));
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis(isA(IllegalArgumentException.class));
@@ -69,9 +72,9 @@ public class RetryExecutorTest_ListenersTest {
     @Test
     public void verifyBeforeNextTryListener() {
         when(dummyMock.callableCallThis())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new RuntimeException())
-                .thenReturn("success!");
+            .thenThrow(new RuntimeException())
+            .thenThrow(new RuntimeException())
+            .thenReturn("success!");
 
         executor.registerRetryListener((BeforeNextTryListener) results -> dummyMock.listenersCallThis());
         executor.execute(callable);
@@ -82,10 +85,10 @@ public class RetryExecutorTest_ListenersTest {
     @Test
     public void verifyOnSuccessListener() {
         when(dummyMock.callableCallThis())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new RuntimeException())
-                .thenReturn("success!");
+            .thenThrow(new RuntimeException())
+            .thenThrow(new RuntimeException())
+            .thenThrow(new RuntimeException())
+            .thenReturn("success!");
 
         executor.registerRetryListener((OnSuccessListener) results -> dummyMock.listenersCallThis());
         executor.execute(callable);
@@ -96,7 +99,7 @@ public class RetryExecutorTest_ListenersTest {
     @Test
     public void verifyOnFailureListener() {
         when(dummyMock.callableCallThis())
-                .thenThrow(new RuntimeException());
+            .thenThrow(new RuntimeException());
 
         executor.registerRetryListener((OnFailureListener) results -> dummyMock.listenersCallThis());
         executor.execute(callable);
@@ -107,17 +110,18 @@ public class RetryExecutorTest_ListenersTest {
     @Test
     public void verifyOnFailureListener_populatesException() {
         when(dummyMock.callableCallThis())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new IllegalArgumentException());
+            .thenThrow(new RuntimeException())
+            .thenThrow(new IllegalArgumentException());
 
         executor.registerRetryListener((OnFailureListener) results
-                -> dummyMock.listenersCallThis(results.getLastExceptionThatCausedRetry()));
+            -> dummyMock.listenersCallThis(results.getLastExceptionThatCausedRetry()));
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000)).listenersCallThis(isA(IllegalArgumentException.class));
     }
 
     private class DummyMock {
+
         public String listenersCallThis() {
             return "this is to use to verify listeners call the mock";
         }

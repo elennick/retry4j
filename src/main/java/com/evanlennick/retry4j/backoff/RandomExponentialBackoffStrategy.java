@@ -17,11 +17,11 @@ public class RandomExponentialBackoffStrategy implements BackoffStrategy {
     @Override
     public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
         long millisToWaitFromExpBackoff
-                = exponentialBackoffStrategy.getMillisToWait(numberOfTriesFailed, delayBetweenAttempts);
+            = exponentialBackoffStrategy.getMillisToWait(numberOfTriesFailed, delayBetweenAttempts);
 
         long millisToWait
-                = randomBackoffStrategy.getMillisToWait(numberOfTriesFailed,
-                Duration.of(millisToWaitFromExpBackoff, ChronoUnit.MILLIS));
+            = randomBackoffStrategy.getMillisToWait(numberOfTriesFailed,
+            Duration.of(millisToWaitFromExpBackoff, ChronoUnit.MILLIS));
 
         return millisToWait;
     }

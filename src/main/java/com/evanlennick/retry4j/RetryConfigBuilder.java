@@ -1,6 +1,12 @@
 package com.evanlennick.retry4j;
 
-import com.evanlennick.retry4j.backoff.*;
+import com.evanlennick.retry4j.backoff.BackoffStrategy;
+import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
+import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
+import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
+import com.evanlennick.retry4j.backoff.NoWaitBackoffStrategy;
+import com.evanlennick.retry4j.backoff.RandomBackoffStrategy;
+import com.evanlennick.retry4j.backoff.RandomExponentialBackoffStrategy;
 import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
 
 import java.time.Duration;
@@ -9,7 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.time.temporal.ChronoUnit.*;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class RetryConfigBuilder {
 
@@ -18,15 +24,15 @@ public class RetryConfigBuilder {
     private boolean validationEnabled;
 
     public final static String MUST_SPECIFY_BACKOFF__ERROR_MSG
-            = "Retry config must specify a backoff strategy!";
+        = "Retry config must specify a backoff strategy!";
     public final static String MUST_SPECIFY_MAX_TRIES__ERROR_MSG
-            = "Retry config must specify a maximum number of tries!";
+        = "Retry config must specify a maximum number of tries!";
     public final static String MUST_SPECIFY_DELAY__ERROR_MSG
-            = "Retry config must specify the delay between retries!";
+        = "Retry config must specify the delay between retries!";
     public final static String CAN_ONLY_SPECIFY_ONE_BACKOFF_STRAT__ERROR_MSG
-            = "Retry config cannot specify more than one backoff strategy!";
+        = "Retry config cannot specify more than one backoff strategy!";
     public final static String CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG
-            = "Retry config cannot specify more than one exception strategy!";
+        = "Retry config cannot specify more than one exception strategy!";
 
     public RetryConfigBuilder() {
         this.config = new RetryConfig();
@@ -141,73 +147,73 @@ public class RetryConfigBuilder {
     }
 
     private void validateConfig() {
-        if(!validationEnabled) {
+        if (!validationEnabled) {
             return;
         }
 
-        if(null == config.getBackoffStrategy()) {
+        if (null == config.getBackoffStrategy()) {
             throw new InvalidRetryConfigException(MUST_SPECIFY_BACKOFF__ERROR_MSG);
         }
 
-        if(null == config.getMaxNumberOfTries()) {
+        if (null == config.getMaxNumberOfTries()) {
             throw new InvalidRetryConfigException(MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
         }
 
-        if(null == config.getDelayBetweenRetries()) {
+        if (null == config.getDelayBetweenRetries()) {
             throw new InvalidRetryConfigException(MUST_SPECIFY_DELAY__ERROR_MSG);
         }
     }
 
     private void validateBackoffStrategyAddition() {
-        if(!validationEnabled) {
+        if (!validationEnabled) {
             return;
         }
 
-        if(null != config.getBackoffStrategy()) {
+        if (null != config.getBackoffStrategy()) {
             throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_ONE_BACKOFF_STRAT__ERROR_MSG);
         }
     }
 
     private void validateExceptionStrategyAddition() {
-        if(!validationEnabled) {
+        if (!validationEnabled) {
             return;
         }
 
-        if(exceptionStrategySpecified) {
+        if (exceptionStrategySpecified) {
             throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
         }
     }
 
     public RetryConfigBuilder fixedBackoff5Tries10Sec() {
         return new RetryConfigBuilder()
-                .retryOnAnyException()
-                .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(10, SECONDS)
-                .withFixedBackoff();
+            .retryOnAnyException()
+            .withMaxNumberOfTries(5)
+            .withDelayBetweenTries(10, SECONDS)
+            .withFixedBackoff();
     }
 
     public RetryConfigBuilder exponentialBackoff5Tries5Sec() {
         return new RetryConfigBuilder()
-                .retryOnAnyException()
-                .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(5, SECONDS)
-                .withExponentialBackoff();
+            .retryOnAnyException()
+            .withMaxNumberOfTries(5)
+            .withDelayBetweenTries(5, SECONDS)
+            .withExponentialBackoff();
     }
 
     public RetryConfigBuilder fiboBackoff7Tries5Sec() {
         return new RetryConfigBuilder()
-                .retryOnAnyException()
-                .withMaxNumberOfTries(7)
-                .withDelayBetweenTries(5, SECONDS)
-                .withFibonacciBackoff();
+            .retryOnAnyException()
+            .withMaxNumberOfTries(7)
+            .withDelayBetweenTries(5, SECONDS)
+            .withFibonacciBackoff();
     }
 
     public RetryConfigBuilder randomExpBackoff10Tries60Sec() {
         return new RetryConfigBuilder()
-                .retryOnAnyException()
-                .withMaxNumberOfTries(10)
-                .withDelayBetweenTries(60, SECONDS)
-                .withRandomExponentialBackoff();
+            .retryOnAnyException()
+            .withMaxNumberOfTries(10)
+            .withDelayBetweenTries(60, SECONDS)
+            .withRandomExponentialBackoff();
     }
 
 }

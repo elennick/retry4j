@@ -2,7 +2,11 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
-import com.evanlennick.retry4j.listener.*;
+import com.evanlennick.retry4j.listener.AfterFailedTryListener;
+import com.evanlennick.retry4j.listener.BeforeNextTryListener;
+import com.evanlennick.retry4j.listener.OnFailureListener;
+import com.evanlennick.retry4j.listener.OnSuccessListener;
+import com.evanlennick.retry4j.listener.RetryListener;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -68,21 +72,21 @@ public class CallExecutor {
     private void postExecutionCleanup(Callable<?> callable, int maxTries, Optional<Object> result) {
         if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
-            if(null != onFailureListener) {
+            if (null != onFailureListener) {
                 onFailureListener.onFailure(results);
             } else {
                 throw new RetriesExhaustedException(failureMsg, results);
             }
         } else {
             results.setResult(result.get());
-            if(null != onSuccessListener) {
+            if (null != onSuccessListener) {
                 onSuccessListener.onSuccess(results);
             }
         }
     }
 
     public void executeAsync(Callable<?> callable) {
-        if(null == executorService) {
+        if (null == executorService) {
             executorService = Executors.newFixedThreadPool(10);
         }
         Runnable runnable = () -> this.execute(callable);

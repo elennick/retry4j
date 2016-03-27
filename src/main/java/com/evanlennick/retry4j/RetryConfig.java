@@ -1,12 +1,8 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.backoff.BackoffStrategy;
-import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
-import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
-import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -69,11 +65,11 @@ public class RetryConfig {
     @Override
     public String toString() {
         return "RetryConfig{" +
-                "retryOnAnyException=" + retryOnAnyException +
-                ", retryOnSpecificExceptions=" + retryOnSpecificExceptions +
-                ", maxNumberOfTries=" + maxNumberOfTries +
-                ", delayBetweenRetries=" + delayBetweenRetries +
-                ", backoffStrategy=" + backoffStrategy +
-                '}';
+            "retryOnAnyException=" + retryOnAnyException +
+            ", retryOnSpecificExceptions=" + retryOnSpecificExceptions +
+            ", maxNumberOfTries=" + maxNumberOfTries +
+            ", delayBetweenRetries=" + delayBetweenRetries +
+            ", backoffStrategy=" + backoffStrategy +
+            '}';
     }
 }

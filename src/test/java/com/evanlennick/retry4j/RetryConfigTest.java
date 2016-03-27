@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 public class RetryConfigTest {
+
     private RetryConfig config;
 
     @BeforeMethod

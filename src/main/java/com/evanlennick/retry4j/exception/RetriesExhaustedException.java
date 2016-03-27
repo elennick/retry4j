@@ -2,8 +2,6 @@ package com.evanlennick.retry4j.exception;
 
 import com.evanlennick.retry4j.CallResults;
 
-import java.util.concurrent.ExecutionException;
-
 /**
  * This exception represents a call execution that never succeeded after exhausting all retries.
  */

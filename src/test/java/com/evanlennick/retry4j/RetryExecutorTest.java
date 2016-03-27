@@ -26,10 +26,10 @@ public class RetryExecutorTest {
         Callable<Boolean> callable = () -> true;
 
         RetryConfig retryConfig = retryConfigBuilder
-                .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
+            .withMaxNumberOfTries(5)
+            .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+            .withFixedBackoff()
+            .build();
 
         CallResults results = new CallExecutor(retryConfig).execute(callable);
         assertThat(results.wasSuccessful());
@@ -42,11 +42,11 @@ public class RetryExecutorTest {
         };
 
         RetryConfig retryConfig = retryConfigBuilder
-                .retryOnAnyException()
-                .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
+            .retryOnAnyException()
+            .withMaxNumberOfTries(1)
+            .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+            .withFixedBackoff()
+            .build();
 
         new CallExecutor(retryConfig).execute(callable);
     }
@@ -58,11 +58,11 @@ public class RetryExecutorTest {
         };
 
         RetryConfig retryConfig = retryConfigBuilder
-                .retryOnSpecificExceptions(IllegalArgumentException.class)
-                .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
+            .retryOnSpecificExceptions(IllegalArgumentException.class)
+            .withMaxNumberOfTries(1)
+            .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+            .withFixedBackoff()
+            .build();
 
         new CallExecutor(retryConfig).execute(callable);
     }
@@ -74,11 +74,11 @@ public class RetryExecutorTest {
         };
 
         RetryConfig retryConfig = retryConfigBuilder
-                .retryOnSpecificExceptions(UnsupportedOperationException.class)
-                .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
+            .retryOnSpecificExceptions(UnsupportedOperationException.class)
+            .withMaxNumberOfTries(1)
+            .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+            .withFixedBackoff()
+            .build();
 
         new CallExecutor(retryConfig).execute(callable);
     }
@@ -88,10 +88,10 @@ public class RetryExecutorTest {
         Callable<Boolean> callable = () -> true;
 
         RetryConfig retryConfig = retryConfigBuilder
-                .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
+            .withMaxNumberOfTries(5)
+            .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+            .withFixedBackoff()
+            .build();
 
         CallResults results = new CallExecutor(retryConfig).execute(callable);
 
@@ -107,10 +107,10 @@ public class RetryExecutorTest {
         Callable<Boolean> callable = () -> false;
 
         RetryConfig retryConfig = retryConfigBuilder
-                .withMaxNumberOfTries(5)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
+            .withMaxNumberOfTries(5)
+            .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+            .withFixedBackoff()
+            .build();
 
         try {
             new CallExecutor(retryConfig).execute(callable);
@@ -129,9 +129,9 @@ public class RetryExecutorTest {
         Callable<String> callable = () -> "test";
 
         RetryConfig retryConfig = retryConfigBuilder
-                .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .build();
+            .withMaxNumberOfTries(1)
+            .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+            .build();
 
         CallResults results = new CallExecutor(retryConfig).execute(callable);
 

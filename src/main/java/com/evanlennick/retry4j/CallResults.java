@@ -88,15 +88,15 @@ public class CallResults<T> {
     @Override
     public String toString() {
         return "CallResults{" +
-                "startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", callName='" + callName + '\'' +
-                ", wasSuccessful=" + wasSuccessful +
-                ", totalTries=" + totalTries +
-                ", totalElapsedDuration=" + totalElapsedDuration +
-                ", result=" + result +
-                ", lastExceptionThatCausedRetry=" + lastExceptionThatCausedRetry +
-                '}';
+            "startTime=" + startTime +
+            ", endTime=" + endTime +
+            ", callName='" + callName + '\'' +
+            ", wasSuccessful=" + wasSuccessful +
+            ", totalTries=" + totalTries +
+            ", totalElapsedDuration=" + totalElapsedDuration +
+            ", result=" + result +
+            ", lastExceptionThatCausedRetry=" + lastExceptionThatCausedRetry +
+            '}';
     }
 
 }
