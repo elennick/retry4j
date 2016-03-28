@@ -88,6 +88,7 @@ public class CallExecutor {
             if (null != onFailureListener) {
                 onFailureListener.onFailure(results);
             } else {
+                logger.trace("Throwing retries exhausted exception");
                 throw new RetriesExhaustedException(failureMsg, results);
             }
         } else {
@@ -112,6 +113,7 @@ public class CallExecutor {
             return Optional.of(result);
         } catch (Exception e) {
             if (shouldThrowException(e)) {
+                logger.trace("Throwing expected exception {}", e);
                 throw new UnexpectedException(e);
             } else {
                 lastKnownExceptionThatCausedRetry = e;
