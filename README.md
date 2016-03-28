@@ -175,10 +175,10 @@ Retry4j supports several backoff strategies. They can be specified like so:
 Backoff strategies can also be specified like so:
 
     RetryConfig config = new RetryConfigBuilder()
-            .withBackoffStrategy(new FixedBackoffStrategy())
+            .withBackoffStrategy(new SomeCustomBackoffStrategy())
             .build();
 
-Additionally, this config method can be used to specify custom backoff strategies. Custom backoff strategies can be created by implementing the **com.evanlennick.retry4j.backoff.BackoffStrategy** interface.
+This config method can be used to specify custom backoff strategies. Custom backoff strategies can be created by implementing the **com.evanlennick.retry4j.backoff.BackoffStrategy** interface.
 
 ### Simple Configs
 
