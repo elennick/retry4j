@@ -1,5 +1,7 @@
 package com.evanlennick.retry4j;
 
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.listener.AfterFailedTryListener;
@@ -18,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class CallExecutor {
+public class CallExecutor<T> {
 
     private Logger logger = LoggerFactory.getLogger(CallExecutor.class);
 
@@ -36,7 +38,7 @@ public class CallExecutor {
 
     private Exception lastKnownExceptionThatCausedRetry;
 
-    private CallResults<Object> results = new CallResults<>();
+    private CallResults<T> results = new CallResults<>();
 
     public CallExecutor() {
         this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
@@ -46,7 +48,7 @@ public class CallExecutor {
         this.config = config;
     }
 
-    public CallResults<Object> execute(Callable<?> callable) throws RetriesExhaustedException, UnexpectedException {
+    public CallResults<T> execute(Callable<T> callable) throws RetriesExhaustedException, UnexpectedException {
         logger.trace("Starting retry4j execution with callable {}", config, callable);
         logger.debug("Starting retry4j execution with executor state {}", this);
 
@@ -57,7 +59,7 @@ public class CallExecutor {
         long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
         this.results.setCallName(callable.toString());
 
-        Optional<Object> result = Optional.empty();
+        Optional<T> result = Optional.empty();
         int tries;
 
         for (tries = 0; tries < maxTries && !result.isPresent(); tries++) {
@@ -82,7 +84,20 @@ public class CallExecutor {
         return results;
     }
 
-    private void postExecutionCleanup(Callable<?> callable, int maxTries, Optional<Object> result) {
+    public void executeAsync(Callable<T> callable) {
+        if (null == executorService) {
+            executorService = Executors.newFixedThreadPool(10);
+        }
+        Runnable runnable = () -> this.execute(callable);
+        executorService.execute(runnable);
+    }
+
+    public void executeUsingAnnotationConfig(Callable<T> callable) {
+        //do annotation stuff to get and set config
+        execute(callable);
+    }
+
+    private void postExecutionCleanup(Callable<T> callable, int maxTries, Optional<T> result) {
         if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
             if (null != onFailureListener) {
@@ -99,17 +114,9 @@ public class CallExecutor {
         }
     }
 
-    public void executeAsync(Callable<?> callable) {
-        if (null == executorService) {
-            executorService = Executors.newFixedThreadPool(10);
-        }
-        Runnable runnable = () -> this.execute(callable);
-        executorService.execute(runnable);
-    }
-
-    private Optional<Object> tryCall(Callable<?> callable) throws UnexpectedException {
+    private Optional<T> tryCall(Callable<T> callable) throws UnexpectedException {
         try {
-            Object result = callable.call();
+            T result = callable.call();
             return Optional.of(result);
         } catch (Exception e) {
             if (shouldThrowException(e)) {

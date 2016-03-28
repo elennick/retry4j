@@ -1,5 +1,7 @@
 package com.evanlennick.retry4j;
 
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeMethod;

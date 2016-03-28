@@ -1,4 +1,4 @@
-package com.evanlennick.retry4j;
+package com.evanlennick.retry4j.config;
 
 import com.evanlennick.retry4j.backoff.BackoffStrategy;
 import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;

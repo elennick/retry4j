@@ -1,8 +1,10 @@
-package com.evanlennick.retry4j;
+package com.evanlennick.retry4j.config;
 
 import com.evanlennick.retry4j.backoff.ExponentialBackoffStrategy;
 import com.evanlennick.retry4j.backoff.FibonacciBackoffStrategy;
 import com.evanlennick.retry4j.backoff.FixedBackoffStrategy;
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

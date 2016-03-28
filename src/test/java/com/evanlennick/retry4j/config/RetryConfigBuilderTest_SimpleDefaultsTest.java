@@ -1,5 +1,9 @@
-package com.evanlennick.retry4j;
+package com.evanlennick.retry4j.config;
 
+import com.evanlennick.retry4j.CallExecutor;
+import com.evanlennick.retry4j.CallResults;
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

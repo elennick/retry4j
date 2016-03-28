@@ -1,5 +1,7 @@
 package com.evanlennick.retry4j;
 
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.listener.AfterFailedTryListener;
 import com.evanlennick.retry4j.listener.BeforeNextTryListener;
 import com.evanlennick.retry4j.listener.OnFailureListener;
