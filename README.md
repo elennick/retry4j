@@ -90,7 +90,7 @@ Or more simple using one of the predefined config options and not checking excep
 
 Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.6.2.
 
-### Logging (0.7.0)
+### Logging (Upcoming in 0.7.0)
 
 Retry4j uses SLF4J to provide logging inside of the library. If you are looking to debug with detailed information, you can set the **com.evanlennick.retry4j** package to DEBUG level for some very simple logging. You can set to TRACE level for extremely detailed and verbose logging within the call executor to help with debugging.
 
