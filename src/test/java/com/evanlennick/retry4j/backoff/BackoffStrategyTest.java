@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.testng.Assert.assertTrue;
 
 public class BackoffStrategyTest {
 
@@ -55,7 +56,20 @@ public class BackoffStrategyTest {
     public void verifyBackoffStrategy_exponential() {
         ExponentialBackoffStrategy backoffStrategy = new ExponentialBackoffStrategy();
         long millisToWait = backoffStrategy.getMillisToWait(5, Duration.ofMillis(100));
+        assertThat(millisToWait).isEqualTo(1600L);
+    }
 
-        assertThat(millisToWait).isEqualTo(1500L);
+    @Test
+    public void verifyBackoffStrategy_exponentialFirstRetry() {
+        ExponentialBackoffStrategy backoffStrategy = new ExponentialBackoffStrategy();
+        long millisToWait = backoffStrategy.getMillisToWait(1, Duration.ofMillis(100));
+        assertThat(millisToWait).isEqualTo(100L);
+    }
+
+    @Test
+    public void verifyBackoffStrategy_exponentialRemainsPositive() {
+        ExponentialBackoffStrategy backoffStrategy = new ExponentialBackoffStrategy();
+        long millisToWait = backoffStrategy.getMillisToWait(10000, Duration.ofMillis(100));
+        assertThat(millisToWait).isPositive();
     }
 }

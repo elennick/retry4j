@@ -9,8 +9,8 @@ public class ExponentialBackoffStrategy implements BackoffStrategy {
 
     @Override
     public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
-        long exponentialMultiplier = (long) ((Math.pow(2L, numberOfTriesFailed) - 1L) / 2L);
-        long millisToWait = exponentialMultiplier * delayBetweenAttempts.toMillis();
-        return millisToWait;
+        double exponentialMultiplier = Math.pow(2.0, numberOfTriesFailed - 1);
+        double result = exponentialMultiplier * delayBetweenAttempts.toMillis();
+        return (long) Math.min(result, Long.MAX_VALUE);
     }
 }
