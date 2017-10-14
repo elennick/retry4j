@@ -83,6 +83,17 @@ public class RetryConfigBuilder {
         return this;
     }
 
+    @SafeVarargs
+    public final RetryConfigBuilder retryOnAnyExceptionExcluding(Class<? extends Exception>... exceptions) {
+        validateExceptionStrategyAddition();
+
+        Set<Class<? extends Exception>> setOfExceptions = new HashSet<>(Arrays.asList(exceptions));
+        config.setRetryOnAnyExceptionExcluding(setOfExceptions);
+
+        exceptionStrategySpecified = true;
+        return this;
+    }
+
     public RetryConfigBuilder withMaxNumberOfTries(int max) {
         config.setMaxNumberOfTries(max);
         return this;

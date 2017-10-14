@@ -92,11 +92,6 @@ public class CallExecutor<T> {
         executorService.execute(runnable);
     }
 
-    public void executeUsingAnnotationConfig(Callable<T> callable) {
-        //do annotation stuff to get and set config
-        execute(callable);
-    }
-
     private void postExecutionCleanup(Callable<T> callable, int maxTries, Optional<T> result) {
         if (!result.isPresent()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
@@ -164,12 +159,21 @@ public class CallExecutor<T> {
     }
 
     private boolean shouldThrowException(Exception e) {
+        //config says to always retry
         if (this.config.isRetryOnAnyException()) {
             return false;
         }
 
+        //config says to retry only on specific exceptions
         for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnSpecificExceptions()) {
             if (e.getClass().isAssignableFrom(exceptionInSet)) {
+                return false;
+            }
+        }
+
+        //config says to retry on all except specific exceptions
+        for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnAnyExceptionExcluding()) {
+            if (!e.getClass().isAssignableFrom(exceptionInSet)) {
                 return false;
             }
         }

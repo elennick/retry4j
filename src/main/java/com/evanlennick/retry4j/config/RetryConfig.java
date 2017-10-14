@@ -9,7 +9,8 @@ import java.util.Set;
 public class RetryConfig {
 
     private Boolean retryOnAnyException = false;
-    private Set<Class<? extends Exception>> retryOnSpecificExceptions = new HashSet<Class<? extends Exception>>();
+    private Set<Class<? extends Exception>> retryOnSpecificExceptions = new HashSet<>();
+    private Set<Class<? extends Exception>> retryOnAnyExceptionExcluding = new HashSet<>();
     private Integer maxNumberOfTries;
     private Duration delayBetweenRetries;
     private BackoffStrategy backoffStrategy;
@@ -28,6 +29,14 @@ public class RetryConfig {
 
     public void setRetryOnSpecificExceptions(Set<Class<? extends Exception>> retryOnSpecificExceptions) {
         this.retryOnSpecificExceptions = retryOnSpecificExceptions;
+    }
+
+    public Set<Class<? extends Exception>> getRetryOnAnyExceptionExcluding() {
+        return retryOnAnyExceptionExcluding;
+    }
+
+    public void setRetryOnAnyExceptionExcluding(Set<Class<? extends Exception>> retryOnAnyExceptionExcluding) {
+        this.retryOnAnyExceptionExcluding = retryOnAnyExceptionExcluding;
     }
 
     public Integer getMaxNumberOfTries() {
