@@ -6,6 +6,7 @@ import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.listener.AfterFailedTryListener;
 import com.evanlennick.retry4j.listener.BeforeNextTryListener;
+import com.evanlennick.retry4j.listener.OnCompletionListener;
 import com.evanlennick.retry4j.listener.OnFailureListener;
 import com.evanlennick.retry4j.listener.OnSuccessListener;
 import com.evanlennick.retry4j.listener.RetryListener;
@@ -33,6 +34,8 @@ public class CallExecutor<T> {
     private OnFailureListener onFailureListener;
 
     private OnSuccessListener onSuccessListener;
+
+    private OnCompletionListener onCompletionListener;
 
     private ExecutorService executorService;
 
@@ -62,24 +65,30 @@ public class CallExecutor<T> {
         Optional<T> result = Optional.empty();
         int tries;
 
-        for (tries = 0; tries < maxTries && !result.isPresent(); tries++) {
-            logger.trace("Retry4j executing callable {}", callable);
-            result = tryCall(callable);
+        try {
+            for (tries = 0; tries < maxTries && !result.isPresent(); tries++) {
+                logger.trace("Retry4j executing callable {}", callable);
+                result = tryCall(callable);
 
-            if (!result.isPresent()) {
-                handleRetry(millisBetweenTries, tries + 1);
+                if (!result.isPresent()) {
+                    handleRetry(millisBetweenTries, tries + 1);
+                }
+
+                logger.trace("Retry4j retrying for time number {}", tries);
             }
 
-            logger.trace("Retry4j retrying for time number {}", tries);
+            refreshRetryResults(result.isPresent(), tries);
+            results.setEndTime(System.currentTimeMillis());
+
+            postExecutionCleanup(callable, maxTries, result);
+
+            logger.debug("Finished retry4j execution in {} ms", results.getTotalElapsedDuration().toMillis());
+            logger.trace("Finished retry4j execution with executor state {}", this);
+        } finally {
+            if (null != onCompletionListener) {
+                onCompletionListener.onCompletion(results);
+            }
         }
-
-        refreshRetryResults(result.isPresent(), tries);
-        results.setEndTime(System.currentTimeMillis());
-
-        postExecutionCleanup(callable, maxTries, result);
-
-        logger.debug("Finished retry4j execution in {} ms", results.getTotalElapsedDuration().toMillis());
-        logger.trace("Finished retry4j execution with executor state {}", this);
 
         return results;
     }
@@ -190,6 +199,8 @@ public class CallExecutor<T> {
             this.onSuccessListener = (OnSuccessListener) listener;
         } else if (listener instanceof OnFailureListener) {
             this.onFailureListener = (OnFailureListener) listener;
+        } else if (listener instanceof OnCompletionListener) {
+            this.onCompletionListener = (OnCompletionListener) listener;
         } else {
             throw new IllegalArgumentException("Tried to register an unrecognized RetryListener!");
         }
