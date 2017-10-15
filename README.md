@@ -296,3 +296,13 @@ Using the ```executeAsync()``` method will execute the passed call in an asynchr
         callExecutor.setExecutorService(customExecutorService);
         
         callExecutor.executeAsync(callable);
+
+## Other Notes
+
+Retry4j follows semantic versioning: http://semver.org/. As it is still version 0.x.x and prior to 1.0.0, the API is subject to rapid change and breakage.
+
+There are a number of other retry libraries for Java and the JVM that might better suit your needs. Please feel free to check out the following libraries as well if Retry4j doesn't fit:
+
+* Guava Retrying - https://github.com/rholder/guava-retrying
+* Failsafe - https://github.com/jhalterman/failsafe
+* Spring Retry - https://github.com/spring-projects/spring-retry
