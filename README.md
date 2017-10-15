@@ -65,22 +65,22 @@ Or more simple using one of the predefined config options and not checking excep
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.6.2</version>
+        <version>0.7.0</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.6.2"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.7.0"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.6.2"
+    compile "com.evanlennick:retry4j:0.7.0"
 
 ## Documentation
 
 ### General
 
-Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.6.2.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.7.0.
 
 ### Exception Handling Config
 
@@ -102,6 +102,12 @@ If you want the executor to continue to retry on all encountered exceptions, spe
             .retryOnAnyException()
             .build();
 
+If you want the executor to continue to retry on all encountered exceptions EXCEPT for a few specific ones, specify this using the **retryOnAnyExceptionExcluding()** config option. If this exception strategy is specified, only the exceptions specified will interupt the executor and throw an **UnexpectedException**.
+
+    RetryConfig config = new RetryConfigBuilder()
+            .retryOnAnyExceptionExcluding(CriticalFailure.class, DontRetryOnThis.class)
+            .build();
+            
 ### Timing Config
 
 To specify the maximum number of tries that should be attempted, specify an integer value in the config using the **withMaxNumberOfTries()** method. The executor will attempt to execute the call the number of times specified and if it does not succeed after all tries have been exhausted, it will throw a **RetriesExhaustedException**.
@@ -267,9 +273,15 @@ Two additional listeners are also offered to indicate when a series of retries h
 
 ***NOTE:*** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
 
+If you wish to execute any sort of cleanup or finalization logic that will execute no matter what the final results is (success, exhausted retries, unexpected exception throw) you can implement the following listener:
+
+        executor.registerRetryListener((OnCompletionListener) results -> {
+            //whatever logic you want to execute after call execution has completed
+        });
+
 ### Async Support
 
-Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor. Right now this support is very beta and has known issues, especially when attempting to execute more than one call asynchonously at the same time. These issues should be cleaned up in the 0.7.0 release and the API related to asynchronous calls will likely change.
+Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor. Right now this support is very beta and has known issues, especially when attempting to execute more than one call asynchonously at the same time. These issues should be cleaned up in a future release and the API related to asynchronous calls will likely change.
 
         CallExecutor executor = new CallExecutor(config);
         executor.executeAsync(callable);
