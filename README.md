@@ -212,7 +212,7 @@ After the executor successfully completes or throws a RetriesExhaustedException,
 
     CallResults results = new CallExecutor(config).execute(callable);
     System.out.println(results.getResult()); //this will be populated if your callable returns a value
-    System.out.println(results.isSucceeded());
+    System.out.println(results.wasSuccessful());
     System.out.println(results.getCallName());
     System.out.println(results.getTotalDurationElapsed());
     System.out.println(results.getTotalTries());
@@ -224,7 +224,7 @@ or
         new CallExecutor(config).execute(callable);
     } catch(RetriesExhaustedException cfe) {
         CallResults results = cfe.getCallResults();
-        System.out.println(results.isSucceeded());
+        System.out.println(results.wasSuccessful());
         System.out.println(results.getCallName());
         System.out.println(results.getTotalDurationElapsed());
         System.out.println(results.getTotalTries());
