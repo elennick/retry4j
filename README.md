@@ -65,22 +65,22 @@ Or more simple using one of the predefined config options and not checking excep
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.7.0"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.7.1"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.7.0"
+    compile "com.evanlennick:retry4j:0.7.1"
 
 ## Documentation
 
 ### General
 
-Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.7.0.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.7.1.
 
 ### Exception Handling Config
 
@@ -90,7 +90,7 @@ If you do not specify how exceptions should be handled or explicitly say **failO
             .failOnAnyException()
             .build();
 
-If you want to specify specific exceptions that should cause the executor to continue and retry on encountering, specify them using the **retryOnSpecificExceptions()** config method. This method can accept any number of exceptions if there is more than one that should indicate the executor should continue retrying. All other unspecified exceptions will immediately interupt the executor and throw an **UnexpectedException**.
+If you want to specify specific exceptions that should cause the executor to continue and retry on encountering, do so using the **retryOnSpecificExceptions()** config method. This method can accept any number of exceptions if there is more than one that should indicate the executor should continue retrying. All other unspecified exceptions will immediately interupt the executor and throw an **UnexpectedException**.
 
     RetryConfig config = new RetryConfigBuilder()
             .retryOnSpecificExceptions(ConnectException.class, TimeoutException.class)
@@ -102,7 +102,7 @@ If you want the executor to continue to retry on all encountered exceptions, spe
             .retryOnAnyException()
             .build();
 
-If you want the executor to continue to retry on all encountered exceptions EXCEPT for a few specific ones, specify this using the **retryOnAnyExceptionExcluding()** config option. If this exception strategy is specified, only the exceptions specified will interupt the executor and throw an **UnexpectedException**.
+If you want the executor to continue to retry on all encountered exceptions EXCEPT for a few specific ones, specify this using the **retryOnAnyExceptionExcluding()** config option. If this exception strategy is chosen, only the exceptions specified or their subclasses will interupt the executor and throw an **UnexpectedException**.
 
     RetryConfig config = new RetryConfigBuilder()
             .retryOnAnyExceptionExcluding(CriticalFailure.class, DontRetryOnThis.class)
