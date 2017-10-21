@@ -182,7 +182,7 @@ public class CallExecutor<T> {
 
         //config says to retry on all except specific exceptions
         for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnAnyExceptionExcluding()) {
-            if (!e.getClass().isAssignableFrom(exceptionInSet)) {
+            if (!exceptionInSet.isAssignableFrom(e.getClass())) {
                 return false;
             }
         }

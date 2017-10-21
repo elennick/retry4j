@@ -85,38 +85,6 @@ public class RetryExecutorTest {
         new CallExecutor(retryConfig).execute(callable);
     }
 
-    @Test(expectedExceptions = {UnexpectedException.class})
-    public void verifyRetryOnAnyExcludingThrowsCallFailureException() throws Exception {
-        Callable<Boolean> callable = () -> {
-            throw new UnsupportedOperationException();
-        };
-
-        RetryConfig retryConfig = retryConfigBuilder
-                .retryOnAnyExceptionExcluding(UnsupportedOperationException.class)
-                .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
-
-        new CallExecutor(retryConfig).execute(callable);
-    }
-
-    @Test(expectedExceptions = {RetriesExhaustedException.class})
-    public void verifyRetryOnAnyExcludingCallSucceeds() throws Exception {
-        Callable<Boolean> callable = () -> {
-            throw new IllegalArgumentException();
-        };
-
-        RetryConfig retryConfig = retryConfigBuilder
-                .retryOnAnyExceptionExcluding(UnsupportedOperationException.class)
-                .withMaxNumberOfTries(1)
-                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-                .withFixedBackoff()
-                .build();
-
-        new CallExecutor(retryConfig).execute(callable);
-    }
-
     @Test
     public void verifyResultsArePopulatedOnSuccessfulCall() throws Exception {
         Callable<Boolean> callable = () -> true;
