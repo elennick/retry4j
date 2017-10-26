@@ -15,7 +15,7 @@
         <connection>scm:git:git@github.com:elennick/retry4j.git</connection>
         <developerConnection>scm:git:git@github.com:elennick/retry4j.git</developerConnection>
         <url>git@github.com:elennick/retry4j.git</url>
-        <tag>retry4j-0.7.1</tag>
+        <tag>retry4j-0.7.2</tag>
     </scm>
 
     <licenses>
