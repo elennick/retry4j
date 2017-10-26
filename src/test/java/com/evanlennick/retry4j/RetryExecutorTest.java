@@ -71,6 +71,22 @@ public class RetryExecutorTest {
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
+    public void verifySpecificSubclassExceptionRetries() throws Exception {
+        Callable<Boolean> callable = () -> {
+            throw new IOException();
+        };
+
+        RetryConfig retryConfig = retryConfigBuilder
+                .retryOnSpecificExceptions(Exception.class)
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+                .withFixedBackoff()
+                .build();
+
+        new CallExecutor(retryConfig).execute(callable);
+    }
+
+    @Test(expectedExceptions = {RetriesExhaustedException.class})
     public void verifyExactSameSpecificExceptionThrowsCallFailureException() throws Exception {
         Callable<Boolean> callable = () -> {
             throw new IllegalArgumentException();
