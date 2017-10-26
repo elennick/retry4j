@@ -7,6 +7,7 @@ import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
@@ -53,8 +54,24 @@ public class RetryExecutorTest {
         new CallExecutor(retryConfig).execute(callable);
     }
 
+    @Test(expectedExceptions = {UnexpectedException.class})
+    public void verifySpecificSuperclassExceptionThrowsUnexpectedException() throws Exception {
+        Callable<Boolean> callable = () -> {
+            throw new Exception();
+        };
+
+        RetryConfig retryConfig = retryConfigBuilder
+                .retryOnSpecificExceptions(IOException.class)
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+                .withFixedBackoff()
+                .build();
+
+        new CallExecutor(retryConfig).execute(callable);
+    }
+
     @Test(expectedExceptions = {RetriesExhaustedException.class})
-    public void verifySpecificExceptionFromCallThrowsCallFailureException() throws Exception {
+    public void verifyExactSameSpecificExceptionThrowsCallFailureException() throws Exception {
         Callable<Boolean> callable = () -> {
             throw new IllegalArgumentException();
         };
