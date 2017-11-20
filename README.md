@@ -65,16 +65,16 @@ Or more simple using one of the predefined config options and not checking excep
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.7.1</version>
+        <version>0.7.2</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.7.1"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.7.2"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.7.1"
+    compile "com.evanlennick:retry4j:0.7.2"
 
 ## Documentation
 
