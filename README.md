@@ -135,7 +135,7 @@ To specify the delay in between each try, use the **withDelayBetweenTries()** co
 
 ### Backoff Strategy Config
 
-Retry4j supports several backoff strategies. They can be specified like so:
+Retry4j has built in support for several backoff strategies. They can be specified like so:
 
     //backoff strategy that delays with the same interval in between every try
     RetryConfig config = new RetryConfigBuilder()
@@ -170,13 +170,13 @@ Retry4j supports several backoff strategies. They can be specified like so:
             .withRandomExponentialBackoff()
             .build();
 
-Backoff strategies can also be specified like so:
+Custom backoff strategies can also be specified like so:
 
     RetryConfig config = new RetryConfigBuilder()
             .withBackoffStrategy(new SomeCustomBackoffStrategy())
             .build();
 
-This config method can be used to specify custom backoff strategies. Custom backoff strategies can be created by implementing the **com.evanlennick.retry4j.backoff.BackoffStrategy** interface.
+Custom backoff strategies can be created by implementing the **com.evanlennick.retry4j.backoff.BackoffStrategy** interface.
 
 ### Simple Configs
 
