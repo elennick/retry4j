@@ -118,13 +118,11 @@ public class CallExecutorTest_RetryOnValueTest {
 
     @Test
     public void verifyRetryOnValueAndExceptionInSameCall() {
+        final Random random = new Random();
         Callable<Boolean> callable = () -> {
-            Random random = new Random();
             if (random.nextBoolean()) {
-                System.out.println("returning false");
                 return false;
             } else {
-                System.out.println("throwing exception");
                 throw new FileNotFoundException();
             }
         };
@@ -137,23 +135,21 @@ public class CallExecutorTest_RetryOnValueTest {
                 .withFixedBackoff()
                 .build();
 
+        assertRetryOccurs(config, callable, 100);
+    }
+
+    private void assertRetryOccurs(RetryConfig config, Callable<?> callable, int expectedNumberOfTries) {
         try {
             new CallExecutor(config).execute(callable);
             fail("Expected RetriesExhaustedException but one wasn't thrown!");
         } catch (RetriesExhaustedException e) {
             assertThat(e.getCallResults().wasSuccessful()).isFalse();
-            assertThat(e.getCallResults().getTotalTries()).isEqualTo(100);
+            assertThat(e.getCallResults().getTotalTries()).isEqualTo(expectedNumberOfTries);
         }
     }
 
     private void assertRetryOccurs(RetryConfig config, Callable<?> callable) {
-        try {
-            new CallExecutor(config).execute(callable);
-            fail("Expected RetriesExhaustedException but one wasn't thrown!");
-        } catch (RetriesExhaustedException e) {
-            assertThat(e.getCallResults().wasSuccessful()).isFalse();
-            assertThat(e.getCallResults().getTotalTries()).isEqualTo(3);
-        }
+        assertRetryOccurs(config, callable, 3);
     }
 
     private void assertRetryDoesNotOccur(RetryConfig config, Callable<?> callable) {
