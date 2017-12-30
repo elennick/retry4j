@@ -19,6 +19,11 @@ public class RetriesExhaustedException extends Retry4jException {
         this.results = results;
     }
 
+    public RetriesExhaustedException(String message, Throwable cause, CallResults results) {
+        super(message, cause);
+        this.results = results;
+    }
+
     public CallResults getCallResults() {
         return results;
     }

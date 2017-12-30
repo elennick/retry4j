@@ -3,15 +3,18 @@ package com.evanlennick.retry4j;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
+import com.evanlennick.retry4j.exception.Retry4jException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.within;
 
 public class CallExecutorTest {
@@ -139,16 +142,18 @@ public class CallExecutorTest {
 
     @Test
     public void verifyResultsArePopulatedOnFailedCall() throws Exception {
-        Callable<Boolean> callable = () -> false;
+        Callable<Boolean> callable = () -> { throw new FileNotFoundException(); };
 
         RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(5)
+                .retryOnAnyException()
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
         try {
             new CallExecutor(retryConfig).execute(callable);
+            fail("RetriesExhaustedException wasn't thrown!");
         } catch (RetriesExhaustedException e) {
             CallResults results = e.getCallResults();
             assertThat(results.getResult()).isNull();
@@ -156,6 +161,7 @@ public class CallExecutorTest {
             assertThat(results.getCallName()).isNotEmpty();
             assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
             assertThat(results.getTotalTries()).isEqualTo(5);
+            assertThat(e.getCause()).isExactlyInstanceOf(FileNotFoundException.class);
         }
     }
 

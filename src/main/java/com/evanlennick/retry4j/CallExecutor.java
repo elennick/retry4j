@@ -109,7 +109,7 @@ public class CallExecutor<T> {
                 onFailureListener.onFailure(results);
             } else {
                 logger.trace("Throwing retries exhausted exception");
-                throw new RetriesExhaustedException(failureMsg, results);
+                throw new RetriesExhaustedException(failureMsg, lastKnownExceptionThatCausedRetry, results);
             }
         } else {
             results.setResult(result.getResult());
