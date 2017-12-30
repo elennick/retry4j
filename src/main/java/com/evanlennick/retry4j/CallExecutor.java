@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,25 +61,27 @@ public class CallExecutor<T> {
         long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
         this.results.setCallName(callable.toString());
 
-        Optional<T> result = Optional.empty();
+        AttemptResults<T> attemptResults = new AttemptResults<>();
+        attemptResults.setSuccessful(false);
+
         int tries;
 
         try {
-            for (tries = 0; tries < maxTries && !result.isPresent(); tries++) {
+            for (tries = 0; tries < maxTries && !attemptResults.wasSuccessful(); tries++) {
                 logger.trace("Retry4j executing callable {}", callable);
-                result = tryCall(callable);
+                attemptResults = tryCall(callable);
 
-                if (!result.isPresent()) {
+                if (!attemptResults.wasSuccessful()) {
                     handleRetry(millisBetweenTries, tries + 1);
                 }
 
                 logger.trace("Retry4j retrying for time number {}", tries);
             }
 
-            refreshRetryResults(result.isPresent(), tries);
+            refreshRetryResults(attemptResults.wasSuccessful(), tries);
             results.setEndTime(System.currentTimeMillis());
 
-            postExecutionCleanup(callable, maxTries, result);
+            postExecutionCleanup(callable, maxTries, attemptResults);
 
             logger.debug("Finished retry4j execution in {} ms", results.getTotalElapsedDuration().toMillis());
             logger.trace("Finished retry4j execution with executor state {}", this);
@@ -101,8 +102,8 @@ public class CallExecutor<T> {
         executorService.execute(runnable);
     }
 
-    private void postExecutionCleanup(Callable<T> callable, int maxTries, Optional<T> result) {
-        if (!result.isPresent()) {
+    private void postExecutionCleanup(Callable<T> callable, int maxTries, AttemptResults<T> result) {
+        if (!result.wasSuccessful()) {
             String failureMsg = String.format("Call '%s' failed after %d tries!", callable.toString(), maxTries);
             if (null != onFailureListener) {
                 onFailureListener.onFailure(results);
@@ -111,24 +112,28 @@ public class CallExecutor<T> {
                 throw new RetriesExhaustedException(failureMsg, results);
             }
         } else {
-            results.setResult(result.get());
+            results.setResult(result.getResult());
             if (null != onSuccessListener) {
                 onSuccessListener.onSuccess(results);
             }
         }
     }
 
-    private Optional<T> tryCall(Callable<T> callable) throws UnexpectedException {
+    private AttemptResults<T> tryCall(Callable<T> callable) throws UnexpectedException {
+        AttemptResults attemptResult = new AttemptResults();
         try {
-            T result = callable.call();
-            return Optional.of(result);
+            T callResult = callable.call();
+            attemptResult.setResult(callResult);
+            attemptResult.setSuccessful(true);
+            return attemptResult;
         } catch (Exception e) {
             if (shouldThrowException(e)) {
                 logger.trace("Throwing expected exception {}", e);
                 throw new UnexpectedException(e);
             } else {
                 lastKnownExceptionThatCausedRetry = e;
-                return Optional.empty();
+                attemptResult.setSuccessful(false);
+                return attemptResult;
             }
         }
     }
