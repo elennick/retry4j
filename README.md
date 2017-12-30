@@ -128,6 +128,13 @@ This can be used in combination with exception handling configuration like so:
             
 In the above scenario, the call execution will be considered a failure and a retry will be triggered if 
 `FileNotFoundException.class` is thrown OR if the String `retry on this value!` is returned from the Callable logic.
+
+To retry only using return values, you can disable exception retries using the `failOnAnyException()` configuration option:
+
+    RetryConfig config = retryConfigBuilder
+            .failOnAnyException()
+            .retryOnReturnValue("retry on this value!")
+            .build();
         
 ### Timing Config
 
