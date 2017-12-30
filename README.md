@@ -6,6 +6,29 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
 
 There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
 
+## Table of Contents
+
+* [Basic Code Examples](#basic-code-examples)
+    * [Synchronous](#synchronous)
+    * [Asynchronous](#asynchronous)
+* [Dependencies](#dependencies)
+    * [Maven](#maven)
+    * [SBT](#sbt)
+    * [Gradle](#gradle)
+* [Usage](#usage)
+    * [General](#general)
+    * [Exception Handling Config](#exception-handling-config)
+    * [Value Handling Config](#value-handling-config)
+    * [Timing Config](#timing-config)
+    * [Backoff Strategy Config](#backoff-strategy-config)
+    * [Simple Configs](#simple-configs)
+    * [CallExecutor](#callexecutor)
+    * [CallResults](#callresults)
+    * [Retry4jException](#retry4jexception)
+    * [Listeners](#listeners)
+    * [Async Support](#async-support)
+* [Other Notes](#other-notes)
+      
 ## Basic Code Examples
 
 ### Synchronous
@@ -60,7 +83,7 @@ Or more simple using one of the predefined config options and not checking excep
 
 ## Dependencies
 
-### Maven (Latest Stable Release)
+### Maven
 
     <dependency>
         <groupId>com.evanlennick</groupId>
@@ -76,7 +99,7 @@ Or more simple using one of the predefined config options and not checking excep
 
     compile "com.evanlennick:retry4j:0.8.0"
 
-## Documentation
+## Usage
 
 ### General
 
