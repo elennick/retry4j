@@ -1,6 +1,5 @@
 package com.evanlennick.retry4j.config;
 
-import com.evanlennick.retry4j.config.RetryConfig;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

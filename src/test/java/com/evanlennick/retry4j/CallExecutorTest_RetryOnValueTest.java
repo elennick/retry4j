@@ -6,7 +6,9 @@ import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.FileNotFoundException;
 import java.time.Duration;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,6 +114,36 @@ public class CallExecutorTest_RetryOnValueTest {
                 .build();
 
         assertRetryDoesNotOccur(config, callable);
+    }
+
+    @Test
+    public void verifyRetryOnValueAndExceptionInSameCall() {
+        Callable<Boolean> callable = () -> {
+            Random random = new Random();
+            if (random.nextBoolean()) {
+                System.out.println("returning false");
+                return false;
+            } else {
+                System.out.println("throwing exception");
+                throw new FileNotFoundException();
+            }
+        };
+
+        RetryConfig config = retryConfigBuilder
+                .retryOnSpecificExceptions(FileNotFoundException.class)
+                .retryOnReturnValue(false)
+                .withDelayBetweenTries(Duration.ZERO)
+                .withMaxNumberOfTries(100)
+                .withFixedBackoff()
+                .build();
+
+        try {
+            new CallExecutor(config).execute(callable);
+            fail("Expected RetriesExhaustedException but one wasn't thrown!");
+        } catch (RetriesExhaustedException e) {
+            assertThat(e.getCallResults().wasSuccessful()).isFalse();
+            assertThat(e.getCallResults().getTotalTries()).isEqualTo(100);
+        }
     }
 
     private void assertRetryOccurs(RetryConfig config, Callable<?> callable) {
