@@ -65,22 +65,23 @@ Or more simple using one of the predefined config options and not checking excep
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.7.2</version>
+        <version>0.7.3</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.7.2"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.7.3"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.7.2"
+    compile "com.evanlennick:retry4j:0.7.3"
 
 ## Documentation
 
 ### General
 
-Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.7.2.
+Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are 
+hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.7.3.
 
 ### Exception Handling Config
 
