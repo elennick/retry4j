@@ -121,11 +121,18 @@ public class CallExecutor<T> {
 
     private AttemptResults<T> tryCall(Callable<T> callable) throws UnexpectedException {
         AttemptResults attemptResult = new AttemptResults();
+
         try {
             T callResult = callable.call();
-            attemptResult.setResult(callResult);
-            attemptResult.setSuccessful(true);
-            return attemptResult;
+
+            boolean shouldRetryOnThisResult
+                    = config.shouldRetryOnValue() && callResult.equals(config.getValueToRetryOn());
+            if (shouldRetryOnThisResult) {
+                attemptResult.setSuccessful(false);
+            } else {
+                attemptResult.setResult(callResult);
+                attemptResult.setSuccessful(true);
+            }
         } catch (Exception e) {
             if (shouldThrowException(e)) {
                 logger.trace("Throwing expected exception {}", e);
@@ -133,9 +140,10 @@ public class CallExecutor<T> {
             } else {
                 lastKnownExceptionThatCausedRetry = e;
                 attemptResult.setSuccessful(false);
-                return attemptResult;
             }
         }
+
+        return attemptResult;
     }
 
     private void handleRetry(long millisBetweenTries, int tries) {

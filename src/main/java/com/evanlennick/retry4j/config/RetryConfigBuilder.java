@@ -94,6 +94,13 @@ public class RetryConfigBuilder {
         return this;
     }
 
+    public final RetryConfigBuilder retryOnReturnValue(Object value) {
+        config.setRetryOnValue(true);
+        config.setValueToRetryOn(value);
+
+        return this;
+    }
+
     public RetryConfigBuilder withMaxNumberOfTries(int max) {
         config.setMaxNumberOfTries(max);
         return this;

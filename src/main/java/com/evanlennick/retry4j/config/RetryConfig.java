@@ -14,6 +14,24 @@ public class RetryConfig {
     private Integer maxNumberOfTries;
     private Duration delayBetweenRetries;
     private BackoffStrategy backoffStrategy;
+    private Object valueToRetryOn;
+    private Boolean retryOnValue = false;
+
+    public Object getValueToRetryOn() {
+        return valueToRetryOn;
+    }
+
+    public void setValueToRetryOn(Object valueToRetryOn) {
+        this.valueToRetryOn = valueToRetryOn;
+    }
+
+    public Boolean shouldRetryOnValue() {
+        return retryOnValue;
+    }
+
+    public void setRetryOnValue(Boolean retryOnValue) {
+        this.retryOnValue = retryOnValue;
+    }
 
     public Boolean isRetryOnAnyException() {
         return retryOnAnyException;
