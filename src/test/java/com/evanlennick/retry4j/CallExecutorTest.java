@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
-public class RetryExecutorTest {
+public class CallExecutorTest {
 
     private RetryConfigBuilder retryConfigBuilder;
 

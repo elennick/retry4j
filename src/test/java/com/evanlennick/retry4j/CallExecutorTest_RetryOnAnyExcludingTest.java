@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
-public class RetryExecutorTest_RetryOnAnyExcludingTest {
+public class CallExecutorTest_RetryOnAnyExcludingTest {
 
     private RetryConfigBuilder retryConfigBuilder;
 
