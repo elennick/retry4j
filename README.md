@@ -110,7 +110,25 @@ If you want the executor to continue to retry on all encountered exceptions EXCE
     RetryConfig config = new RetryConfigBuilder()
             .retryOnAnyExceptionExcluding(CriticalFailure.class, DontRetryOnThis.class)
             .build();
+    
+### Value Handling Config
+
+If you want the executor to retry based on the returned value from the Callable:
+
+    RetryConfig config = retryConfigBuilder
+            .retryOnReturnValue("retry on this value!")
+            .build();
+                
+This can be used in combination with exception handling configuration like so:
+
+    RetryConfig config = retryConfigBuilder
+            .retryOnSpecificExceptions(FileNotFoundException.class)
+            .retryOnReturnValue("retry on this value!")
+            .build();
             
+In the above scenario, the call execution will be considered a failure and a retry will be triggered if 
+`FileNotFoundException.class` is thrown OR if the String `retry on this value!` is returned from the Callable logic.
+        
 ### Timing Config
 
 To specify the maximum number of tries that should be attempted, specify an integer value in the config using the **withMaxNumberOfTries()** method. The executor will attempt to execute the call the number of times specified and if it does not succeed after all tries have been exhausted, it will throw a **RetriesExhaustedException**.
