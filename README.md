@@ -83,6 +83,8 @@ Or more simple using one of the predefined config options and not checking excep
 Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are 
 hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.7.3.
 
+Continuous Integration results are available via Travis CI here: https://travis-ci.org/elennick/retry4j.
+
 ### Exception Handling Config
 
 If you do not specify how exceptions should be handled or explicitly say **failOnAnyException()**, the CallExecutor will fail and throw an **UnexpectedException** when encountering exceptions while running. Use this configuration if you want the executor to cease its work when it runs into any exception at all.
