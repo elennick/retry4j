@@ -28,15 +28,13 @@ public class ThreadedCallExecutor<T> implements RetryExecutor<T> {
     private static final int DEFAULT_NUMBER_OF_THREADS_IN_POOL = 10;
 
     public ThreadedCallExecutor(RetryConfig config) {
-        this.config = config;
-        this.listeners = new ArrayList<>();
-        executorService = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS_IN_POOL);
+        this(config, Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS_IN_POOL));
     }
 
     public ThreadedCallExecutor(RetryConfig config, ExecutorService executorService) {
         this.config = config;
-        this.listeners = new ArrayList<>();
         this.executorService = executorService;
+        this.listeners = new ArrayList<>();
     }
 
     @Override
