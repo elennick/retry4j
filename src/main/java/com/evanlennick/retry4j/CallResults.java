@@ -16,8 +16,8 @@ public class CallResults<T> extends AttemptResults<T> {
         return id;
     }
 
-    public void setId(String callId) {
-        this.id = callId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public long getStartTime() {
