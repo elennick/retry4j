@@ -42,9 +42,7 @@ public class ThreadedCallExecutor<T> implements RetryExecutor<T> {
         CallExecutor<T> synchronousCallExecutor = new CallExecutor<>(config);
         synchronousCallExecutor.registerRetryListeners(listeners);
 
-        executorService.submit(() -> {
-            synchronousCallExecutor.execute(callable);
-        });
+        executorService.submit(() -> synchronousCallExecutor.execute(callable));
 
         return null;
     }
