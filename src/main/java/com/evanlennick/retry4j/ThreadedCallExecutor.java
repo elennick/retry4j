@@ -1,15 +1,15 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.exception.RetriesExhaustedException;
-import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.listener.RetryListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Implementation that kicks off each retry request in its own separate thread that does not block the thread the
@@ -38,13 +38,16 @@ public class ThreadedCallExecutor<T> implements RetryExecutor<T> {
     }
 
     @Override
-    public Void execute(Callable<T> callable) throws RetriesExhaustedException, UnexpectedException {
+    public Future<CallResults<T>> execute(Callable<T> callable) {
         CallExecutor<T> synchronousCallExecutor = new CallExecutor<>(config);
         synchronousCallExecutor.registerRetryListeners(listeners);
 
-        executorService.submit(() -> synchronousCallExecutor.execute(callable));
+        CompletableFuture<CallResults<T>> completableFuture = new CompletableFuture<>();
+        executorService.submit(() -> {
+            completableFuture.complete(synchronousCallExecutor.execute(callable));
+        });
 
-        return null;
+        return completableFuture;
     }
 
     @Override
@@ -62,15 +65,15 @@ public class ThreadedCallExecutor<T> implements RetryExecutor<T> {
         this.config = config;
     }
 
-    public void shutdownExecutorService() {
+    public void shutdownThreadExecutorService() {
         executorService.shutdown();
     }
 
-    public void shutdownExecutorServiceNow() {
+    public void shutdownThreadExecutorServiceNow() {
         executorService.shutdownNow();
     }
 
-    public ExecutorService getExecutorService() {
+    public ExecutorService getThreadExecutorService() {
         return executorService;
     }
 
