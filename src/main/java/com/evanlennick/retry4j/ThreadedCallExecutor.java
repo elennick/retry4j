@@ -43,9 +43,8 @@ public class ThreadedCallExecutor<T> implements RetryExecutor<T> {
         synchronousCallExecutor.registerRetryListeners(listeners);
 
         CompletableFuture<CallResults<T>> completableFuture = new CompletableFuture<>();
-        executorService.submit(() -> {
-            completableFuture.complete(synchronousCallExecutor.execute(callable));
-        });
+        executorService.submit(() ->
+                completableFuture.complete(synchronousCallExecutor.execute(callable)));
 
         return completableFuture;
     }
