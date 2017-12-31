@@ -4,12 +4,21 @@ import java.time.Duration;
 
 public class CallResults<T> extends AttemptResults<T> {
 
+    private String id;
     private long startTime;
     private long endTime;
     private String callName;
     private int totalTries;
     private Duration totalElapsedDuration;
     private Exception lastExceptionThatCausedRetry;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String callId) {
+        this.id = callId;
+    }
 
     public long getStartTime() {
         return startTime;
@@ -62,7 +71,8 @@ public class CallResults<T> extends AttemptResults<T> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CallResults{");
-        sb.append("startTime=").append(startTime);
+        sb.append("id=").append(id);
+        sb.append(", startTime=").append(startTime);
         sb.append(", endTime=").append(endTime);
         sb.append(", callName='").append(callName).append('\'');
         sb.append(", wasSuccessful=").append(wasSuccessful());
