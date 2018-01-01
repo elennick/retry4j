@@ -15,12 +15,18 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public class CallExecutor<T> {
+/**
+ * Default implementation that does a single, synchrnous retry in the same thread that it is called from.
+ *
+ * @param <T> The type that is returned by the Callable (eg: Boolean, Void, Object, etc)
+ */
+public class CallExecutor<T> implements RetryExecutor<T> {
 
     private Logger logger = LoggerFactory.getLogger(CallExecutor.class);
 
@@ -36,8 +42,6 @@ public class CallExecutor<T> {
 
     private OnCompletionListener onCompletionListener;
 
-    private ExecutorService executorService;
-
     private Exception lastKnownExceptionThatCausedRetry;
 
     private CallResults<T> results = new CallResults<>();
@@ -48,8 +52,10 @@ public class CallExecutor<T> {
 
     public CallExecutor(RetryConfig config) {
         this.config = config;
+        this.results.setId(UUID.randomUUID().toString());
     }
 
+    @Override
     public CallResults<T> execute(Callable<T> callable) throws RetriesExhaustedException, UnexpectedException {
         logger.trace("Starting retry4j execution with callable {}", config, callable);
         logger.debug("Starting retry4j execution with executor state {}", this);
@@ -92,14 +98,6 @@ public class CallExecutor<T> {
         }
 
         return results;
-    }
-
-    public void executeAsync(Callable<T> callable) {
-        if (null == executorService) {
-            executorService = Executors.newFixedThreadPool(10);
-        }
-        Runnable runnable = () -> this.execute(callable);
-        executorService.execute(runnable);
     }
 
     private void postExecutionCleanup(Callable<T> callable, int maxTries, AttemptResults<T> result) {
@@ -203,6 +201,7 @@ public class CallExecutor<T> {
         return true;
     }
 
+    @Override
     public void registerRetryListener(RetryListener listener) {
         if (listener instanceof AfterFailedTryListener) {
             this.afterFailedTryListener = (AfterFailedTryListener) listener;
@@ -221,13 +220,17 @@ public class CallExecutor<T> {
         logger.trace("Registered listener on retry4j executor {}", listener);
     }
 
+    @Override
+    public void registerRetryListeners(List<RetryListener> listeners) {
+        for (RetryListener listener : listeners) {
+            registerRetryListener(listener);
+        }
+    }
+
+    @Override
     public void setConfig(RetryConfig config) {
         logger.trace("Set config on retry4j executor {}", config);
         this.config = config;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
     }
 
     @Override
@@ -238,7 +241,6 @@ public class CallExecutor<T> {
         sb.append(", beforeNextTryListener=").append(beforeNextTryListener);
         sb.append(", onFailureListener=").append(onFailureListener);
         sb.append(", onSuccessListener=").append(onSuccessListener);
-        sb.append(", executorService=").append(executorService);
         sb.append(", lastKnownExceptionThatCausedRetry=").append(lastKnownExceptionThatCausedRetry);
         sb.append(", results=").append(results);
         sb.append('}');
