@@ -24,7 +24,7 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T> {
 
     private List<RetryListener> listeners;
 
-    private static final int DEFAULT_NUMBER_OF_THREADS_IN_POOL = 10;
+    private static final int DEFAULT_NUMBER_OF_THREADS_IN_POOL = 5;
 
     public AsyncCallExecutor(RetryConfig config) {
         this(config, Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS_IN_POOL));

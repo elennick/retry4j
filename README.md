@@ -302,51 +302,72 @@ or
 
 RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
 
-        CallExecutor executor = new CallExecutor(config);
-        
-        executor.registerRetryListener((AfterFailedTryListener) results -> {
-            //whatever logic you want to execute after a failed try
-        });
-        
-        executor.registerRetryListener((BeforeNextTryListener) results -> {
-            //whatever logic you want to execute before the next try
-        });
+    CallExecutor executor = new CallExecutor(config);
+    
+    executor.registerRetryListener((AfterFailedTryListener) results -> {
+        //whatever logic you want to execute after a failed try
+    });
+    
+    executor.registerRetryListener((BeforeNextTryListener) results -> {
+        //whatever logic you want to execute before the next try
+    });
 
 Two additional listeners are also offered to indicate when a series of retries has succeed or failed. They can be specified like so:
 
-        executor.registerRetryListener((OnSuccessListener) results -> {
-            //whatever logic you want to execute after retry execution has completed successfully
-        });
-        
-        executor.registerRetryListener((OnFailureListener) results -> {
-            //whatever logic you want to execute after retry execution has exhausted all retries
-        });
+    executor.registerRetryListener((OnSuccessListener) results -> {
+        //whatever logic you want to execute after retry execution has completed successfully
+    });
+    
+    executor.registerRetryListener((OnFailureListener) results -> {
+        //whatever logic you want to execute after retry execution has exhausted all retries
+    });
 
 ***NOTE:*** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
 
 If you wish to execute any sort of cleanup or finalization logic that will execute no matter what the final results is (success, exhausted retries, unexpected exception throw) you can implement the following listener:
 
-        executor.registerRetryListener((OnCompletionListener) results -> {
-            //whatever logic you want to execute after call execution has completed
-        });
+    executor.registerRetryListener((OnCompletionListener) results -> {
+        //whatever logic you want to execute after call execution has completed
+    });
 
 ### Async Support
 
-Retry4j has asynchronous support of calls by using the ```executeAsync()``` method of the CallExecutor. Right now this support is very beta and has known issues, especially when attempting to execute more than one call asynchonously at the same time. These issues should be cleaned up in a future release and the API related to asynchronous calls will likely change.
+Retry4j has some built in support for executing and retrying on one or more threads in an asynchronous fashion. The 
+`AsyncCallExecutor` utilizes threading and async mechanisms via Java's `ExecutorService` and `CompletableFuture` 
+API's. A basic example of this in action with a single call:
 
-        CallExecutor executor = new CallExecutor(config);
-        executor.executeAsync(callable);
+    AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(config);
+    CompletableFuture<CallResults<Boolean>> future = executor.execute(callable);
+    CallResults<Boolean> results = future.get();
+    
+In the above case, the logic in the callable will begin executing immediately upon `executor.execute(callable)` being 
+called. However, the callable (with retries) will execute on another thread and the original thread that started 
+execution will not be blocked until `future.get()` is called (if it hasn't completed).
+    
+This executor can also be used to trigger the same retried logic several times in parallel:
 
-Using the ```executeAsync()``` method will execute the passed call in an asynchronous, nonblocking fashion.
+    AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
 
-***NOTE:*** If no ```java.util.concurrent.ExecutorService``` is specified, the Retry4j CallExecutor will default to using a fixed thread pool with 10 threads. If you want to specify an ExecutorService that is initialized with your own configuration, you can do so by calling ```CallExecutor.setExecutorService(executorService)```. For example:
+    CompletableFuture<CallResults<Boolean>> future1 = executor.execute(callable);
+    CompletableFuture<CallResults<Boolean>> future2 = executor.execute(callable);
+    CompletableFuture<CallResults<Boolean>> future3 = executor.execute(callable);
 
-        ExecutorService customExecutorService = Executors.newScheduledThreadPool(10);
-        
-        CallExecutor callExecutor = new CallExecutor(config);
-        callExecutor.setExecutorService(customExecutorService);
-        
-        callExecutor.executeAsync(callable);
+    CompletableFuture combinedFuture = CompletableFuture.allOf(future1, future2, future3);
+    combinedFuture.get();
+    
+In both of these examples, the `AsyncCallExecutor` takes care of instantiating and using a simple, default 
+`ExecutorService` for managing threads. If you wish to define what `ExecutorService` gets used by the 
+`AsyncCallExecutor`, you can pass it in as part of the constructor like this:
+
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
+    new AsyncCallExecutor<>(config, executorService);
+    
+You can register retry listeners and configuration on an `AsyncCallExecutor` in the same fashion as the normal, 
+synchronous `CallExecutor`. All calls in all threads that are triggered from an `AsyncCallExecutor` after its 
+construction will use the same listeners and configuration.
+
+All of this async and threading functionality is new as of `0.9.0` and may need some time to settle before it is 
+completely stable and mature.
 
 ## Other Notes
 
