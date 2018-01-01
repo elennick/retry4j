@@ -9,8 +9,8 @@ There are several libraries that have similar capabilities this but I found them
 ## Table of Contents
 
 * [Basic Code Examples](#basic-code-examples)
-    * [Synchronous](#synchronous)
-    * [Asynchronous](#asynchronous)
+    * [Handling Results Normally](#handling-results-normally)
+    * [Handling Results With Listeners](#handling-results-with-listeners)
 * [Dependencies](#dependencies)
     * [Maven](#maven)
     * [SBT](#sbt)
@@ -31,7 +31,7 @@ There are several libraries that have similar capabilities this but I found them
       
 ## Basic Code Examples
 
-### Synchronous
+### Handling Results Normally
 
     Callable<Object> callable = () -> {
         //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
@@ -65,7 +65,7 @@ Or more simple using one of the predefined config options and not checking excep
 
     CallResults<Object> results = new CallExecutor(config).execute(callable);
 
-### Asynchronous
+### Handling Results With Listeners
 
     Callable<Object> callable = () -> {
         //code that you want to retry
@@ -79,7 +79,7 @@ Or more simple using one of the predefined config options and not checking excep
     
     executor.registerRetryListener((OnFailureListener) results -> { /** some code to execute on failure **/ });
     executor.registerRetryListener((OnSuccessListener) results -> { /** some code to execute on success **/ });
-    executor.executeAsync(callable);
+    executor.execute(callable);
 
 ## Dependencies
 
