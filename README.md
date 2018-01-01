@@ -88,23 +88,23 @@ Or more simple using one of the predefined config options and not checking excep
     <dependency>
         <groupId>com.evanlennick</groupId>
         <artifactId>retry4j</artifactId>
-        <version>0.8.0</version>
+        <version>0.9.0</version>
     </dependency>
 
 ### SBT
 
-    libraryDependencies += "com.evanlennick" % "retry4j" % "0.8.0"
+    libraryDependencies += "com.evanlennick" % "retry4j" % "0.9.0"
 
 ### Gradle
 
-    compile "com.evanlennick:retry4j:0.8.0"
+    compile "com.evanlennick:retry4j:0.9.0"
 
 ## Usage
 
 ### General
 
 Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are 
-hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.8.0.
+hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.9.0.
 
 Continuous Integration results are available via Travis CI here: https://travis-ci.org/elennick/retry4j.
 
