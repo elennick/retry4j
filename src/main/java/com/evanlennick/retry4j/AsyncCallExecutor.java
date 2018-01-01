@@ -9,7 +9,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Implementation that kicks off each retry request in its own separate thread that does not block the thread the
@@ -17,7 +16,7 @@ import java.util.concurrent.Future;
  *
  * @param <T> The type that is returned by the Callable (eg: Boolean, Void, Object, etc)
  */
-public class ThreadedCallExecutor<T> implements RetryExecutor<T> {
+public class AsyncCallExecutor<T> implements RetryExecutor<T> {
 
     private RetryConfig config;
 
@@ -27,24 +26,31 @@ public class ThreadedCallExecutor<T> implements RetryExecutor<T> {
 
     private static final int DEFAULT_NUMBER_OF_THREADS_IN_POOL = 10;
 
-    public ThreadedCallExecutor(RetryConfig config) {
+    public AsyncCallExecutor(RetryConfig config) {
         this(config, Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS_IN_POOL));
     }
 
-    public ThreadedCallExecutor(RetryConfig config, ExecutorService executorService) {
+    public AsyncCallExecutor(RetryConfig config, ExecutorService executorService) {
         this.config = config;
         this.executorService = executorService;
         this.listeners = new ArrayList<>();
     }
 
     @Override
-    public Future<CallResults<T>> execute(Callable<T> callable) {
+    public CompletableFuture<CallResults<T>> execute(Callable<T> callable) {
         CallExecutor<T> synchronousCallExecutor = new CallExecutor<>(config);
         synchronousCallExecutor.registerRetryListeners(listeners);
 
         CompletableFuture<CallResults<T>> completableFuture = new CompletableFuture<>();
-        executorService.submit(() ->
-                completableFuture.complete(synchronousCallExecutor.execute(callable)));
+
+        executorService.submit(() -> {
+            try {
+                CallResults<T> results = synchronousCallExecutor.execute(callable);
+                completableFuture.complete(results);
+            } catch (Throwable t) {
+                completableFuture.completeExceptionally(t);
+            }
+        });
 
         return completableFuture;
     }
