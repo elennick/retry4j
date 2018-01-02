@@ -2,9 +2,7 @@
 
 ## Retry4j
 
-Retry4j is a simple Java library to assist with retrying transient failure situations or unreliable code. Code that relies on connecting to an external resource that is intermittently available (ie: a REST API or external database connection) is a good example of where this type of logic is useful.
-
-There are several libraries that have similar capabilities this but I found them to either not work as advertised, to be overly complex or to be poorly documented. Retry4j aims to be readable, well documented and streamlined.
+Retry4j is a simple Java library to assist with retrying transient failure situations or unreliable code. Retry4j aims to be readable, well documented and streamlined.
 
 ## Table of Contents
 
@@ -45,12 +43,12 @@ There are several libraries that have similar capabilities this but I found them
             .build();
             
     try {  
-      CallResults<Object> results = new CallExecutor(config).execute(callable);
-      Object object = results.getResult(); //the result of the callable logic, if it returns one
+        CallResults<Object> results = new CallExecutor(config).execute(callable);
+        Object object = results.getResult(); //the result of the callable logic, if it returns one
     } catch(RetriesExhaustedException ree) {
-      //the call exhausted all tries without succeeding
+        //the call exhausted all tries without succeeding
     } catch(UnexpectedException ue) {
-      //the call threw an unexpected exception that was not specified to retry on
+        //the call threw an unexpected exception
     }
 
 Or more simple using one of the predefined config options and not checking exceptions:
@@ -344,13 +342,13 @@ In the above case, the logic in the callable will begin executing immediately up
 called. However, the callable (with retries) will execute on another thread and the original thread that started 
 execution will not be blocked until `future.get()` is called (if it hasn't completed).
     
-This executor can also be used to trigger the same retried logic several times in parallel:
+This executor can also be used to trigger several Callable's in parallel:
 
     AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
 
-    CompletableFuture<CallResults<Boolean>> future1 = executor.execute(callable);
-    CompletableFuture<CallResults<Boolean>> future2 = executor.execute(callable);
-    CompletableFuture<CallResults<Boolean>> future3 = executor.execute(callable);
+    CompletableFuture<CallResults<Boolean>> future1 = executor.execute(callable1);
+    CompletableFuture<CallResults<Boolean>> future2 = executor.execute(callable2);
+    CompletableFuture<CallResults<Boolean>> future3 = executor.execute(callable3);
 
     CompletableFuture combinedFuture = CompletableFuture.allOf(future1, future2, future3);
     combinedFuture.get();
