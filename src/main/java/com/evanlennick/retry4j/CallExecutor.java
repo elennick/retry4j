@@ -18,7 +18,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -170,7 +169,7 @@ public class CallExecutor<T> implements RetryExecutor<T> {
 
     private void sleep(long millis, int tries) {
         Duration duration = Duration.of(millis, ChronoUnit.MILLIS);
-        long millisToSleep = config.getBackoffStrategy().getMillisToWait(tries, duration);
+        long millisToSleep = config.getBackoffStrategy().getDurationToWait(tries, duration).toMillis();
 
         logger.trace("Retry4j executor sleeping for {} ms", millisToSleep);
         try {

@@ -8,9 +8,11 @@ import java.time.Duration;
 public class ExponentialBackoffStrategy implements BackoffStrategy {
 
     @Override
-    public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
+    public Duration getDurationToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
         double exponentialMultiplier = Math.pow(2.0, numberOfTriesFailed - 1);
         double result = exponentialMultiplier * delayBetweenAttempts.toMillis();
-        return (long) Math.min(result, Long.MAX_VALUE);
+        long millisToWait = (long) Math.min(result, Long.MAX_VALUE);
+        return Duration.ofMillis(millisToWait);
     }
+
 }

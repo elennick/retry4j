@@ -16,8 +16,8 @@ public class RandomBackoffStrategy implements BackoffStrategy {
     }
 
     @Override
-    public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
-        int i = ThreadLocalRandom.current().nextInt(0, maxMultiplier + 1);
-        return i * delayBetweenAttempts.toMillis();
+    public Duration getDurationToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
+        int i = ThreadLocalRandom.current().nextInt(0, maxMultiplier - 1);
+        return Duration.ofMillis(i * delayBetweenAttempts.toMillis());
     }
 }

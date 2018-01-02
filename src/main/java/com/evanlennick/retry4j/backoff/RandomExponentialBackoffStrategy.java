@@ -1,7 +1,6 @@
 package com.evanlennick.retry4j.backoff;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 public class RandomExponentialBackoffStrategy implements BackoffStrategy {
 
@@ -15,14 +14,10 @@ public class RandomExponentialBackoffStrategy implements BackoffStrategy {
     }
 
     @Override
-    public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
-        long millisToWaitFromExpBackoff
-            = exponentialBackoffStrategy.getMillisToWait(numberOfTriesFailed, delayBetweenAttempts);
+    public Duration getDurationToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
+        Duration durationWaitFromExpBackoff
+                = exponentialBackoffStrategy.getDurationToWait(numberOfTriesFailed, delayBetweenAttempts);
 
-        long millisToWait
-            = randomBackoffStrategy.getMillisToWait(numberOfTriesFailed,
-            Duration.of(millisToWaitFromExpBackoff, ChronoUnit.MILLIS));
-
-        return millisToWait;
+        return randomBackoffStrategy.getDurationToWait(numberOfTriesFailed, durationWaitFromExpBackoff);
     }
 }

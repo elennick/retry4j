@@ -4,6 +4,6 @@ import java.time.Duration;
 
 public interface BackoffStrategy {
 
-    abstract public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts);
+    Duration getDurationToWait(int numberOfTriesFailed, Duration delayBetweenAttempts);
 
 }
