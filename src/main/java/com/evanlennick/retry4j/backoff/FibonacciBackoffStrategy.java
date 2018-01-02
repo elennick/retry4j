@@ -23,14 +23,14 @@ public class FibonacciBackoffStrategy implements BackoffStrategy {
     }
 
     @Override
-    public long getMillisToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
+    public Duration getDurationToWait(int numberOfTriesFailed, Duration delayBetweenAttempts) {
         int fibNumber;
         try {
             fibNumber = fibonacciNumbers.get(numberOfTriesFailed);
         } catch (IndexOutOfBoundsException e) {
             fibNumber = fibonacciNumbers.get(MAX_NUM_OF_FIB_NUMBERS - 1);
         }
-        return delayBetweenAttempts.toMillis() * fibNumber;
+        return Duration.ofMillis(delayBetweenAttempts.toMillis() * fibNumber);
     }
 
     public List<Integer> getFibonacciNumbers() {
