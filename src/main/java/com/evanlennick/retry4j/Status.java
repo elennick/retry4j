@@ -2,7 +2,7 @@ package com.evanlennick.retry4j;
 
 import java.time.Duration;
 
-public class CallResults<T> extends AttemptResults<T> {
+public class Status<T> extends AttemptStatus<T> {
 
     private String id;
     private long startTime;
@@ -70,7 +70,7 @@ public class CallResults<T> extends AttemptResults<T> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CallResults{");
+        final StringBuilder sb = new StringBuilder("Status{");
         sb.append("id=").append(id);
         sb.append(", startTime=").append(startTime);
         sb.append(", endTime=").append(endTime);

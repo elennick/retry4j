@@ -143,8 +143,8 @@ public class CallExecutorTest_RetryOnValueTest {
             new CallExecutor(config).execute(callable);
             fail("Expected RetriesExhaustedException but one wasn't thrown!");
         } catch (RetriesExhaustedException e) {
-            assertThat(e.getCallResults().wasSuccessful()).isFalse();
-            assertThat(e.getCallResults().getTotalTries()).isEqualTo(expectedNumberOfTries);
+            assertThat(e.getStatus().wasSuccessful()).isFalse();
+            assertThat(e.getStatus().getTotalTries()).isEqualTo(expectedNumberOfTries);
         }
     }
 
@@ -153,9 +153,9 @@ public class CallExecutorTest_RetryOnValueTest {
     }
 
     private void assertRetryDoesNotOccur(RetryConfig config, Callable<?> callable) {
-        CallResults results = new CallExecutor(config).execute(callable);
-        assertThat(results.wasSuccessful()).isTrue();
-        assertThat(results.getTotalTries()).isEqualTo(1);
+        Status status = new CallExecutor(config).execute(callable);
+        assertThat(status.wasSuccessful()).isTrue();
+        assertThat(status.getTotalTries()).isEqualTo(1);
     }
 
     private class RetryOnValueTestObject {
