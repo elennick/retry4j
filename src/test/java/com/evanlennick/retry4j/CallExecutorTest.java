@@ -121,7 +121,7 @@ public class CallExecutorTest {
     }
 
     @Test
-    public void verifystatusArePopulatedOnSuccessfulCall() throws Exception {
+    public void verifyStatusIsPopulatedOnSuccessfulCall() throws Exception {
         Callable<Boolean> callable = () -> true;
 
         RetryConfig retryConfig = retryConfigBuilder
@@ -140,7 +140,7 @@ public class CallExecutorTest {
     }
 
     @Test
-    public void verifystatusArePopulatedOnFailedCall() throws Exception {
+    public void verifyStatusIsPopulatedOnFailedCall() throws Exception {
         Callable<Boolean> callable = () -> { throw new FileNotFoundException(); };
 
         RetryConfig retryConfig = retryConfigBuilder
