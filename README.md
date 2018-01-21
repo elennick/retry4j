@@ -1,4 +1,4 @@
-![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master&link=https://travis-ci.org/elennick/retry4j&link=https://travis-ci.org/elennick/retry4j) [![Coverage Status](https://coveralls.io/repos/github/elennick/retry4j/badge.svg?branch=master)](https://coveralls.io/github/elennick/retry4j?branch=master) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Maven Central](https://img.shields.io/maven-central/v/com.evanlennick/retry4j.svg)
+![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master&link=https://travis-ci.org/elennick/retry4j&link=https://travis-ci.org/elennick/retry4j) [![Coverage Status](https://coveralls.io/repos/github/elennick/retry4j/badge.svg?branch=master)](https://coveralls.io/github/elennick/retry4j?branch=master) ![Maven Central](https://img.shields.io/maven-central/v/com.evanlennick/retry4j.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Retry4j
 
