@@ -164,6 +164,13 @@ To specify the maximum number of tries that should be attempted, specify an inte
     RetryConfig config = new RetryConfigBuilder()
             .withMaxNumberOfTries(5)
             .build();
+            
+If you do not wish to have a maximum and want retries to continue indefinitely, instead us the `retryIndefinitely()` 
+option:
+
+    RetryConfig config = new RetryConfigBuilder()
+            .retryIndefinitely()
+            .build();
 
 To specify the delay in between each try, use the **withDelayBetweenTries()** config method. This method will accept a Java 8 Duration object or an integer combined with a ChronoUnit.
 
