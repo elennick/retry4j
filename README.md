@@ -104,7 +104,9 @@ Or more simple using one of the predefined config options and not checking excep
 Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer. Javadocs are 
 hosted at http://www.javadoc.io/doc/com.evanlennick/retry4j/0.10.0.
 
-Continuous Integration results are available via Travis CI here: https://travis-ci.org/elennick/retry4j.
+Continuous integration results are available via Travis CI here: https://travis-ci.org/elennick/retry4j.
+
+Code coverage information is available via Coveralls here: https://coveralls.io/github/elennick/retry4j
 
 ### Exception Handling Config
 
