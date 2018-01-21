@@ -133,7 +133,7 @@ public class CallExecutor<T> implements RetryExecutor<T> {
         } catch (Exception e) {
             if (shouldThrowException(e)) {
                 logger.trace("Throwing expected exception {}", e);
-                throw new UnexpectedException(e);
+                throw new UnexpectedException("Unexpected exception thrown during retry execution!", e);
             } else {
                 lastKnownExceptionThatCausedRetry = e;
                 attemptResult.setSuccessful(false);
