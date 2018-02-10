@@ -366,11 +366,11 @@ Listeners are offered in case you want to be able to add logic that will execute
 CallExecutor executor = new CallExecutor(config);
 
 executor.afterFailedTry(s -> { 
-    //whatever logic you want to execute immediately after the next failed try
+    //whatever logic you want to execute immediately after each failed try
 });
 
 executor.beforeNextTry(s -> {
-    //whatever logic you want to execute immediately before the next try
+    //whatever logic you want to execute immediately before each try
 });
 ```
 
