@@ -457,7 +457,7 @@ completely stable and mature.
 
 ### Logging
 
-Retry4j contains detailed internal logging using [SLF4J](https://www.slf4j.org/manual.html). If you do not specify a SLF4J implementation, these logs will be discarded. If you do specify an implementation (eg: Logback, Log4J, etc) you can specify the log level on the `com.evanlennick.retry4j` package if you want to set Retry4j logging to a specific level.
+Retry4j contains detailed internal logging using [SLF4J](https://www.slf4j.org/manual.html). If you do not specify a SLF4J implementation, these logs will be discarded. If you do specify an implementation (eg: Logback, Log4J, etc) you can specify the log level on the `com.evanlennick.retry4j` package to set Retry4j logging to a specific level.
 
 ## Other Notes
 
