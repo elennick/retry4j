@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -193,6 +194,31 @@ public class CallExecutorTest {
             Status status = e.getStatus();
             assertThat(status.getResult()).isNull();
             assertThat(status.wasSuccessful()).isTrue();
+        }
+    }
+
+    @Test
+    public void verifyRetryingIndefinitely() throws Exception {
+        Callable<Boolean> callable = () -> {
+            Random random = new Random();
+            if (random.nextInt(10000) == 0) {
+                return true;
+            }
+            throw new IllegalArgumentException();
+        };
+
+        RetryConfig retryConfig = retryConfigBuilder
+                .retryIndefinitely()
+                .retryOnAnyException()
+                .withFixedBackoff()
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+                .build();
+
+        try {
+            CallExecutor executor = new CallExecutor(retryConfig);
+            executor.execute(callable);
+        } catch (RetriesExhaustedException e) {
+            fail("Retries should never be exhausted!");
         }
     }
 }
