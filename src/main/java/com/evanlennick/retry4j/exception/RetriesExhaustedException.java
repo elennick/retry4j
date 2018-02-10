@@ -9,16 +9,6 @@ public class RetriesExhaustedException extends Retry4jException {
 
     private Status status;
 
-    public RetriesExhaustedException(Status results) {
-        super();
-        this.status = results;
-    }
-
-    public RetriesExhaustedException(String message, Status status) {
-        super(message);
-        this.status = status;
-    }
-
     public RetriesExhaustedException(String message, Throwable cause, Status status) {
         super(message, cause);
         this.status = status;
