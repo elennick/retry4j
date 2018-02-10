@@ -360,7 +360,7 @@ new RetryConfigBuilder(false);
 
 ### Listeners
 
-RetryListener's are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
+Listeners are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
 
 ```java
 CallExecutor executor = new CallExecutor(config);
