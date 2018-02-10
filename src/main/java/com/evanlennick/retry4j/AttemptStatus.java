@@ -1,6 +1,6 @@
 package com.evanlennick.retry4j;
 
-public class AttemptResults<T> {
+public class AttemptStatus<T> {
 
     private T result;
 

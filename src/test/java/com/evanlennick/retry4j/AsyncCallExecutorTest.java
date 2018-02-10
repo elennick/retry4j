@@ -44,9 +44,9 @@ public class AsyncCallExecutorTest {
 
         AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
 
-        CompletableFuture<CallResults<Boolean>> future1 = executor.execute(callable);
-        CompletableFuture<CallResults<Boolean>> future2 = executor.execute(callable);
-        CompletableFuture<CallResults<Boolean>> future3 = executor.execute(callable);
+        CompletableFuture<Status<Boolean>> future1 = executor.execute(callable);
+        CompletableFuture<Status<Boolean>> future2 = executor.execute(callable);
+        CompletableFuture<Status<Boolean>> future3 = executor.execute(callable);
 
         CompletableFuture combinedFuture
                 = CompletableFuture.allOf(future1, future2, future3);
@@ -63,11 +63,11 @@ public class AsyncCallExecutorTest {
 
         AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
 
-        CompletableFuture<CallResults<Boolean>> future = executor.execute(callable);
+        CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
-        CallResults<Boolean> results = future.get();
+        Status<Boolean> status = future.get();
         assertThat(future).isDone();
-        assertThat(results.wasSuccessful()).isTrue();
+        assertThat(status.wasSuccessful()).isTrue();
     }
 
     @Test
@@ -76,7 +76,7 @@ public class AsyncCallExecutorTest {
 
         AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
 
-        CompletableFuture<CallResults<Boolean>> future = executor.execute(callable);
+        CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
         assertThatThrownBy(future::get)
                 .isExactlyInstanceOf(ExecutionException.class)
@@ -89,7 +89,7 @@ public class AsyncCallExecutorTest {
 
         AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(failOnAnyExceptionConfig);
 
-        CompletableFuture<CallResults<Boolean>> future = executor.execute(callable);
+        CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
         assertThatThrownBy(future::get)
                 .isExactlyInstanceOf(ExecutionException.class)

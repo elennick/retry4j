@@ -21,7 +21,7 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
     * [Backoff Strategy Config](#backoff-strategy-config)
     * [Simple Configs](#simple-configs)
     * [CallExecutor](#callexecutor)
-    * [CallResults](#callresults)
+    * [Call Status](#call-status)
     * [Retry4jException](#retry4jexception)
     * [Listeners](#listeners)
     * [Async Support](#async-support)
@@ -36,21 +36,21 @@ Callable<Object> callable = () -> {
     //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
 };
 
-RetryConfig config = new RetryConfigBuilder()
-        .retryOnSpecificExceptions(ConnectException.class)
-        .withMaxNumberOfTries(10)
-        .withDelayBetweenTries(30, ChronoUnit.SECONDS)
-        .withExponentialBackoff()
-        .build();
-        
-try {  
-    CallResults<Object> results = new CallExecutor(config).execute(callable);
-    Object object = results.getResult(); //the result of the callable logic, if it returns one
-} catch(RetriesExhaustedException ree) {
-    //the call exhausted all tries without succeeding
-} catch(UnexpectedException ue) {
-    //the call threw an unexpected exception
-}
+    RetryConfig config = new RetryConfigBuilder()
+            .retryOnSpecificExceptions(ConnectException.class)
+            .withMaxNumberOfTries(10)
+            .withDelayBetweenTries(30, ChronoUnit.SECONDS)
+            .withExponentialBackoff()
+            .build();
+            
+    try {  
+        Status<Object> status = new CallExecutor(config).execute(callable);
+        Object object = status.getResult(); //the result of the callable logic, if it returns one
+    } catch(RetriesExhaustedException ree) {
+        //the call exhausted all tries without succeeding
+    } catch(UnexpectedException ue) {
+        //the call threw an unexpected exception
+    }
 ```
 
 Or more simple using one of the predefined config options and not checking exceptions:
@@ -64,7 +64,7 @@ RetryConfig config = new RetryConfigBuilder()
     .exponentialBackoff5Tries5Sec()
     .build();
 
-CallResults<Object> results = new CallExecutor(config).execute(callable);
+    Status<Object> status = new CallExecutor(config).execute(callable);
 ```
 
 ### Handling Results With Listeners
@@ -307,35 +307,33 @@ new CallExecutor(config).execute(callable);
 
 The CallExecutor expects that your logic is wrapped in a **java.util.concurrent.Callable**.
 
-### CallResults
+### Call Status
 
 After the executor successfully completes or throws a RetriesExhaustedException, a **CallResults** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
 
 ```java
-CallResults results = new CallExecutor(config).execute(callable);
-System.out.println(results.getResult()); //this will be populated if your callable returns a value
-System.out.println(results.wasSuccessful());
-System.out.println(results.getCallName());
-System.out.println(results.getTotalDurationElapsed());
-System.out.println(results.getTotalTries());
-System.out.println(results.getLastExceptionThatCausedRetry());
+Status status = new CallExecutor(config).execute(callable);
+System.out.println(status.getResult()); //this will be populated if your callable returns a value
+System.out.println(status.wasSuccessful());
+System.out.println(status.getCallName());
+System.out.println(status.getTotalDurationElapsed());
+System.out.println(status.getTotalTries());
+System.out.println(status.getLastExceptionThatCausedRetry());
 ```  
 
 or
 
-
-
 ```java
-try {  
-    new CallExecutor(config).execute(callable);
-} catch(RetriesExhaustedException cfe) {
-    CallResults results = cfe.getCallResults();
-    System.out.println(results.wasSuccessful());
-    System.out.println(results.getCallName());
-    System.out.println(results.getTotalDurationElapsed());
-    System.out.println(results.getTotalTries());
-    System.out.println(results.getLastExceptionThatCausedRetry());
-}
+    try {  
+        new CallExecutor(config).execute(callable);
+    } catch(RetriesExhaustedException cfe) {
+        Status status = cfe.getStatus();
+        System.out.println(status.wasSuccessful());
+        System.out.println(status.getCallName());
+        System.out.println(status.getTotalDurationElapsed());
+        System.out.println(status.getTotalTries());
+        System.out.println(status.getLastExceptionThatCausedRetry());
+    }
 ```
 
 ### Retry4jException
@@ -403,12 +401,10 @@ Retry4j has some built in support for executing and retrying on one or more thre
 `AsyncCallExecutor` utilizes threading and async mechanisms via Java's `ExecutorService` and `CompletableFuture` 
 API's. A basic example of this in action with a single call:
 
-```java 
-AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(config);
-CompletableFuture<CallResults<Boolean>> future = executor.execute(callable);
-CallResults<Boolean> results = future.get();
-```
-
+    ```javaAsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(config);
+    CompletableFuture<Status<Boolean>> future = executor.execute(callable);
+    Status<Boolean> status = future.get();
+    ```
 In the above case, the logic in the callable will begin executing immediately upon `executor.execute(callable)` being 
 called. However, the callable (with retries) will execute on another thread and the original thread that started 
 execution will not be blocked until `future.get()` is called (if it hasn't completed).
@@ -418,9 +414,9 @@ This executor can also be used to trigger several Callable's in parallel:
 ```java
 AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
 
-CompletableFuture<CallResults<Boolean>> future1 = executor.execute(callable1);
-CompletableFuture<CallResults<Boolean>> future2 = executor.execute(callable2);
-CompletableFuture<CallResults<Boolean>> future3 = executor.execute(callable3);
+CompletableFuture<Status<Boolean>> future1 = executor.execute(callable1);
+CompletableFuture<Status<Boolean>> future2 = executor.execute(callable2);
+CompletableFuture<Status<Boolean>> future3 = executor.execute(callable3);
 
 CompletableFuture combinedFuture = CompletableFuture.allOf(future1, future2, future3);
 combinedFuture.get();

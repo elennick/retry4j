@@ -1,30 +1,20 @@
 package com.evanlennick.retry4j.exception;
 
-import com.evanlennick.retry4j.CallResults;
+import com.evanlennick.retry4j.Status;
 
 /**
  * This exception represents a call execution that never succeeded after exhausting all retries.
  */
 public class RetriesExhaustedException extends Retry4jException {
 
-    private CallResults results;
+    private Status status;
 
-    public RetriesExhaustedException(CallResults results) {
-        super();
-        this.results = results;
-    }
-
-    public RetriesExhaustedException(String message, CallResults results) {
-        super(message);
-        this.results = results;
-    }
-
-    public RetriesExhaustedException(String message, Throwable cause, CallResults results) {
+    public RetriesExhaustedException(String message, Throwable cause, Status status) {
         super(message, cause);
-        this.results = results;
+        this.status = status;
     }
 
-    public CallResults getCallResults() {
-        return results;
+    public Status getStatus() {
+        return status;
     }
 }

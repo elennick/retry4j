@@ -37,8 +37,8 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
-        assertThat(results.wasSuccessful());
+        Status status = new CallExecutor(retryConfig).execute(callable);
+        assertThat(status.wasSuccessful());
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -122,7 +122,7 @@ public class CallExecutorTest {
     }
 
     @Test
-    public void verifyResultsArePopulatedOnSuccessfulCall() throws Exception {
+    public void verifyStatusIsPopulatedOnSuccessfulCall() throws Exception {
         Callable<Boolean> callable = () -> true;
 
         RetryConfig retryConfig = retryConfigBuilder
@@ -131,17 +131,17 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
+        Status status = new CallExecutor(retryConfig).execute(callable);
 
-        assertThat(results.getResult()).isNotNull();
-        assertThat(results.wasSuccessful());
-        assertThat(results.getCallName()).isNotEmpty();
-        assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
-        assertThat(results.getTotalTries()).isEqualTo(1);
+        assertThat(status.getResult()).isNotNull();
+        assertThat(status.wasSuccessful());
+        assertThat(status.getCallName()).isNotEmpty();
+        assertThat(status.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
+        assertThat(status.getTotalTries()).isEqualTo(1);
     }
 
     @Test
-    public void verifyResultsArePopulatedOnFailedCall() throws Exception {
+    public void verifyStatusIsPopulatedOnFailedCall() throws Exception {
         Callable<Boolean> callable = () -> { throw new FileNotFoundException(); };
 
         RetryConfig retryConfig = retryConfigBuilder
@@ -155,12 +155,12 @@ public class CallExecutorTest {
             new CallExecutor(retryConfig).execute(callable);
             fail("RetriesExhaustedException wasn't thrown!");
         } catch (RetriesExhaustedException e) {
-            CallResults results = e.getCallResults();
-            assertThat(results.getResult()).isNull();
-            assertThat(results.wasSuccessful()).isFalse();
-            assertThat(results.getCallName()).isNotEmpty();
-            assertThat(results.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
-            assertThat(results.getTotalTries()).isEqualTo(5);
+            Status status = e.getStatus();
+            assertThat(status.getResult()).isNull();
+            assertThat(status.wasSuccessful()).isFalse();
+            assertThat(status.getCallName()).isNotEmpty();
+            assertThat(status.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
+            assertThat(status.getTotalTries()).isEqualTo(5);
             assertThat(e.getCause()).isExactlyInstanceOf(FileNotFoundException.class);
         }
     }
@@ -174,9 +174,9 @@ public class CallExecutorTest {
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .build();
 
-        CallResults results = new CallExecutor(retryConfig).execute(callable);
+        Status status = new CallExecutor(retryConfig).execute(callable);
 
-        assertThat(results.getResult()).isEqualTo("test");
+        assertThat(status.getResult()).isEqualTo("test");
     }
 
     @Test
@@ -191,9 +191,9 @@ public class CallExecutorTest {
         try {
             new CallExecutor(retryConfig).execute(callable);
         } catch (RetriesExhaustedException e) {
-            CallResults results = e.getCallResults();
-            assertThat(results.getResult()).isNull();
-            assertThat(results.wasSuccessful()).isTrue();
+            Status status = e.getStatus();
+            assertThat(status.getResult()).isNull();
+            assertThat(status.wasSuccessful()).isTrue();
         }
     }
 

@@ -10,8 +10,4 @@ public class Retry4jException extends RuntimeException {
         super(message);
     }
 
-    public Retry4jException() {
-
-    }
-
 }
