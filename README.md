@@ -25,6 +25,7 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
     * [Retry4jException](#retry4jexception)
     * [Listeners](#listeners)
     * [Async Support](#async-support)
+    * [Logging](#logging)
 * [Other Notes](#other-notes)
       
 ## Basic Code Examples
@@ -436,6 +437,10 @@ construction will use the same listeners and configuration.
 
 All of this async and threading functionality is new as of `0.9.0` and may need some time to settle before it is 
 completely stable and mature.
+
+### Logging
+
+Retry4j contains detailed internal logging using [SLF4J|https://www.slf4j.org/manual.html]. If you do not specify a SLF4J logging implementation, these logs will be discarded. If you do specify an implementation (eg: Logback, Log4J2, etc) you can specify the log level on the `com.evanlennick.retry4j` package if you want to set Retry4j logging to a specific level.
 
 ## Other Notes
 
