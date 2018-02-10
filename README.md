@@ -311,7 +311,7 @@ The CallExecutor expects that your logic is wrapped in a **java.util.concurrent.
 
 ### Call Status
 
-After the executor successfully completes or throws a RetriesExhaustedException, a **CallResults** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
+After the executor successfully completes or throws a RetriesExhaustedException, a **Status** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
 
 ```java
 Status status = new CallExecutor(config).execute(callable);
