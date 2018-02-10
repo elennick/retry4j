@@ -79,14 +79,12 @@ RetryConfig config = new RetryConfigBuilder()
         .exponentialBackoff5Tries5Sec()
         .build();
 
-CallExecutor executor = new CallExecutor(config);
-
-new CallExecutor<>(config)
-        .onSuccess(s -> System.out.println("Status after success: " + s))
-        .onFailure(s -> System.out.println("Failed! All retries exhausted..."))
-        .afterFailedTry(s -> System.out.println("Try failed! Will try again in 0ms."))
-        .beforeNextTry(s -> System.out.println("Trying again..."))
-        .onCompletion(s -> System.out.println("Retry execution complete!"))
+CallExecutor executor = new CallExecutor<>(config)
+        .onSuccess(s -> { //do something on success })
+        .onFailure(s -> { //do something on a failed try })
+        .afterFailedTry(s -> { //do something after a failed try })
+        .beforeNextTry(s -> { //do something before the next try })
+        .onCompletion(s -> { //do some cleanup })
         .execute(callable);
 ```
 
@@ -398,6 +396,18 @@ If you wish to execute any sort of cleanup or finalization logic that will execu
 executor.onCompletion(s -> {
     //whatever logic you want to execute after the executor has completed, regardless of status
 });
+```
+
+Listeners can be chained together:
+
+```java
+new CallExecutor<>(config)
+       .onSuccess(s -> System.out.println("Success!"))
+       .onCompletion(s -> System.out.println("Retry execution complete!"))
+       .onFailure(s -> System.out.println("Failed! All retries exhausted..."))
+       .afterFailedTry(s -> System.out.println("Try failed! Will try again in 0ms."))
+       .beforeNextTry(s -> System.out.println("Trying again..."))
+       .execute(callable);
 ```
 
 ### Async Support
