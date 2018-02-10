@@ -50,7 +50,8 @@ Callable<Object> callable = () -> {
         //the call exhausted all tries without succeeding
     } catch(UnexpectedException ue) {
         //the call threw an unexpected exception
-    }```
+    }
+```
 
 Or more simple using one of the predefined config options and not checking exceptions:
 
@@ -63,7 +64,8 @@ RetryConfig config = new RetryConfigBuilder()
     .exponentialBackoff5Tries5Sec()
     .build();
 
-    Status<Object> status = new CallExecutor(config).execute(callable);```
+    Status<Object> status = new CallExecutor(config).execute(callable);
+```
 
 ### Handling Results With Listeners
 
@@ -321,7 +323,8 @@ System.out.println(status.getLastExceptionThatCausedRetry());
 
 or
 
-    ```javatry {  
+```java
+    try {  
         new CallExecutor(config).execute(callable);
     } catch(RetriesExhaustedException cfe) {
         Status status = cfe.getStatus();
@@ -330,7 +333,8 @@ or
         System.out.println(status.getTotalDurationElapsed());
         System.out.println(status.getTotalTries());
         System.out.println(status.getLastExceptionThatCausedRetry());
-    }```
+    }
+```
 
 ### Retry4jException
 
