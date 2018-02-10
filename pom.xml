@@ -6,7 +6,7 @@
 
     <groupId>com.evanlennick</groupId>
     <artifactId>retry4j</artifactId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>0.11.0</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Library for retrying Java logic.</description>
@@ -16,7 +16,7 @@
         <connection>scm:git:git@github.com:elennick/retry4j.git</connection>
         <developerConnection>scm:git:git@github.com:elennick/retry4j.git</developerConnection>
         <url>git@github.com:elennick/retry4j.git</url>
-        <tag>retry4j-0.10.0</tag>
+        <tag>retry4j-0.11.0</tag>
     </scm>
 
     <licenses>
