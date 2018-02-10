@@ -30,7 +30,7 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
       
 ## Basic Code Examples
 
-### Handling Results Normally
+### Handling Failures with Exceptions
 
 ```java
 Callable<Object> callable = () -> {
@@ -68,7 +68,7 @@ RetryConfig config = new RetryConfigBuilder()
 Status<Object> status = new CallExecutor(config).execute(callable);
 ```
 
-### Handling Results With Listeners
+### Handling All Results with Listeners
 
 ```java
 Callable<Object> callable = () -> {
