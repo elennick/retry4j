@@ -37,21 +37,21 @@ Callable<Object> callable = () -> {
     //code that you want to retry until success OR retries are exhausted OR an unexpected exception is thrown
 };
 
-    RetryConfig config = new RetryConfigBuilder()
-            .retryOnSpecificExceptions(ConnectException.class)
-            .withMaxNumberOfTries(10)
-            .withDelayBetweenTries(30, ChronoUnit.SECONDS)
-            .withExponentialBackoff()
-            .build();
-            
-    try {  
-        Status<Object> status = new CallExecutor(config).execute(callable);
-        Object object = status.getResult(); //the result of the callable logic, if it returns one
-    } catch(RetriesExhaustedException ree) {
-        //the call exhausted all tries without succeeding
-    } catch(UnexpectedException ue) {
-        //the call threw an unexpected exception
-    }
+RetryConfig config = new RetryConfigBuilder()
+        .retryOnSpecificExceptions(ConnectException.class)
+        .withMaxNumberOfTries(10)
+        .withDelayBetweenTries(30, ChronoUnit.SECONDS)
+        .withExponentialBackoff()
+        .build();
+        
+try {  
+    Status<Object> status = new CallExecutor(config).execute(callable);
+    Object object = status.getResult(); //the result of the callable logic, if it returns one
+} catch(RetriesExhaustedException ree) {
+    //the call exhausted all tries without succeeding
+} catch(UnexpectedException ue) {
+    //the call threw an unexpected exception
+}
 ```
 
 Or more simple using one of the predefined config options and not checking exceptions:
@@ -65,7 +65,7 @@ RetryConfig config = new RetryConfigBuilder()
     .exponentialBackoff5Tries5Sec()
     .build();
 
-    Status<Object> status = new CallExecutor(config).execute(callable);
+Status<Object> status = new CallExecutor(config).execute(callable);
 ```
 
 ### Handling Results With Listeners
@@ -76,14 +76,18 @@ Callable<Object> callable = () -> {
 };
 
 RetryConfig config = new RetryConfigBuilder()
-    .exponentialBackoff5Tries5Sec()
-    .build();
+        .exponentialBackoff5Tries5Sec()
+        .build();
 
 CallExecutor executor = new CallExecutor(config);
 
-executor.registerRetryListener((OnFailureListener) results -> { /** some code to execute on failure **/ });
-executor.registerRetryListener((OnSuccessListener) results -> { /** some code to execute on success **/ });
-executor.execute(callable);
+new CallExecutor<>(config)
+        .onSuccess(s -> System.out.println("Status after success: " + s))
+        .onFailure(s -> System.out.println("Failed! All retries exhausted..."))
+        .afterFailedTry(s -> System.out.println("Try failed! Will try again in 0ms."))
+        .beforeNextTry(s -> System.out.println("Trying again..."))
+        .onCompletion(s -> System.out.println("Retry execution complete!"))
+        .execute(callable);
 ```
 
 ## Dependencies
@@ -363,35 +367,36 @@ RetryListener's are offered in case you want to be able to add logic that will e
 ```java
 CallExecutor executor = new CallExecutor(config);
 
-executor.registerRetryListener((AfterFailedTryListener) results -> {
-    //whatever logic you want to execute after a failed try
+executor.afterFailedTry(s -> { 
+    //whatever logic you want to execute immediately after the next failed try
 });
 
-executor.registerRetryListener((BeforeNextTryListener) results -> {
-    //whatever logic you want to execute before the next try
+executor.beforeNextTry(s -> {
+    //whatever logic you want to execute immediately before the next try
 });
 ```
 
 Two additional listeners are also offered to indicate when a series of retries has succeed or failed. They can be specified like so:
 
 ```java
-executor.registerRetryListener((OnSuccessListener) results -> {
-    //whatever logic you want to execute after retry execution has completed successfully
+executor.onSuccess(s -> {
+    //whatever logic you want to execute when the callable finishes successfully
 });
 
-executor.registerRetryListener((OnFailureListener) results -> {
-    //whatever logic you want to execute after retry execution has exhausted all retries
+executor.onFailure(s -> {
+    //whatever logic you want to execute when all retries are exhausted
 });
 ```
 
-***NOTE:*** If you register an ```OnFailureListener``` with the CallExecutor, it will toggle off the throwing of **RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
+***NOTE:*** If you register a failure listener with the CallExecutor, it will toggle off the throwing of 
+**RetriesExhaustedException**'s. Handling a failure after retries are exhausted will be left up to the listener.
 
 If you wish to execute any sort of cleanup or finalization logic that will execute no matter what the final results is (success, exhausted retries, unexpected exception throw) you can implement the following listener:
 
 
 ```java
-executor.registerRetryListener((OnCompletionListener) results -> {
-    //whatever logic you want to execute after call execution has completed
+executor.onCompletion(s -> {
+    //whatever logic you want to execute after the executor has completed, regardless of status
 });
 ```
 
@@ -401,10 +406,12 @@ Retry4j has some built in support for executing and retrying on one or more thre
 `AsyncCallExecutor` utilizes threading and async mechanisms via Java's `ExecutorService` and `CompletableFuture` 
 API's. A basic example of this in action with a single call:
 
-    ```javaAsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(config);
-    CompletableFuture<Status<Boolean>> future = executor.execute(callable);
-    Status<Boolean> status = future.get();
-    ```
+```java
+AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(config);
+CompletableFuture<Status<Boolean>> future = executor.execute(callable);
+Status<Boolean> status = future.get();
+```
+
 In the above case, the logic in the callable will begin executing immediately upon `executor.execute(callable)` being 
 called. However, the callable (with retries) will execute on another thread and the original thread that started 
 execution will not be blocked until `future.get()` is called (if it hasn't completed).
@@ -448,6 +455,6 @@ Retry4j follows semantic versioning: http://semver.org/. As it is still version 
 
 There are a number of other retry libraries for Java and the JVM that might better suit your needs. Please feel free to check out the following libraries as well if Retry4j doesn't fit:
 
-* Guava Retrying - https://github.com/rholder/guava-retrying
+* Guava Retrying - https://github.com/rhuffman/re-retrying
 * Failsafe - https://github.com/jhalterman/failsafe
 * Spring Retry - https://github.com/spring-projects/spring-retry
