@@ -1,5 +1,8 @@
 package com.evanlennick.retry4j.backoff;
 
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,13 @@ public class FibonacciBackoffStrategy implements BackoffStrategy {
             fibNumber = fibonacciNumbers.get(MAX_NUM_OF_FIB_NUMBERS - 1);
         }
         return Duration.ofMillis(delayBetweenAttempts.toMillis() * fibNumber);
+    }
+
+    @Override
+    public void validateConfig(RetryConfig config) {
+        if (null == config.getDelayBetweenRetries()) {
+            throw new InvalidRetryConfigException("Retry config must specify the delay between retries!");
+        }
     }
 
     public List<Integer> getFibonacciNumbers() {

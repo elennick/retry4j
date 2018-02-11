@@ -43,6 +43,11 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
 
     @Override
     public CompletableFuture<Status<T>> execute(Callable<T> callable) {
+        return execute(callable, null);
+    }
+
+    @Override
+    public CompletableFuture<Status<T>> execute(Callable<T> callable, String callName) {
         CallExecutor<T> synchronousCallExecutor = new CallExecutor<>(config);
 
         synchronousCallExecutor.afterFailedTry(afterFailedTryListener);
@@ -55,7 +60,7 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
 
         executorService.submit(() -> {
             try {
-                Status<T> status = synchronousCallExecutor.execute(callable);
+                Status<T> status = synchronousCallExecutor.execute(callable, callName);
                 completableFuture.complete(status);
             } catch (Throwable t) {
                 completableFuture.completeExceptionally(t);

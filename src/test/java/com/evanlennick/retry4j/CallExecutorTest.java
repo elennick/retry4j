@@ -135,7 +135,7 @@ public class CallExecutorTest {
 
         assertThat(status.getResult()).isNotNull();
         assertThat(status.wasSuccessful());
-        assertThat(status.getCallName()).isNotEmpty();
+        assertThat(status.getCallName()).isNullOrEmpty();
         assertThat(status.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
         assertThat(status.getTotalTries()).isEqualTo(1);
     }
@@ -152,13 +152,13 @@ public class CallExecutorTest {
                 .build();
 
         try {
-            new CallExecutor(retryConfig).execute(callable);
+            new CallExecutor(retryConfig).execute(callable, "TestCall");
             fail("RetriesExhaustedException wasn't thrown!");
         } catch (RetriesExhaustedException e) {
             Status status = e.getStatus();
             assertThat(status.getResult()).isNull();
             assertThat(status.wasSuccessful()).isFalse();
-            assertThat(status.getCallName()).isNotEmpty();
+            assertThat(status.getCallName()).isEqualTo("TestCall");
             assertThat(status.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
             assertThat(status.getTotalTries()).isEqualTo(5);
             assertThat(e.getCause()).isExactlyInstanceOf(FileNotFoundException.class);

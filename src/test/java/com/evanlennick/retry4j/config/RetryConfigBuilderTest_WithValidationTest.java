@@ -51,7 +51,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
     }
 
     @Test
-    public void verifyNoDelayThrowsException() {
+    public void verifyNoDelayThrowsException_exponentialBackoff() {
         try {
             retryConfigBuilder
                     .withMaxNumberOfTries(1)
@@ -60,8 +60,58 @@ public class RetryConfigBuilderTest_WithValidationTest {
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_DELAY__ERROR_MSG);
+                    .isEqualTo("Retry config must specify the delay between retries!");
         }
+    }
+
+    @Test
+    public void verifyNoDelayThrowsException_fixedBackoff() {
+        try {
+            retryConfigBuilder
+                    .withMaxNumberOfTries(1)
+                    .withFixedBackoff()
+                    .build();
+            fail("Expected InvalidRetryConfigException but one wasn't thrown!");
+        } catch (InvalidRetryConfigException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("Retry config must specify the delay between retries!");
+        }
+    }
+
+    @Test
+    public void verifyNoDelayThrowsException_randomBackoff() {
+        try {
+            retryConfigBuilder
+                    .withMaxNumberOfTries(1)
+                    .withRandomBackoff()
+                    .build();
+            fail("Expected InvalidRetryConfigException but one wasn't thrown!");
+        } catch (InvalidRetryConfigException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("Retry config must specify the delay between retries!");
+        }
+    }
+
+    @Test
+    public void verifyNoDelayThrowsException_fibonacciBackoff() {
+        try {
+            retryConfigBuilder
+                    .withMaxNumberOfTries(1)
+                    .withRandomBackoff()
+                    .build();
+            fail("Expected InvalidRetryConfigException but one wasn't thrown!");
+        } catch (InvalidRetryConfigException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("Retry config must specify the delay between retries!");
+        }
+    }
+
+    @Test
+    public void verifyNoDelayDoesNotThrowException_noWaitBackoff() {
+        retryConfigBuilder
+                .withMaxNumberOfTries(1)
+                .withNoWaitBackoff()
+                .build();
     }
 
     @Test
