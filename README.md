@@ -19,6 +19,7 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
     * [Value Handling Config](#value-handling-config)
     * [Timing Config](#timing-config)
     * [Backoff Strategy Config](#backoff-strategy-config)
+    * [Custom Backoff Strategies](#custom-backoff-strategies)
     * [Simple Configs](#simple-configs)
     * [CallExecutor](#callexecutor)
     * [Call Status](#call-status)
@@ -267,7 +268,9 @@ RetryConfig config = new RetryConfigBuilder()
         .build();
 ```
 
-Custom backoff strategies can also be specified like so:
+### Custom Backoff Strategies
+
+Custom backoff strategies can be specified like so:
 
 ```java
 RetryConfig config = new RetryConfigBuilder()
@@ -275,7 +278,7 @@ RetryConfig config = new RetryConfigBuilder()
         .build();
 ```
 
-Custom backoff strategies can be created by implementing the **com.evanlennick.retry4j.backoff.BackoffStrategy** interface.
+...where `SomeCustomBackoffStrategy` is an object that implements the `com.evanlennick.retry4j.backoff.BackoffStrategy` interface. The only mandatory method to implement is `getDurationToWait()` which determines how long to wait between each try. Optionally, the `validateConfig()` method can also be implemented if your backoff strategy needs to verify that the configuration being used is valid. For examples of this in action, check out the default implementations [here](https://github.com/elennick/retry4j/tree/master/src/main/java/com/evanlennick/retry4j/backoff).
 
 ### Simple Configs
 
