@@ -280,7 +280,7 @@ RetryConfig config = new RetryConfigBuilder()
 
 ...where `SomeCustomBackoffStrategy` is an object that implements the `com.evanlennick.retry4j.backoff.BackoffStrategy` interface. The only mandatory method to implement is `getDurationToWait()` which determines how long to wait between each try. Optionally, the `validateConfig()` method can also be implemented if your backoff strategy needs to verify that the configuration being used is valid.
 
-For examples creating backoff strategies, check out the default implementations [here](https://github.com/elennick/retry4j/tree/master/src/main/java/com/evanlennick/retry4j/backoff).
+For examples creating backoff strategies, check out the provided implementations [here](https://github.com/elennick/retry4j/tree/master/src/main/java/com/evanlennick/retry4j/backoff).
 
 ### Simple Configs
 
