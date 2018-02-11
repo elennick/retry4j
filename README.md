@@ -7,8 +7,8 @@ Retry4j is a simple Java library to assist with retrying transient failure situa
 ## Table of Contents
 
 * [Basic Code Examples](#basic-code-examples)
-    * [Handling Results Normally](#handling-results-normally)
-    * [Handling Results With Listeners](#handling-results-with-listeners)
+    * [Handling Failures with Exceptions](#handling-failures-with-exceptions)
+    * [Handling All Results With Listeners](#handling-all-results-with-listeners)
 * [Dependencies](#dependencies)
     * [Maven](#maven)
     * [SBT](#sbt)
@@ -374,7 +374,7 @@ executor.beforeNextTry(s -> {
 });
 ```
 
-Two additional listeners are also offered to indicate when a series of retries has succeed or failed. They can be specified like so:
+Two additional listeners are also offered to indicate when a series of retries has succeeded or failed. They can be specified like so:
 
 ```java
 executor.onSuccess(s -> {
