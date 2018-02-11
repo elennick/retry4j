@@ -10,6 +10,8 @@ public interface RetryExecutor<T, S> {
 
     S execute(Callable<T> callable) throws RetriesExhaustedException, UnexpectedException;
 
+    S execute(Callable<T> callable, String callName) throws RetriesExhaustedException, UnexpectedException;
+
     void setConfig(RetryConfig config);
 
 }

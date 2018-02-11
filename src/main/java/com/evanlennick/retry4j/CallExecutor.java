@@ -49,7 +49,12 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
     }
 
     @Override
-    public Status<T> execute(Callable<T> callable) throws RetriesExhaustedException, UnexpectedException {
+    public Status<T> execute(Callable<T> callable) {
+        return execute(callable, null);
+    }
+
+    @Override
+    public Status<T> execute(Callable<T> callable, String callName) {
         logger.trace("Starting retry4j execution with callable {}", config, callable);
         logger.debug("Starting retry4j execution with executor state {}", this);
 
@@ -58,7 +63,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
         int maxTries = config.getMaxNumberOfTries();
         long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
-        this.status.setCallName(callable.toString());
+        this.status.setCallName(callName);
 
         AttemptStatus<T> attemptStatus = new AttemptStatus<>();
         attemptStatus.setSuccessful(false);

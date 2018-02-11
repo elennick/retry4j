@@ -1,5 +1,8 @@
 package com.evanlennick.retry4j.backoff;
 
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
+
 import java.time.Duration;
 
 /**
@@ -13,6 +16,13 @@ public class ExponentialBackoffStrategy implements BackoffStrategy {
         double result = exponentialMultiplier * delayBetweenAttempts.toMillis();
         long millisToWait = (long) Math.min(result, Long.MAX_VALUE);
         return Duration.ofMillis(millisToWait);
+    }
+
+    @Override
+    public void validateConfig(RetryConfig config) {
+        if (null == config.getDelayBetweenRetries()) {
+            throw new InvalidRetryConfigException("Retry config must specify the delay between retries!");
+        }
     }
 
 }

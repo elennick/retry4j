@@ -27,8 +27,6 @@ public class RetryConfigBuilder {
             = "Retry config must specify a backoff strategy!";
     public final static String MUST_SPECIFY_MAX_TRIES__ERROR_MSG
             = "Retry config must specify a maximum number of tries!";
-    public final static String MUST_SPECIFY_DELAY__ERROR_MSG
-            = "Retry config must specify the delay between retries!";
     public final static String CAN_ONLY_SPECIFY_ONE_BACKOFF_STRAT__ERROR_MSG
             = "Retry config cannot specify more than one backoff strategy!";
     public final static String CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG
@@ -104,7 +102,7 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfigBuilder withMaxNumberOfTries(int max) {
-        if(config.getMaxNumberOfTries() != null) {
+        if (config.getMaxNumberOfTries() != null) {
             throw new InvalidRetryConfigException(ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
         }
 
@@ -113,7 +111,7 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfigBuilder retryIndefinitely() {
-        if(config.getMaxNumberOfTries() != null) {
+        if (config.getMaxNumberOfTries() != null) {
             throw new InvalidRetryConfigException(ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
         }
 
@@ -192,9 +190,7 @@ public class RetryConfigBuilder {
             throw new InvalidRetryConfigException(MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
         }
 
-        if (null == config.getDelayBetweenRetries()) {
-            throw new InvalidRetryConfigException(MUST_SPECIFY_DELAY__ERROR_MSG);
-        }
+        config.getBackoffStrategy().validateConfig(config);
     }
 
     private void validateBackoffStrategyAddition() {
