@@ -473,3 +473,4 @@ There are a number of other retry libraries for Java and the JVM that might bett
 * Guava Retrying - https://github.com/rhuffman/re-retrying
 * Failsafe - https://github.com/jhalterman/failsafe
 * Spring Retry - https://github.com/spring-projects/spring-retry
+* resilience4j - https://github.com/resilience4j/resilience4j
