@@ -1,6 +1,7 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeMethod;
@@ -244,12 +245,21 @@ public class CallExecutorTest {
                 .build();
 
         try {
-            Status<Boolean> status = CallExecutor.<Boolean>builder()
+            CallExecutor.<Boolean>builder()
                     .withConfig(retryConfig)
                     .build()
                     .execute(callable);
         } catch (RetriesExhaustedException e) {
             fail("Retries should never be exhausted!");
         }
+    }
+
+    @Test(expectedExceptions = InvalidRetryConfigException.class)
+    public void verifyNoConfigThrowsException() throws Exception {
+        Callable<String> callable = () -> "blah";
+
+        CallExecutor.<String>builder()
+                .build()
+                .execute(callable);
     }
 }

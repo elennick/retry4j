@@ -1,6 +1,7 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.listener.RetryListener;
@@ -53,6 +54,12 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         this.onSuccessListener = onSuccess;
         this.onCompletionListener = onCompletion;
         this.status.setId(UUID.randomUUID().toString());
+
+        if(null == this.config) { //TODO write a test to verify this
+            throw new InvalidRetryConfigException("Cannot construct call executor with no configuration set!");
+        }
+
+        log.debug("Built new call executor with id {}", this.status.getId());
     }
 
     @Override

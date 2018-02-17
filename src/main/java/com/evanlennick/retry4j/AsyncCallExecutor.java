@@ -77,7 +77,7 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
             try {
                 Status<T> status = synchronousCallExecutor.execute(callable, callName);
                 completableFuture.complete(status);
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 completableFuture.completeExceptionally(t);
             }
         });
