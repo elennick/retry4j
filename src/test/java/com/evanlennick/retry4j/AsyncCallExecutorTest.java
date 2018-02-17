@@ -1,7 +1,6 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeClass;
@@ -23,14 +22,14 @@ public class AsyncCallExecutorTest {
 
     @BeforeClass
     public void setup() {
-        retryOnAnyExceptionConfig = new RetryConfigBuilder()
+        retryOnAnyExceptionConfig = new RetryConfig.RetryConfigBuilder()
                 .retryOnAnyException()
                 .withFixedBackoff()
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(Duration.ofMillis(0))
                 .build();
 
-        failOnAnyExceptionConfig = new RetryConfigBuilder()
+        failOnAnyExceptionConfig = new RetryConfig.RetryConfigBuilder()
                 .failOnAnyException()
                 .withFixedBackoff()
                 .withMaxNumberOfTries(1)

@@ -1,7 +1,6 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -16,12 +15,11 @@ import static org.testng.AssertJUnit.fail;
 
 public class CallExecutorTest_RetryOnValueTest {
 
-    private RetryConfigBuilder retryConfigBuilder;
+    private RetryConfig.RetryConfigBuilder<String> retryConfigBuilder;
 
     @BeforeMethod
     public void setup() {
-        boolean configValidationEnabled = true;
-        this.retryConfigBuilder = new RetryConfigBuilder(configValidationEnabled);
+        this.retryConfigBuilder = RetryConfig.builder();
     }
 
     @Test
@@ -140,7 +138,7 @@ public class CallExecutorTest_RetryOnValueTest {
 
     private void assertRetryOccurs(RetryConfig config, Callable<?> callable, int expectedNumberOfTries) {
         try {
-            Status status = CallExecutor.builder()
+            CallExecutor.builder()
                     .withConfig(config)
                     .build()
                     .execute((Callable<Object>) callable);

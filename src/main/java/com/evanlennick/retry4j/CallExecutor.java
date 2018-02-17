@@ -5,6 +5,7 @@ import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.listener.RetryListener;
 import lombok.Builder;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @param <T> The type that is returned by the Callable (eg: Boolean, Void, Object, etc)
  */
 @Slf4j
+@ToString
 public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
     private final RetryConfig config;
@@ -71,7 +73,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         this.status.setCallName(callName);
 
         AttemptStatus<T> attemptStatus = new AttemptStatus<>();
-        attemptStatus.setSuccessful(false);
+        attemptStatus.setWasSuccessful(false);
 
         int tries;
 
@@ -129,10 +131,10 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
             boolean shouldRetryOnThisResult
                     = config.shouldRetryOnValue() && callResult.equals(config.getValueToRetryOn());
             if (shouldRetryOnThisResult) {
-                attemptStatus.setSuccessful(false);
+                attemptStatus.setWasSuccessful(false);
             } else {
                 attemptStatus.setResult(callResult);
-                attemptStatus.setSuccessful(true);
+                attemptStatus.setWasSuccessful(true);
             }
         } catch (Exception e) {
             if (shouldThrowException(e)) {
@@ -140,7 +142,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
                 throw new UnexpectedException("Unexpected exception thrown during retry execution!", e);
             } else {
                 lastKnownExceptionThatCausedRetry = e;
-                attemptStatus.setSuccessful(false);
+                attemptStatus.setWasSuccessful(false);
             }
         }
 
@@ -167,7 +169,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
         status.setTotalTries(tries);
         status.setTotalElapsedDuration(Duration.of(elapsed, ChronoUnit.MILLIS));
-        status.setSuccessful(success);
+        status.setWasSuccessful(success);
         status.setLastExceptionThatCausedRetry(lastKnownExceptionThatCausedRetry);
     }
 
@@ -178,7 +180,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         log.trace("Retry4j executor sleeping for {} ms", millisToSleep);
         try {
             TimeUnit.MILLISECONDS.sleep(millisToSleep);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {} //TODO what are the ramifications of leaving this ignored?
     }
 
     private boolean shouldThrowException(Exception e) {
@@ -188,33 +190,19 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         }
 
         //config says to retry only on specific exceptions
-        for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnSpecificExceptions()) {
-            if (exceptionInSet.isAssignableFrom(e.getClass())) {
+        for (Object exceptionInSet : this.config.getRetryOnSpecificExceptions()) {
+            if (((Class) exceptionInSet).isAssignableFrom(e.getClass())) {
                 return false;
             }
         }
 
         //config says to retry on all except specific exceptions
-        for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnAnyExceptionExcluding()) {
-            if (!exceptionInSet.isAssignableFrom(e.getClass())) {
+        for (Object exceptionInSet : this.config.getRetryOnAnyExceptionExcluding()) {
+            if (!((Class) exceptionInSet).isAssignableFrom(e.getClass())) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("CallExecutor{");
-        sb.append("config=").append(config);
-        sb.append(", afterFailedTryListener=").append(afterFailedTryListener);
-        sb.append(", beforeNextTryListener=").append(beforeNextTryListener);
-        sb.append(", onFailureListener=").append(onFailureListener);
-        sb.append(", onSuccessListener=").append(onSuccessListener);
-        sb.append(", lastKnownExceptionThatCausedRetry=").append(lastKnownExceptionThatCausedRetry);
-        sb.append(", status=").append(status);
-        sb.append('}');
-        return sb.toString();
     }
 }

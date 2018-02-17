@@ -1,7 +1,6 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeMethod;
@@ -14,12 +13,11 @@ import java.util.concurrent.Callable;
 
 public class CallExecutorTest_RetryOnAnyExcludingTest {
 
-    private RetryConfigBuilder retryConfigBuilder;
+    private RetryConfig.RetryConfigBuilder retryConfigBuilder;
 
     @BeforeMethod
     public void setup() {
-        boolean configValidationEnabled = false;
-        this.retryConfigBuilder = new RetryConfigBuilder(configValidationEnabled);
+        this.retryConfigBuilder = RetryConfig.builder().withValidationDisabled();
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})

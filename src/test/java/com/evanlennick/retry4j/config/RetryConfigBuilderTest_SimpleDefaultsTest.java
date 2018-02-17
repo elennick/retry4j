@@ -11,12 +11,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RetryConfigBuilderTest_SimpleDefaultsTest {
 
-    private RetryConfigBuilder retryConfigBuilder;
+    private RetryConfig.RetryConfigBuilder retryConfigBuilder;
 
     @BeforeMethod
     public void setup() {
-        retryConfigBuilder = new RetryConfigBuilder();
-        retryConfigBuilder.setValidationEnabled(true);
+        retryConfigBuilder = RetryConfig.builder().withValidationDisabled();
     }
 
     @Test
