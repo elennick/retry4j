@@ -17,9 +17,9 @@ import java.util.concurrent.Executors;
  */
 public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<Status<T>>> {
 
-    private RetryConfig config;
+    private final RetryConfig config;
 
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
 
     private final RetryListener afterFailedTryListener;
 
@@ -47,10 +47,11 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
         this.onFailureListener = onFailure;
         this.onSuccessListener = onSuccess;
         this.onCompletionListener = onCompletion;
-        this.executorService = executorService;
 
-        if (this.executorService == null) {
+        if (executorService == null) {
             this.executorService = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS_IN_POOL);
+        } else {
+            this.executorService = executorService;
         }
     }
 
@@ -82,11 +83,6 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
         });
 
         return completableFuture;
-    }
-
-    @Override //TODO see about removing this
-    public void setConfig(RetryConfig config) {
-        this.config = config;
     }
 
     public ExecutorService getThreadExecutorService() {

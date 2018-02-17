@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
-    private RetryConfig config;
+    private final RetryConfig config;
 
     private final RetryListener afterFailedTryListener;
 
@@ -202,12 +202,6 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         }
 
         return true;
-    }
-
-    @Override //TODO see about removing this
-    public void setConfig(RetryConfig config) {
-        log.trace("Set config on retry4j executor {}", config);
-        this.config = config;
     }
 
     @Override
