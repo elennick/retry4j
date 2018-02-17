@@ -1,7 +1,7 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
+import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeMethod;
@@ -19,12 +19,11 @@ import static org.assertj.core.api.Assertions.within;
 
 public class CallExecutorTest {
 
-    private RetryConfigBuilder retryConfigBuilder;
+    private RetryConfig.RetryConfigBuilder retryConfigBuilder;
 
     @BeforeMethod
     public void setup() {
-        boolean configValidationEnabled = false;
-        this.retryConfigBuilder = new RetryConfigBuilder(configValidationEnabled);
+        this.retryConfigBuilder = RetryConfig.builder().withValidationDisabled();
     }
 
     @Test
@@ -37,8 +36,12 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        Status status = new CallExecutor(retryConfig).execute(callable);
-        assertThat(status.wasSuccessful());
+        Status status = CallExecutor.<Boolean>builder()
+                .withConfig(retryConfig)
+                .build()
+                .execute(callable);
+
+        assertThat(status.wasSuccessful()).isTrue();
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -54,7 +57,10 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(retryConfig)
+                .build()
+                .execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -70,7 +76,10 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(retryConfig)
+                .build()
+                .execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -86,7 +95,10 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(retryConfig)
+                .build()
+                .execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -102,7 +114,10 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(retryConfig)
+                .build()
+                .execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -118,7 +133,10 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(retryConfig)
+                .build()
+                .execute(callable);
     }
 
     @Test
@@ -131,10 +149,13 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        Status status = new CallExecutor(retryConfig).execute(callable);
+        Status<Boolean> status = CallExecutor.<Boolean>builder()
+                .withConfig(retryConfig)
+                .build()
+                .execute(callable);
 
         assertThat(status.getResult()).isNotNull();
-        assertThat(status.wasSuccessful());
+        assertThat(status.wasSuccessful()).isTrue();
         assertThat(status.getCallName()).isNullOrEmpty();
         assertThat(status.getTotalElapsedDuration().toMillis()).isCloseTo(0, within(25L));
         assertThat(status.getTotalTries()).isEqualTo(1);
@@ -152,7 +173,10 @@ public class CallExecutorTest {
                 .build();
 
         try {
-            new CallExecutor(retryConfig).execute(callable, "TestCall");
+            Status<Boolean> status = CallExecutor.<Boolean>builder()
+                    .withConfig(retryConfig)
+                    .build()
+                    .execute(callable, "TestCall");
             fail("RetriesExhaustedException wasn't thrown!");
         } catch (RetriesExhaustedException e) {
             Status status = e.getStatus();
@@ -174,7 +198,10 @@ public class CallExecutorTest {
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .build();
 
-        Status status = new CallExecutor(retryConfig).execute(callable);
+        Status<String> status = CallExecutor.<String>builder()
+                .withConfig(retryConfig)
+                .build()
+                .execute(callable, "TestCall");
 
         assertThat(status.getResult()).isEqualTo("test");
     }
@@ -189,7 +216,10 @@ public class CallExecutorTest {
                 .build();
 
         try {
-            new CallExecutor(retryConfig).execute(callable);
+            Status<String> status = CallExecutor.<String>builder()
+                    .withConfig(retryConfig)
+                    .build()
+                    .execute(callable);
         } catch (RetriesExhaustedException e) {
             Status status = e.getStatus();
             assertThat(status.getResult()).isNull();
@@ -215,10 +245,21 @@ public class CallExecutorTest {
                 .build();
 
         try {
-            CallExecutor executor = new CallExecutor(retryConfig);
-            executor.execute(callable);
+            CallExecutor.<Boolean>builder()
+                    .withConfig(retryConfig)
+                    .build()
+                    .execute(callable);
         } catch (RetriesExhaustedException e) {
             fail("Retries should never be exhausted!");
         }
+    }
+
+    @Test(expectedExceptions = InvalidRetryConfigException.class)
+    public void verifyNoConfigThrowsException() throws Exception {
+        Callable<String> callable = () -> "blah";
+
+        CallExecutor.<String>builder()
+                .build()
+                .execute(callable);
     }
 }

@@ -1,7 +1,6 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import org.testng.annotations.BeforeClass;
@@ -23,14 +22,14 @@ public class AsyncCallExecutorTest {
 
     @BeforeClass
     public void setup() {
-        retryOnAnyExceptionConfig = new RetryConfigBuilder()
+        retryOnAnyExceptionConfig = new RetryConfig.RetryConfigBuilder()
                 .retryOnAnyException()
                 .withFixedBackoff()
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(Duration.ofMillis(0))
                 .build();
 
-        failOnAnyExceptionConfig = new RetryConfigBuilder()
+        failOnAnyExceptionConfig = new RetryConfig.RetryConfigBuilder()
                 .failOnAnyException()
                 .withFixedBackoff()
                 .withMaxNumberOfTries(1)
@@ -42,7 +41,9 @@ public class AsyncCallExecutorTest {
     public void verifyMultipleCalls() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
+        AsyncCallExecutor<Boolean> executor = AsyncCallExecutor.<Boolean>builder()
+                .withConfig(retryOnAnyExceptionConfig)
+                .build();
 
         CompletableFuture<Status<Boolean>> future1 = executor.execute(callable);
         CompletableFuture<Status<Boolean>> future2 = executor.execute(callable);
@@ -61,7 +62,9 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_success() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
+        AsyncCallExecutor<Boolean> executor = AsyncCallExecutor.<Boolean>builder()
+                .withConfig(retryOnAnyExceptionConfig)
+                .build();
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -74,7 +77,9 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_failDueToTooManyRetries() throws Exception {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
+        AsyncCallExecutor<Boolean> executor = AsyncCallExecutor.<Boolean>builder()
+                .withConfig(retryOnAnyExceptionConfig)
+                .build();
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -87,7 +92,9 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_failDueToUnexpectedException() throws Exception {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(failOnAnyExceptionConfig);
+        AsyncCallExecutor<Boolean> executor = AsyncCallExecutor.<Boolean>builder()
+                .withConfig(failOnAnyExceptionConfig)
+                .build();
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 

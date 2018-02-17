@@ -2,6 +2,7 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.listener.RetryListener;
+import lombok.Builder;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -16,29 +17,42 @@ import java.util.concurrent.Executors;
  */
 public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<Status<T>>> {
 
-    private RetryConfig config;
+    private final RetryConfig config;
 
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
 
-    private RetryListener afterFailedTryListener;
+    private final RetryListener afterFailedTryListener;
 
-    private RetryListener beforeNextTryListener;
+    private final RetryListener beforeNextTryListener;
 
-    private RetryListener onFailureListener;
+    private final RetryListener onFailureListener;
 
-    private RetryListener onSuccessListener;
+    private final RetryListener onSuccessListener;
 
-    private RetryListener onCompletionListener;
+    private final RetryListener onCompletionListener;
 
     private static final int DEFAULT_NUMBER_OF_THREADS_IN_POOL = 5;
 
-    public AsyncCallExecutor(RetryConfig config) {
-        this(config, Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS_IN_POOL));
-    }
+    @Builder
+    public AsyncCallExecutor(RetryConfig withConfig,
+                             RetryListener afterFailedTry,
+                             RetryListener beforeNextTry,
+                             RetryListener onFailure,
+                             RetryListener onSuccess,
+                             RetryListener onCompletion,
+                             ExecutorService executorService) {
+        this.config = withConfig;
+        this.afterFailedTryListener = afterFailedTry;
+        this.beforeNextTryListener = beforeNextTry;
+        this.onFailureListener = onFailure;
+        this.onSuccessListener = onSuccess;
+        this.onCompletionListener = onCompletion;
 
-    public AsyncCallExecutor(RetryConfig config, ExecutorService executorService) {
-        this.config = config;
-        this.executorService = executorService;
+        if (executorService == null) {
+            this.executorService = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS_IN_POOL);
+        } else {
+            this.executorService = executorService;
+        }
     }
 
     @Override
@@ -48,13 +62,14 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
 
     @Override
     public CompletableFuture<Status<T>> execute(Callable<T> callable, String callName) {
-        CallExecutor<T> synchronousCallExecutor = new CallExecutor<>(config);
-
-        synchronousCallExecutor.afterFailedTry(afterFailedTryListener);
-        synchronousCallExecutor.beforeNextTry(beforeNextTryListener);
-        synchronousCallExecutor.onSuccess(onSuccessListener);
-        synchronousCallExecutor.onFailure(onFailureListener);
-        synchronousCallExecutor.onCompletion(onCompletionListener);
+        CallExecutor<T> synchronousCallExecutor = CallExecutor.<T>builder()
+                .withConfig(config)
+                .afterFailedTry(afterFailedTryListener)
+                .beforeNextTry(beforeNextTryListener)
+                .onSuccess(onSuccessListener)
+                .onFailure(onFailureListener)
+                .onCompletion(onCompletionListener)
+                .build();
 
         CompletableFuture<Status<T>> completableFuture = new CompletableFuture<>();
 
@@ -62,42 +77,12 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
             try {
                 Status<T> status = synchronousCallExecutor.execute(callable, callName);
                 completableFuture.complete(status);
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 completableFuture.completeExceptionally(t);
             }
         });
 
         return completableFuture;
-    }
-
-    public AsyncCallExecutor<T> afterFailedTry(RetryListener listener) {
-        this.afterFailedTryListener = listener;
-        return this;
-    }
-
-    public AsyncCallExecutor<T> beforeNextTry(RetryListener listener) {
-        this.beforeNextTryListener = listener;
-        return this;
-    }
-
-    public AsyncCallExecutor<T> onCompletion(RetryListener listener) {
-        this.onCompletionListener = listener;
-        return this;
-    }
-
-    public AsyncCallExecutor<T> onSuccess(RetryListener listener) {
-        this.onSuccessListener = listener;
-        return this;
-    }
-
-    public AsyncCallExecutor<T> onFailure(RetryListener listener) {
-        this.onFailureListener = listener;
-        return this;
-    }
-
-    @Override
-    public void setConfig(RetryConfig config) {
-        this.config = config;
     }
 
     public ExecutorService getThreadExecutorService() {

@@ -12,12 +12,11 @@ import static org.testng.AssertJUnit.fail;
 
 public class RetryConfigBuilderTest_WithValidationTest {
 
-    private RetryConfigBuilder retryConfigBuilder;
+    private RetryConfig.RetryConfigBuilder retryConfigBuilder;
 
     @BeforeMethod
     public void setup() {
-        boolean isValidationEnabled = true;
-        retryConfigBuilder = new RetryConfigBuilder(isValidationEnabled);
+        retryConfigBuilder = RetryConfig.builder();
     }
 
     @Test
@@ -30,7 +29,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_BACKOFF__ERROR_MSG);
+                    .isEqualTo(RetryConfig.RetryConfigBuilder.MUST_SPECIFY_BACKOFF__ERROR_MSG);
         }
     }
 
@@ -46,7 +45,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_BACKOFF_STRAT__ERROR_MSG);
+                    .isEqualTo(RetryConfig.RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_BACKOFF_STRAT__ERROR_MSG);
         }
     }
 
@@ -124,7 +123,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
+                    .isEqualTo(RetryConfig.RetryConfigBuilder.MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
         }
     }
 
@@ -141,7 +140,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
+                    .isEqualTo(RetryConfig.RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
         }
     }
 
@@ -158,7 +157,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
+                    .isEqualTo(RetryConfig.RetryConfigBuilder.CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
         }
     }
 
@@ -174,7 +173,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
+                    .isEqualTo(RetryConfig.RetryConfigBuilder.ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
         }
     }
 
@@ -190,7 +189,7 @@ public class RetryConfigBuilderTest_WithValidationTest {
             fail("Expected InvalidRetryConfigException but one wasn't thrown!");
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
-                    .isEqualTo(RetryConfigBuilder.ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
+                    .isEqualTo(RetryConfig.RetryConfigBuilder.ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
         }
     }
 }

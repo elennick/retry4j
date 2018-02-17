@@ -11,59 +11,74 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RetryConfigBuilderTest_SimpleDefaultsTest {
 
-    private RetryConfigBuilder retryConfigBuilder;
+    private RetryConfig.RetryConfigBuilder retryConfigBuilder;
 
     @BeforeMethod
     public void setup() {
-        retryConfigBuilder = new RetryConfigBuilder();
-        retryConfigBuilder.setValidationEnabled(true);
+        retryConfigBuilder = RetryConfig.builder().withValidationDisabled();
     }
 
     @Test
     public void verifySimpleExponentialProfile() {
         Callable<Boolean> callable = () -> true;
 
-        RetryConfig retryConfig = retryConfigBuilder
-            .exponentialBackoff5Tries5Sec()
-            .build();
+        RetryConfig config = retryConfigBuilder
+                .exponentialBackoff5Tries5Sec()
+                .build();
 
-        Status results = new CallExecutor(retryConfig).execute(callable);
-        assertThat(results.wasSuccessful());
+        Status results = CallExecutor.<Boolean>builder()
+                .withConfig(config)
+                .build()
+                .execute(callable);
+
+        assertThat(results.wasSuccessful()).isTrue();
     }
 
     @Test
     public void verifySimpleFibonacciProfile() {
         Callable<Boolean> callable = () -> true;
 
-        RetryConfig retryConfig = retryConfigBuilder
-            .fiboBackoff7Tries5Sec()
-            .build();
+        RetryConfig config = retryConfigBuilder
+                .fiboBackoff7Tries5Sec()
+                .build();
 
-        Status results = new CallExecutor(retryConfig).execute(callable);
-        assertThat(results.wasSuccessful());
+        Status results = CallExecutor.<Boolean>builder()
+                .withConfig(config)
+                .build()
+                .execute(callable);
+
+        assertThat(results.wasSuccessful()).isTrue();
     }
 
     @Test
     public void verifySimpleRandomExponentialProfile() {
         Callable<Boolean> callable = () -> true;
 
-        RetryConfig retryConfig = retryConfigBuilder
-            .randomExpBackoff10Tries60Sec()
-            .build();
+        RetryConfig config = retryConfigBuilder
+                .randomExpBackoff10Tries60Sec()
+                .build();
 
-        Status results = new CallExecutor(retryConfig).execute(callable);
-        assertThat(results.wasSuccessful());
+        Status results = CallExecutor.<Boolean>builder()
+                .withConfig(config)
+                .build()
+                .execute(callable);
+
+        assertThat(results.wasSuccessful()).isTrue();
     }
 
     @Test
     public void verifySimpleFixedProfile() {
         Callable<Boolean> callable = () -> true;
 
-        RetryConfig retryConfig = retryConfigBuilder
-            .fixedBackoff5Tries10Sec()
-            .build();
+        RetryConfig config = retryConfigBuilder
+                .fixedBackoff5Tries10Sec()
+                .build();
 
-        Status results = new CallExecutor(retryConfig).execute(callable);
-        assertThat(results.wasSuccessful());
+        Status results = CallExecutor.<Boolean>builder()
+                .withConfig(config)
+                .build()
+                .execute(callable);
+
+        assertThat(results.wasSuccessful()).isTrue();
     }
 }
