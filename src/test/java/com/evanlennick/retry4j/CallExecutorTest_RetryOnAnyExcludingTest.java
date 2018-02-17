@@ -28,14 +28,17 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
             throw new UnsupportedOperationException();
         };
 
-        RetryConfig retryConfig = retryConfigBuilder
+        RetryConfig config = retryConfigBuilder
                 .retryOnAnyExceptionExcluding(UnsupportedOperationException.class)
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(config)
+                .build()
+                .execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -44,14 +47,17 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
             throw new IllegalArgumentException();
         };
 
-        RetryConfig retryConfig = retryConfigBuilder
+        RetryConfig config = retryConfigBuilder
                 .retryOnAnyExceptionExcluding(UnsupportedOperationException.class)
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(config)
+                .build()
+                .execute(callable);
     }
 
     @Test(expectedExceptions = UnexpectedException.class)
@@ -60,14 +66,17 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
             throw new FileNotFoundException();
         };
 
-        RetryConfig retryConfig = retryConfigBuilder
+        RetryConfig config = retryConfigBuilder
                 .retryOnAnyExceptionExcluding(IOException.class)
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(config)
+                .build()
+                .execute(callable);
     }
 
     @Test(expectedExceptions = RetriesExhaustedException.class)
@@ -76,14 +85,17 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
             throw new IOException();
         };
 
-        RetryConfig retryConfig = retryConfigBuilder
+        RetryConfig config = retryConfigBuilder
                 .retryOnAnyExceptionExcluding(FileNotFoundException.class)
                 .withMaxNumberOfTries(1)
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        CallExecutor.<Boolean>builder()
+                .withConfig(config)
+                .build()
+                .execute(callable);
     }
 
 }

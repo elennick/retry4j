@@ -1,12 +1,11 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.listener.RetryListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -19,32 +18,38 @@ import java.util.concurrent.TimeUnit;
  *
  * @param <T> The type that is returned by the Callable (eg: Boolean, Void, Object, etc)
  */
+@Slf4j
 public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
-
-    private Logger logger = LoggerFactory.getLogger(CallExecutor.class);
 
     private RetryConfig config;
 
-    private RetryListener afterFailedTryListener;
+    private final RetryListener afterFailedTryListener;
 
-    private RetryListener beforeNextTryListener;
+    private final RetryListener beforeNextTryListener;
 
-    private RetryListener onFailureListener;
+    private final RetryListener onFailureListener;
 
-    private RetryListener onSuccessListener;
+    private final RetryListener onSuccessListener;
 
-    private RetryListener onCompletionListener;
+    private final RetryListener onCompletionListener;
 
     private Exception lastKnownExceptionThatCausedRetry;
 
     private Status<T> status = new Status<>();
 
-    public CallExecutor() {
-        this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
-    }
-
-    public CallExecutor(RetryConfig config) {
-        this.config = config;
+    @Builder
+    private CallExecutor(RetryConfig withConfig,
+                         RetryListener afterFailedTry,
+                         RetryListener beforeNextTry,
+                         RetryListener onFailure,
+                         RetryListener onSuccess,
+                         RetryListener onCompletion) {
+        this.config = withConfig;
+        this.afterFailedTryListener = afterFailedTry;
+        this.beforeNextTryListener = beforeNextTry;
+        this.onFailureListener = onFailure;
+        this.onSuccessListener = onSuccess;
+        this.onCompletionListener = onCompletion;
         this.status.setId(UUID.randomUUID().toString());
     }
 
@@ -55,8 +60,8 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
     @Override
     public Status<T> execute(Callable<T> callable, String callName) {
-        logger.trace("Starting retry4j execution with callable {}", config, callable);
-        logger.debug("Starting retry4j execution with executor state {}", this);
+        log.trace("Starting retry4j execution with callable {}", config, callable);
+        log.debug("Starting retry4j execution with executor state {}", this);
 
         long start = System.currentTimeMillis();
         status.setStartTime(start);
@@ -72,14 +77,14 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
         try {
             for (tries = 0; tries < maxTries && !attemptStatus.wasSuccessful(); tries++) {
-                logger.trace("Retry4j executing callable {}", callable);
+                log.trace("Retry4j executing callable {}", callable);
                 attemptStatus = tryCall(callable);
 
                 if (!attemptStatus.wasSuccessful()) {
                     handleRetry(millisBetweenTries, tries + 1);
                 }
 
-                logger.trace("Retry4j retrying for time number {}", tries);
+                log.trace("Retry4j retrying for time number {}", tries);
             }
 
             refreshRetryStatus(attemptStatus.wasSuccessful(), tries);
@@ -87,8 +92,8 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
             postExecutionCleanup(callable, maxTries, attemptStatus);
 
-            logger.debug("Finished retry4j execution in {} ms", status.getTotalElapsedDuration().toMillis());
-            logger.trace("Finished retry4j execution with executor state {}", this);
+            log.debug("Finished retry4j execution in {} ms", status.getTotalElapsedDuration().toMillis());
+            log.trace("Finished retry4j execution with executor state {}", this);
         } finally {
             if (null != onCompletionListener) {
                 onCompletionListener.onEvent(status);
@@ -104,7 +109,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
             if (null != onFailureListener) {
                 onFailureListener.onEvent(status);
             } else {
-                logger.trace("Throwing retries exhausted exception");
+                log.trace("Throwing retries exhausted exception");
                 throw new RetriesExhaustedException(failureMsg, lastKnownExceptionThatCausedRetry, status);
             }
         } else {
@@ -131,7 +136,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
             }
         } catch (Exception e) {
             if (shouldThrowException(e)) {
-                logger.trace("Throwing expected exception {}", e);
+                log.trace("Throwing expected exception {}", e);
                 throw new UnexpectedException("Unexpected exception thrown during retry execution!", e);
             } else {
                 lastKnownExceptionThatCausedRetry = e;
@@ -170,7 +175,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         Duration duration = Duration.of(millis, ChronoUnit.MILLIS);
         long millisToSleep = config.getBackoffStrategy().getDurationToWait(tries, duration).toMillis();
 
-        logger.trace("Retry4j executor sleeping for {} ms", millisToSleep);
+        log.trace("Retry4j executor sleeping for {} ms", millisToSleep);
         try {
             TimeUnit.MILLISECONDS.sleep(millisToSleep);
         } catch (InterruptedException ignored) {}
@@ -199,35 +204,10 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         return true;
     }
 
-    @Override
+    @Override //TODO see about removing this
     public void setConfig(RetryConfig config) {
-        logger.trace("Set config on retry4j executor {}", config);
+        log.trace("Set config on retry4j executor {}", config);
         this.config = config;
-    }
-
-    public CallExecutor<T> afterFailedTry(RetryListener listener) {
-        this.afterFailedTryListener = listener;
-        return this;
-    }
-
-    public CallExecutor<T> beforeNextTry(RetryListener listener) {
-        this.beforeNextTryListener = listener;
-        return this;
-    }
-
-    public CallExecutor<T> onCompletion(RetryListener listener) {
-        this.onCompletionListener = listener;
-        return this;
-    }
-
-    public CallExecutor<T> onSuccess(RetryListener listener) {
-        this.onSuccessListener = listener;
-        return this;
-    }
-
-    public CallExecutor<T> onFailure(RetryListener listener) {
-        this.onFailureListener = listener;
-        return this;
     }
 
     @Override

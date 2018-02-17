@@ -140,7 +140,10 @@ public class CallExecutorTest_RetryOnValueTest {
 
     private void assertRetryOccurs(RetryConfig config, Callable<?> callable, int expectedNumberOfTries) {
         try {
-            new CallExecutor(config).execute(callable);
+            Status status = CallExecutor.builder()
+                    .withConfig(config)
+                    .build()
+                    .execute((Callable<Object>) callable);
             fail("Expected RetriesExhaustedException but one wasn't thrown!");
         } catch (RetriesExhaustedException e) {
             assertThat(e.getStatus().wasSuccessful()).isFalse();
@@ -153,7 +156,10 @@ public class CallExecutorTest_RetryOnValueTest {
     }
 
     private void assertRetryDoesNotOccur(RetryConfig config, Callable<?> callable) {
-        Status status = new CallExecutor(config).execute(callable);
+        Status status = CallExecutor.builder()
+                .withConfig(config)
+                .build()
+                .execute((Callable<Object>) callable);
         assertThat(status.wasSuccessful()).isTrue();
         assertThat(status.getTotalTries()).isEqualTo(1);
     }
