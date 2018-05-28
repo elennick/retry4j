@@ -17,10 +17,10 @@ import java.util.Set;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
-public class RetryConfigBuilder {
+public class RetryConfigBuilder<T> {
 
     private boolean exceptionStrategySpecified;
-    private RetryConfig config;
+    private RetryConfig<T> config;
     private boolean validationEnabled;
 
     public final static String MUST_SPECIFY_BACKOFF__ERROR_MSG
@@ -35,7 +35,7 @@ public class RetryConfigBuilder {
             = "Number of tries can only be specified once!";
 
     public RetryConfigBuilder() {
-        this.config = new RetryConfig();
+        this.config = new RetryConfig<>();
         this.exceptionStrategySpecified = false;
         this.validationEnabled = true;
     }
@@ -53,7 +53,7 @@ public class RetryConfigBuilder {
         this.validationEnabled = validationEnabled;
     }
 
-    public RetryConfigBuilder retryOnAnyException() {
+    public RetryConfigBuilder<T> retryOnAnyException() {
         validateExceptionStrategyAddition();
 
         config.setRetryOnAnyException(true);
@@ -62,7 +62,7 @@ public class RetryConfigBuilder {
         return this;
     }
 
-    public RetryConfigBuilder failOnAnyException() {
+    public RetryConfigBuilder<T> failOnAnyException() {
         validateExceptionStrategyAddition();
 
         config.setRetryOnAnyException(false);
@@ -73,7 +73,7 @@ public class RetryConfigBuilder {
     }
 
     @SafeVarargs
-    public final RetryConfigBuilder retryOnSpecificExceptions(Class<? extends Exception>... exceptions) {
+    public final RetryConfigBuilder<T> retryOnSpecificExceptions(Class<? extends Exception>... exceptions) {
         validateExceptionStrategyAddition();
 
         Set<Class<? extends Exception>> setOfExceptions = new HashSet<>(Arrays.asList(exceptions));
@@ -84,7 +84,7 @@ public class RetryConfigBuilder {
     }
 
     @SafeVarargs
-    public final RetryConfigBuilder retryOnAnyExceptionExcluding(Class<? extends Exception>... exceptions) {
+    public final RetryConfigBuilder<T> retryOnAnyExceptionExcluding(Class<? extends Exception>... exceptions) {
         validateExceptionStrategyAddition();
 
         Set<Class<? extends Exception>> setOfExceptions = new HashSet<>(Arrays.asList(exceptions));
@@ -94,14 +94,14 @@ public class RetryConfigBuilder {
         return this;
     }
 
-    public final RetryConfigBuilder retryOnReturnValue(Object value) {
+    public final RetryConfigBuilder<T> retryOnReturnValue(T value) {
         config.setRetryOnValue(true);
         config.setValueToRetryOn(value);
 
         return this;
     }
 
-    public RetryConfigBuilder withMaxNumberOfTries(int max) {
+    public RetryConfigBuilder<T> withMaxNumberOfTries(int max) {
         if (config.getMaxNumberOfTries() != null) {
             throw new InvalidRetryConfigException(ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
         }
@@ -110,7 +110,7 @@ public class RetryConfigBuilder {
         return this;
     }
 
-    public RetryConfigBuilder retryIndefinitely() {
+    public RetryConfigBuilder<T> retryIndefinitely() {
         if (config.getMaxNumberOfTries() != null) {
             throw new InvalidRetryConfigException(ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
         }
@@ -119,59 +119,59 @@ public class RetryConfigBuilder {
         return this;
     }
 
-    public RetryConfigBuilder withDelayBetweenTries(Duration duration) {
+    public RetryConfigBuilder<T> withDelayBetweenTries(Duration duration) {
         config.setDelayBetweenRetries(duration);
         return this;
     }
 
-    public RetryConfigBuilder withDelayBetweenTries(long amount, ChronoUnit time) {
+    public RetryConfigBuilder<T> withDelayBetweenTries(long amount, ChronoUnit time) {
         config.setDelayBetweenRetries(Duration.of(amount, time));
         return this;
     }
 
-    public RetryConfigBuilder withBackoffStrategy(BackoffStrategy backoffStrategy) {
+    public RetryConfigBuilder<T> withBackoffStrategy(BackoffStrategy backoffStrategy) {
         validateBackoffStrategyAddition();
         config.setBackoffStrategy(backoffStrategy);
         return this;
     }
 
-    public RetryConfigBuilder withFixedBackoff() {
+    public RetryConfigBuilder<T> withFixedBackoff() {
         validateBackoffStrategyAddition();
         config.setBackoffStrategy(new FixedBackoffStrategy());
         return this;
     }
 
-    public RetryConfigBuilder withExponentialBackoff() {
+    public RetryConfigBuilder<T> withExponentialBackoff() {
         validateBackoffStrategyAddition();
         config.setBackoffStrategy(new ExponentialBackoffStrategy());
         return this;
     }
 
-    public RetryConfigBuilder withFibonacciBackoff() {
+    public RetryConfigBuilder<T> withFibonacciBackoff() {
         validateBackoffStrategyAddition();
         config.setBackoffStrategy(new FibonacciBackoffStrategy());
         return this;
     }
 
-    public RetryConfigBuilder withNoWaitBackoff() {
+    public RetryConfigBuilder<T> withNoWaitBackoff() {
         validateBackoffStrategyAddition();
         config.setBackoffStrategy(new NoWaitBackoffStrategy());
         return this;
     }
 
-    public RetryConfigBuilder withRandomBackoff() {
+    public RetryConfigBuilder<T> withRandomBackoff() {
         validateBackoffStrategyAddition();
         config.setBackoffStrategy(new RandomBackoffStrategy());
         return this;
     }
 
-    public RetryConfigBuilder withRandomExponentialBackoff() {
+    public RetryConfigBuilder<T> withRandomExponentialBackoff() {
         validateBackoffStrategyAddition();
         config.setBackoffStrategy(new RandomExponentialBackoffStrategy());
         return this;
     }
 
-    public RetryConfig build() {
+    public RetryConfig<T> build() {
         validateConfig();
 
         return config;
@@ -213,32 +213,32 @@ public class RetryConfigBuilder {
         }
     }
 
-    public RetryConfigBuilder fixedBackoff5Tries10Sec() {
-        return new RetryConfigBuilder()
+    public RetryConfigBuilder<T> fixedBackoff5Tries10Sec() {
+        return new RetryConfigBuilder<T>()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(10, SECONDS)
                 .withFixedBackoff();
     }
 
-    public RetryConfigBuilder exponentialBackoff5Tries5Sec() {
-        return new RetryConfigBuilder()
+    public RetryConfigBuilder<T> exponentialBackoff5Tries5Sec() {
+        return new RetryConfigBuilder<T>()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(5, SECONDS)
                 .withExponentialBackoff();
     }
 
-    public RetryConfigBuilder fiboBackoff7Tries5Sec() {
-        return new RetryConfigBuilder()
+    public RetryConfigBuilder<T> fiboBackoff7Tries5Sec() {
+        return new RetryConfigBuilder<T>()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(7)
                 .withDelayBetweenTries(5, SECONDS)
                 .withFibonacciBackoff();
     }
 
-    public RetryConfigBuilder randomExpBackoff10Tries60Sec() {
-        return new RetryConfigBuilder()
+    public RetryConfigBuilder<T> randomExpBackoff10Tries60Sec() {
+        return new RetryConfigBuilder<T>()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(10)
                 .withDelayBetweenTries(60, SECONDS)

@@ -16,19 +16,19 @@ import static org.testng.AssertJUnit.fail;
 
 public class CallExecutorTest_RetryOnValueTest {
 
-    private RetryConfigBuilder retryConfigBuilder;
+    private RetryConfigBuilder<String> retryConfigBuilder;
 
     @BeforeMethod
     public void setup() {
         boolean configValidationEnabled = true;
-        this.retryConfigBuilder = new RetryConfigBuilder(configValidationEnabled);
+        this.retryConfigBuilder = new RetryConfigBuilder<>(configValidationEnabled);
     }
 
     @Test
     public void verifyRetryOnStringValue_shouldRetry() {
         Callable<String> callable = () -> "should retry!";
 
-        RetryConfig config = retryConfigBuilder
+        RetryConfig<String> config = retryConfigBuilder
                 .retryOnAnyException()
                 .retryOnReturnValue("should retry!")
                 .withDelayBetweenTries(Duration.ZERO)
@@ -56,11 +56,11 @@ public class CallExecutorTest_RetryOnValueTest {
 
     @Test
     public void verifyRetryOnBooleanValue_shouldRetry() {
-        Callable<Boolean> callable = () -> false;
+        Callable<String> callable = () -> "bad";
 
-        RetryConfig config = retryConfigBuilder
+        RetryConfig<String> config = retryConfigBuilder
                 .retryOnAnyException()
-                .retryOnReturnValue(false)
+                .retryOnReturnValue("bad")
                 .withDelayBetweenTries(Duration.ZERO)
                 .withMaxNumberOfTries(3)
                 .withFixedBackoff()
@@ -71,11 +71,11 @@ public class CallExecutorTest_RetryOnValueTest {
 
     @Test
     public void verifyRetryOnBooleanValue_shouldNotRetry() {
-        Callable<Boolean> callable = () -> true;
+        Callable<String> callable = () -> "good";
 
-        RetryConfig config = retryConfigBuilder
+        RetryConfig<String> config = retryConfigBuilder
                 .retryOnAnyException()
-                .retryOnReturnValue(false)
+                .retryOnReturnValue("bad")
                 .withDelayBetweenTries(Duration.ZERO)
                 .withMaxNumberOfTries(3)
                 .withFixedBackoff()
@@ -89,7 +89,7 @@ public class CallExecutorTest_RetryOnValueTest {
         Callable<RetryOnValueTestObject> callable
                 = () -> new RetryOnValueTestObject("should retry on this value!");
 
-        RetryConfig config = retryConfigBuilder
+        RetryConfig<RetryOnValueTestObject> config = new RetryConfigBuilder<RetryOnValueTestObject>()
                 .retryOnAnyException()
                 .retryOnReturnValue(new RetryOnValueTestObject("should retry on this value!"))
                 .withDelayBetweenTries(Duration.ZERO)
@@ -105,7 +105,7 @@ public class CallExecutorTest_RetryOnValueTest {
         Callable<RetryOnValueTestObject> callable
                 = () -> new RetryOnValueTestObject("should NOT retry on this value!");
 
-        RetryConfig config = retryConfigBuilder
+        RetryConfig<RetryOnValueTestObject> config = new RetryConfigBuilder<RetryOnValueTestObject>()
                 .retryOnAnyException()
                 .retryOnReturnValue(new RetryOnValueTestObject("should retry on this value!"))
                 .withDelayBetweenTries(Duration.ZERO)
@@ -127,7 +127,7 @@ public class CallExecutorTest_RetryOnValueTest {
             }
         };
 
-        RetryConfig config = retryConfigBuilder
+        RetryConfig config = new RetryConfigBuilder<Boolean>()
                 .retryOnSpecificExceptions(FileNotFoundException.class)
                 .retryOnReturnValue(false)
                 .withDelayBetweenTries(Duration.ZERO)
