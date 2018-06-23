@@ -71,7 +71,7 @@ public class AsyncCallExecutorTest {
     }
 
     @Test
-    public void verifyOneCall_failDueToTooManyRetries() throws Exception {
+    public void verifyOneCall_failDueToTooManyRetries() {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
         AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
@@ -84,7 +84,7 @@ public class AsyncCallExecutorTest {
     }
 
     @Test
-    public void verifyOneCall_failDueToUnexpectedException() throws Exception {
+    public void verifyOneCall_failDueToUnexpectedException() {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
         AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(failOnAnyExceptionConfig);

@@ -23,7 +23,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
     private Logger logger = LoggerFactory.getLogger(CallExecutor.class);
 
-    private RetryConfig config;
+    private RetryConfig<T> config;
 
     private RetryListener afterFailedTryListener;
 
@@ -43,7 +43,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
     }
 
-    public CallExecutor(RetryConfig config) {
+    public CallExecutor(RetryConfig<T> config) {
         this.config = config;
         this.status.setId(UUID.randomUUID().toString());
     }

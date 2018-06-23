@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RetryConfig {
+public class RetryConfig<T> {
 
     private Boolean retryOnAnyException = false;
     private Set<Class<? extends Exception>> retryOnSpecificExceptions = new HashSet<>();
@@ -14,14 +14,14 @@ public class RetryConfig {
     private Integer maxNumberOfTries;
     private Duration delayBetweenRetries;
     private BackoffStrategy backoffStrategy;
-    private Object valueToRetryOn;
+    private T valueToRetryOn;
     private Boolean retryOnValue = false;
 
-    public Object getValueToRetryOn() {
+    public T getValueToRetryOn() {
         return valueToRetryOn;
     }
 
-    public void setValueToRetryOn(Object valueToRetryOn) {
+    public void setValueToRetryOn(T valueToRetryOn) {
         this.valueToRetryOn = valueToRetryOn;
     }
 

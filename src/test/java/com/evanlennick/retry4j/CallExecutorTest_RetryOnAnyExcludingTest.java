@@ -23,7 +23,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
-    public void verifyRetryOnAnyExcludingThrowsCallFailureException() throws Exception {
+    public void verifyRetryOnAnyExcludingThrowsCallFailureException() {
         Callable<Boolean> callable = () -> {
             throw new UnsupportedOperationException();
         };
@@ -39,7 +39,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
-    public void verifyRetryOnAnyExcludingCallSucceeds() throws Exception {
+    public void verifyRetryOnAnyExcludingCallSucceeds() {
         Callable<Boolean> callable = () -> {
             throw new IllegalArgumentException();
         };
@@ -55,7 +55,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
     }
 
     @Test(expectedExceptions = UnexpectedException.class)
-    public void verifySubclassOfExcludedExceptionThrowsUnexpectedException() throws Exception {
+    public void verifySubclassOfExcludedExceptionThrowsUnexpectedException() {
         Callable<Boolean> callable = () -> {
             throw new FileNotFoundException();
         };
@@ -71,7 +71,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
     }
 
     @Test(expectedExceptions = RetriesExhaustedException.class)
-    public void verifySuperclassOfExcludedExceptionDoesntThrowUnexpectedException() throws Exception {
+    public void verifySuperclassOfExcludedExceptionDoesntThrowUnexpectedException() {
         Callable<Boolean> callable = () -> {
             throw new IOException();
         };
