@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -76,6 +77,25 @@ public class CallExecutorTest_ListenersTest {
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
+    }
+
+    @Test
+    public void verifyBeforeNextTryListener_NotCalledAfterLastFailure() {
+        when(dummyMock.callableCallThis())
+                .thenThrow(new NullPointerException())
+                .thenThrow(new NullPointerException())
+                .thenThrow(new NullPointerException())
+                .thenThrow(new NullPointerException())
+                .thenThrow(new IllegalArgumentException());
+
+        executor.beforeNextTry(status -> dummyMock.listenersCallThis(status.getLastExceptionThatCausedRetry()));
+        try {
+            executor.execute(callable);
+        } catch (Exception e) {}
+
+        // the beforeNextTry listener should only be called before a retry (5 attempts == 4 retries)
+        verify(dummyMock, timeout(1000).times(4)).listenersCallThis(isA(NullPointerException.class));
+        verify(dummyMock, after(1000).never()).listenersCallThis(isA(IllegalArgumentException.class));
     }
 
     @Test

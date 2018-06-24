@@ -72,14 +72,17 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
         try {
             for (tries = 0; tries < maxTries && !attemptStatus.wasSuccessful(); tries++) {
+                if (tries > 0) {
+                    handleBeforeNextTry(millisBetweenTries, tries);
+                    logger.trace("Retry4j retrying for time number {}", tries);
+                }
+
                 logger.trace("Retry4j executing callable {}", callable);
                 attemptStatus = tryCall(callable);
 
                 if (!attemptStatus.wasSuccessful()) {
-                    handleRetry(millisBetweenTries, tries + 1);
+                    handleFailedTry(tries + 1);
                 }
-
-                logger.trace("Retry4j retrying for time number {}", tries);
             }
 
             refreshRetryStatus(attemptStatus.wasSuccessful(), tries);
@@ -142,17 +145,18 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         return attemptStatus;
     }
 
-    private void handleRetry(long millisBetweenTries, int tries) {
+    private void handleBeforeNextTry(final long millisBetweenTries, final int tries) {
+        sleep(millisBetweenTries, tries);
+        if (null != beforeNextTryListener) {
+            beforeNextTryListener.onEvent(status);
+        }
+    }
+
+    private void handleFailedTry(int tries) {
         refreshRetryStatus(false, tries);
 
         if (null != afterFailedTryListener) {
             afterFailedTryListener.onEvent(status);
-        }
-
-        sleep(millisBetweenTries, tries);
-
-        if (null != beforeNextTryListener) {
-            beforeNextTryListener.onEvent(status);
         }
     }
 
