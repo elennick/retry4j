@@ -1,14 +1,19 @@
 package com.evanlennick.retry4j;
 
+import com.evanlennick.retry4j.backoff.BackoffStrategy;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
+
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -16,13 +21,20 @@ import java.util.concurrent.Callable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.within;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class CallExecutorTest {
+
+    @Mock
+    private BackoffStrategy mockBackOffStrategy;
 
     private RetryConfigBuilder retryConfigBuilder;
 
     @BeforeMethod
     public void setup() {
+        MockitoAnnotations.initMocks(this);
+
         boolean configValidationEnabled = false;
         this.retryConfigBuilder = new RetryConfigBuilder(configValidationEnabled);
     }
@@ -220,5 +232,30 @@ public class CallExecutorTest {
         } catch (RetriesExhaustedException e) {
             fail("Retries should never be exhausted!");
         }
+    }
+
+    @Test
+    public void verifyRetryPolicyTimeoutIsUsed() {
+        Callable<Object> callable = () -> {
+            throw new RuntimeException();
+        };
+
+        Duration delayBetweenTriesDuration = Duration.ofSeconds(17);
+        when(mockBackOffStrategy.getDurationToWait(1, delayBetweenTriesDuration)).thenReturn(Duration.ofSeconds(5));
+
+        RetryConfig retryConfig = retryConfigBuilder
+                .withMaxNumberOfTries(2)
+                .retryOnAnyException()
+                .withDelayBetweenTries(delayBetweenTriesDuration)
+                .withBackoffStrategy(mockBackOffStrategy)
+                .build();
+
+        final long before = System.currentTimeMillis();
+        try {
+            new CallExecutor<>(retryConfig).execute(callable);
+        } catch (RetriesExhaustedException ignored) {}
+
+        assertThat(System.currentTimeMillis() - before).isGreaterThan(5000);
+        verify(mockBackOffStrategy).getDurationToWait(1, delayBetweenTriesDuration);
     }
 }
