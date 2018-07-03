@@ -440,8 +440,8 @@ CompletableFuture<Status<Boolean>> future1 = executor.execute(callable1);
 CompletableFuture<Status<Boolean>> future2 = executor.execute(callable2);
 CompletableFuture<Status<Boolean>> future3 = executor.execute(callable3);
 
-CompletableFuture combinedFuture = CompletableFuture.allOf(future1, future2, future3);
-combinedFuture.get();
+CompletableFuture.allOf(future1, future2, future3).join();
+executor.getThreadExecutorService().shutdown();
 ```
 
 In both of these examples, the `AsyncCallExecutor` takes care of instantiating and using a simple, default 
