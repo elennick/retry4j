@@ -418,8 +418,8 @@ new CallExecutor<>(config)
 ### Async Support
 
 Retry4j has some built in support for executing and retrying on one or more threads in an asynchronous fashion. The 
-`AsyncCallExecutor` utilizes threading and async mechanisms via Java's `ExecutorService` and `CompletableFuture` 
-API's. A basic example of this in action with a single call:
+`AsyncCallExecutor` utilizes threading and async mechanisms via Java's `CompletableFuture` API. A basic example of this 
+in action with a single call:
 
 ```java
 AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(config);
@@ -441,12 +441,12 @@ CompletableFuture<Status<Boolean>> future2 = executor.execute(callable2);
 CompletableFuture<Status<Boolean>> future3 = executor.execute(callable3);
 
 CompletableFuture.allOf(future1, future2, future3).join();
-executor.getThreadExecutorService().shutdown();
 ```
 
-In both of these examples, the `AsyncCallExecutor` takes care of instantiating and using a simple, default 
-`ExecutorService` for managing threads. If you wish to define what `ExecutorService` gets used by the 
-`AsyncCallExecutor`, you can pass it in as part of the constructor like this:
+If you wish to define a thread pool to be used by your `AsyncCallExecutor`, you can define and pass in an 
+`ExecutorService` in the constructor. When using this pattern, it's important to remember that this thread pool will not
+shut itself down and you will have to explicitly call `shutdown()` on the `ExecutorService` if you want it to be cleaned
+up.
 
 ```java
 ExecutorService executorService = Executors.newFixedThreadPool(10);
@@ -456,11 +456,6 @@ new AsyncCallExecutor<>(config, executorService);
 You can register retry listeners and configuration on an `AsyncCallExecutor` in the same fashion as the normal, 
 synchronous `CallExecutor`. All calls in all threads that are triggered from an `AsyncCallExecutor` after its 
 construction will use the same listeners and configuration.
-
-It's important to note that a Java `ExecutorService` will not shut down automatically when there is no additional work to do. It will hang onto threads indefinitely until you shut it down. If you need a reference to the `ExecutorService` being used by you instance of `AsyncCallExecutor` you can use the `getThreadExecutorService()` method and then call `shutdown()` or `shutdownNow()`.
-
-All of this async and threading functionality is new as of `0.9.0` and may need some time to settle before it is 
-completely stable and mature.
 
 ### Logging
 
