@@ -457,6 +457,8 @@ You can register retry listeners and configuration on an `AsyncCallExecutor` in 
 synchronous `CallExecutor`. All calls in all threads that are triggered from an `AsyncCallExecutor` after its 
 construction will use the same listeners and configuration.
 
+It's important to note that a Java `ExecutorService` will not shut down automatically when there is no additional work to do. It will hang onto threads indefinitely until you shut it down. If you need a reference to the `ExecutorService` being used by you instance of `AsyncCallExecutor` you can use the `getThreadExecutorService()` method and then call `shutdown()` or `shutdownNow()`.
+
 All of this async and threading functionality is new as of `0.9.0` and may need some time to settle before it is 
 completely stable and mature.
 
