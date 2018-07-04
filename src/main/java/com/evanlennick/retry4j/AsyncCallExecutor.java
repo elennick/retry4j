@@ -6,11 +6,10 @@ import com.evanlennick.retry4j.listener.RetryListener;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Implementation that kicks off each retry request in its own separate thread that does not block the thread the
- * execution is called from.
+ * execution is called from. If you provide an ExecutorService, it will be used when creating threads.
  *
  * @param <T> The type that is returned by the Callable (eg: Boolean, Void, Object, etc)
  */
@@ -30,10 +29,8 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
 
     private RetryListener onCompletionListener;
 
-    private static final int DEFAULT_NUMBER_OF_THREADS_IN_POOL = 5;
-
     public AsyncCallExecutor(RetryConfig config) {
-        this(config, Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS_IN_POOL));
+        this(config, null);
     }
 
     public AsyncCallExecutor(RetryConfig config, ExecutorService executorService) {
@@ -58,16 +55,24 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
 
         CompletableFuture<Status<T>> completableFuture = new CompletableFuture<>();
 
-        executorService.submit(() -> {
-            try {
-                Status<T> status = synchronousCallExecutor.execute(callable, callName);
-                completableFuture.complete(status);
-            } catch (Throwable t) {
-                completableFuture.completeExceptionally(t);
-            }
-        });
+        if (executorService != null) {
+            executorService.submit(()
+                    -> executeFuture(callable, callName, synchronousCallExecutor, completableFuture));
+        } else {
+            (new Thread(()
+                    -> executeFuture(callable, callName, synchronousCallExecutor, completableFuture))).start();
+        }
 
         return completableFuture;
+    }
+
+    private void executeFuture(Callable<T> callable, String callName, CallExecutor<T> synchronousCallExecutor, CompletableFuture<Status<T>> completableFuture) {
+        try {
+            Status<T> status = synchronousCallExecutor.execute(callable, callName);
+            completableFuture.complete(status);
+        } catch (Throwable t) {
+            completableFuture.completeExceptionally(t);
+        }
     }
 
     public AsyncCallExecutor<T> afterFailedTry(RetryListener listener) {
@@ -100,6 +105,15 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
         this.config = config;
     }
 
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    @Deprecated
     public ExecutorService getThreadExecutorService() {
         return executorService;
     }
