@@ -157,6 +157,8 @@ RetryConfig config = new RetryConfigBuilder()
         .build();
 ```
 
+NOTE: When using `retryOnSpecificExceptions` and `retryOnAnyExceptionExcluding`, the call executor will also take into account if the encountered exceptions are subclasses of the types you specified. For example, if you tell the configuration to retry on any `IOException`, the executor will retry on a `FileNotFoundException` which is a subclass of `IOException`.
+
 If you do not want to use these built-in mechanisms for retrying on exceptions, you can override them and create custom logic:
 
 ```java
