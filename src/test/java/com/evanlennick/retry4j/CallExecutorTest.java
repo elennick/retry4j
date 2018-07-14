@@ -5,7 +5,6 @@ import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
@@ -257,5 +256,19 @@ public class CallExecutorTest {
 
         assertThat(System.currentTimeMillis() - before).isGreaterThan(5000);
         verify(mockBackOffStrategy).getDurationToWait(1, delayBetweenTriesDuration);
+    }
+
+    @Test
+    public void verifyNoDurationSpecifiedSucceeds() {
+        Callable<String> callable = () -> "test";
+
+        RetryConfig noWaitConfig = new RetryConfigBuilder()
+                .withMaxNumberOfTries(1)
+                .withNoWaitBackoff()
+                .build();
+
+        Status status = new CallExecutor(noWaitConfig).execute(callable);
+
+        assertThat(status.getResult()).isEqualTo("test");
     }
 }

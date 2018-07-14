@@ -1,10 +1,12 @@
 package com.evanlennick.retry4j.config;
 
 import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
+import org.testng.TestException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.net.ConnectException;
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -191,6 +193,57 @@ public class RetryConfigBuilderTest_WithValidationTest {
         } catch (InvalidRetryConfigException e) {
             assertThat(e.getMessage())
                     .isEqualTo(RetryConfigBuilder.ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
+        }
+    }
+
+    @Test
+    public void verifySpecifyingMultipleBuildInAndCustomExceptionStrategiesThrowsException_anyException() {
+        try {
+            retryConfigBuilder
+                    .retryOnAnyException()
+                    .retryOnCustomExceptionLogic(ex -> ex.getMessage().contains("should retry!"))
+                    .withFixedBackoff()
+                    .withDelayBetweenTries(Duration.ofMillis(1))
+                    .withMaxNumberOfTries(3)
+                    .build();
+            fail("Expected InvalidRetryConfigException but one wasn't thrown!");
+        } catch (InvalidRetryConfigException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG);
+        }
+    }
+
+    @Test
+    public void verifySpecifyingMultipleBuildInAndCustomExceptionStrategiesThrowsException_specificExceptions() {
+        try {
+            retryConfigBuilder
+                    .retryOnSpecificExceptions(TestException.class)
+                    .retryOnCustomExceptionLogic(ex -> ex.getMessage().contains("should retry!"))
+                    .withFixedBackoff()
+                    .withDelayBetweenTries(Duration.ofMillis(1))
+                    .withMaxNumberOfTries(3)
+                    .build();
+            fail("Expected InvalidRetryConfigException but one wasn't thrown!");
+        } catch (InvalidRetryConfigException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG);
+        }
+    }
+
+    @Test
+    public void verifySpecifyingMultipleBuildInAndCustomExceptionStrategiesThrowsException_excludingExceptions() {
+        try {
+            retryConfigBuilder
+                    .retryOnAnyExceptionExcluding(TestException.class)
+                    .retryOnCustomExceptionLogic(ex -> ex.getMessage().contains("should retry!"))
+                    .withFixedBackoff()
+                    .withDelayBetweenTries(Duration.ofMillis(1))
+                    .withMaxNumberOfTries(3)
+                    .build();
+            fail("Expected InvalidRetryConfigException but one wasn't thrown!");
+        } catch (InvalidRetryConfigException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG);
         }
     }
 }

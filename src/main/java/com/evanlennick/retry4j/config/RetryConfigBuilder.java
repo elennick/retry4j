@@ -14,12 +14,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class RetryConfigBuilder {
 
-    private boolean exceptionStrategySpecified;
+    private boolean builtInExceptionStrategySpecified;
     private RetryConfig config;
     private boolean validationEnabled;
 
@@ -33,10 +34,12 @@ public class RetryConfigBuilder {
             = "Retry config cannot specify more than one exception strategy!";
     public final static String ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG
             = "Number of tries can only be specified once!";
+    public final static String CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG
+            = "You cannot use built in exception logic and custom exception logic in the same config!";
 
     public RetryConfigBuilder() {
         this.config = new RetryConfig();
-        this.exceptionStrategySpecified = false;
+        this.builtInExceptionStrategySpecified = false;
         this.validationEnabled = true;
     }
 
@@ -58,7 +61,7 @@ public class RetryConfigBuilder {
 
         config.setRetryOnAnyException(true);
 
-        exceptionStrategySpecified = true;
+        builtInExceptionStrategySpecified = true;
         return this;
     }
 
@@ -68,7 +71,7 @@ public class RetryConfigBuilder {
         config.setRetryOnAnyException(false);
         config.setRetryOnSpecificExceptions(new HashSet<>());
 
-        exceptionStrategySpecified = true;
+        builtInExceptionStrategySpecified = true;
         return this;
     }
 
@@ -79,7 +82,7 @@ public class RetryConfigBuilder {
         Set<Class<? extends Exception>> setOfExceptions = new HashSet<>(Arrays.asList(exceptions));
         config.setRetryOnSpecificExceptions(setOfExceptions);
 
-        exceptionStrategySpecified = true;
+        builtInExceptionStrategySpecified = true;
         return this;
     }
 
@@ -90,7 +93,7 @@ public class RetryConfigBuilder {
         Set<Class<? extends Exception>> setOfExceptions = new HashSet<>(Arrays.asList(exceptions));
         config.setRetryOnAnyExceptionExcluding(setOfExceptions);
 
-        exceptionStrategySpecified = true;
+        builtInExceptionStrategySpecified = true;
         return this;
     }
 
@@ -98,6 +101,11 @@ public class RetryConfigBuilder {
         config.setRetryOnValue(true);
         config.setValueToRetryOn(value);
 
+        return this;
+    }
+
+    public RetryConfigBuilder retryOnCustomExceptionLogic(Function<Exception, Boolean> customRetryFunction) {
+        this.config.setCustomRetryOnLogic(customRetryFunction);
         return this;
     }
 
@@ -190,6 +198,10 @@ public class RetryConfigBuilder {
             throw new InvalidRetryConfigException(MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
         }
 
+        if (null != config.getCustomRetryOnLogic() && builtInExceptionStrategySpecified) {
+            throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG);
+        }
+
         config.getBackoffStrategy().validateConfig(config);
     }
 
@@ -208,7 +220,7 @@ public class RetryConfigBuilder {
             return;
         }
 
-        if (exceptionStrategySpecified) {
+        if (builtInExceptionStrategySpecified) {
             throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
         }
     }

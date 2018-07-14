@@ -127,7 +127,6 @@ Retry4j does not require any external dependencies. It does require that you are
 
 If you do not specify how exceptions should be handled or explicitly say **failOnAnyException()**, the CallExecutor will fail and throw an **UnexpectedException** when encountering exceptions while running. Use this configuration if you want the executor to cease its work when it runs into any exception at all.
 
-
 ```java
 RetryConfig config = new RetryConfigBuilder()
         .failOnAnyException()
@@ -144,7 +143,6 @@ RetryConfig config = new RetryConfigBuilder()
 
 If you want the executor to continue to retry on all encountered exceptions, specify this using the **retryOnAnyException()** config option.
 
-
 ```java
 RetryConfig config = new RetryConfigBuilder()
         .retryOnAnyException()
@@ -158,6 +156,18 @@ RetryConfig config = new RetryConfigBuilder()
         .retryOnAnyExceptionExcluding(CriticalFailure.class, DontRetryOnThis.class)
         .build();
 ```
+
+If you do not want to use these built-in mechanisms for retrying on exceptions, you can override them and create custom logic:
+
+```java
+RetryConfig config = new RetryConfigBuilder()
+        .retryOnCustomExceptionLogic(ex -> {
+            //return true to retry, otherwise return false
+        })
+        .build();
+```
+
+If you create custom exception logic, no other built-in configuration can be used at the same time.
 
 ### Value Handling Config
 

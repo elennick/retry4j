@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Default implementation that does a single, synchrnous retry in the same thread that it is called from.
+ * Default implementation that does a single, synchronous retry in the same thread that it is called from.
  *
  * @param <T> The type that is returned by the Callable (eg: Boolean, Void, Object, etc)
  */
@@ -62,7 +62,8 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         status.setStartTime(start);
 
         int maxTries = config.getMaxNumberOfTries();
-        long millisBetweenTries = config.getDelayBetweenRetries().toMillis();
+        long millisBetweenTries = config.getDelayBetweenRetries() != null
+                ? config.getDelayBetweenRetries().toMillis() : 0L;
         this.status.setCallName(callName);
 
         AttemptStatus<T> attemptStatus = new AttemptStatus<>();
@@ -181,26 +182,31 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
     }
 
     private boolean shouldThrowException(Exception e) {
-        //config says to always retry
-        if (this.config.isRetryOnAnyException()) {
-            return false;
-        }
-
-        //config says to retry only on specific exceptions
-        for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnSpecificExceptions()) {
-            if (exceptionInSet.isAssignableFrom(e.getClass())) {
+        if (this.config.getCustomRetryOnLogic() != null) {
+            //custom retry logic
+            return !this.config.getCustomRetryOnLogic().apply(e);
+        } else {
+            //config says to always retry
+            if (this.config.isRetryOnAnyException()) {
                 return false;
             }
-        }
 
-        //config says to retry on all except specific exceptions
-        for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnAnyExceptionExcluding()) {
-            if (!exceptionInSet.isAssignableFrom(e.getClass())) {
-                return false;
+            //config says to retry only on specific exceptions
+            for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnSpecificExceptions()) {
+                if (exceptionInSet.isAssignableFrom(e.getClass())) {
+                    return false;
+                }
             }
-        }
 
-        return true;
+            //config says to retry on all except specific exceptions
+            for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnAnyExceptionExcluding()) {
+                if (!exceptionInSet.isAssignableFrom(e.getClass())) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.evanlennick.retry4j.backoff.BackoffStrategy;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 public class RetryConfig {
 
@@ -16,6 +17,7 @@ public class RetryConfig {
     private BackoffStrategy backoffStrategy;
     private Object valueToRetryOn;
     private Boolean retryOnValue = false;
+    private Function<Exception, Boolean> customRetryOnLogic;
 
     public Object getValueToRetryOn() {
         return valueToRetryOn;
@@ -89,14 +91,26 @@ public class RetryConfig {
         this.backoffStrategy = backoffStrategy;
     }
 
+    public Function<Exception, Boolean> getCustomRetryOnLogic() {
+        return customRetryOnLogic;
+    }
+
+    public void setCustomRetryOnLogic(Function<Exception, Boolean> customRetryOnLogic) {
+        this.customRetryOnLogic = customRetryOnLogic;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("RetryConfig{");
         sb.append("retryOnAnyException=").append(retryOnAnyException);
         sb.append(", retryOnSpecificExceptions=").append(retryOnSpecificExceptions);
+        sb.append(", retryOnAnyExceptionExcluding=").append(retryOnAnyExceptionExcluding);
         sb.append(", maxNumberOfTries=").append(maxNumberOfTries);
         sb.append(", delayBetweenRetries=").append(delayBetweenRetries);
         sb.append(", backoffStrategy=").append(backoffStrategy);
+        sb.append(", valueToRetryOn=").append(valueToRetryOn);
+        sb.append(", retryOnValue=").append(retryOnValue);
+        sb.append(", customRetryOnLogic=").append(customRetryOnLogic);
         sb.append('}');
         return sb.toString();
     }
