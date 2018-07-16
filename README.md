@@ -97,19 +97,19 @@ CallExecutor executor = new CallExecutor<>(config)
 <dependency>
     <groupId>com.evanlennick</groupId>
     <artifactId>retry4j</artifactId>
-    <version>0.13.0</version>
+    <version>0.14.0</version>
 </dependency>
 ```
 
 ### SBT
 
 ```sbt
-libraryDependencies += "com.evanlennick" % "retry4j" % "0.13.0"
+libraryDependencies += "com.evanlennick" % "retry4j" % "0.14.0"
 ```
 ### Gradle
 
 ```groovy
-compile "com.evanlennick:retry4j:0.13.0"
+compile "com.evanlennick:retry4j:0.14.0"
 ```
 
 ## Usage
@@ -118,7 +118,7 @@ compile "com.evanlennick:retry4j:0.13.0"
 
 Retry4j does not require any external dependencies. It does require that you are using Java 8 or newer.
 
-* Javadocs are hosted at: http://www.javadoc.io/doc/com.evanlennick/retry4j/0.13.0.
+* Javadocs are hosted at: http://www.javadoc.io/doc/com.evanlennick/retry4j/0.14.0.
 * Continuous integration results are available via Travis CI here: https://travis-ci.org/elennick/retry4j.
 * Code coverage information is available via Coveralls here: https://coveralls.io/github/elennick/retry4j.
 * Examples of Retry4j in use are documented here: https://github.com/elennick/retry4j-examples
