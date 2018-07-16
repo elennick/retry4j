@@ -116,4 +116,19 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
         new CallExecutor(retryConfig).execute(callable);
     }
 
+    @Test(expectedExceptions = {RetriesExhaustedException.class})
+    public void verifyMultipleExceptions_retryOnNotExcludedException() {
+        Callable<Boolean> callable = () -> {
+            throw new NullPointerException();
+        };
+
+        RetryConfig retryConfig = retryConfigBuilder
+                .retryOnAnyExceptionExcluding(IllegalArgumentException.class, UnsupportedOperationException.class)
+                .withMaxNumberOfTries(5)
+                .withNoWaitBackoff()
+                .build();
+
+        new CallExecutor(retryConfig).execute(callable);
+    }
+
 }
