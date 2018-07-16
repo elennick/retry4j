@@ -169,7 +169,7 @@ RetryConfig config = new RetryConfigBuilder()
         .build();
 ```
 
-If you create custom exception logic, no other built-in configuration can be used at the same time.
+If you create custom exception logic, no other built-in retry-on-exception configuration can be used at the same time.
 
 ### Value Handling Config
 
