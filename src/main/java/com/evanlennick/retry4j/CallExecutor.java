@@ -192,17 +192,20 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
             }
 
             //config says to retry only on specific exceptions
-            for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnSpecificExceptions()) {
-                if (exceptionInSet.isAssignableFrom(e.getClass())) {
+            for (Class<? extends Exception> exceptionToRetryOn : this.config.getRetryOnSpecificExceptions()) {
+                if (exceptionToRetryOn.isAssignableFrom(e.getClass())) {
                     return false;
                 }
             }
 
             //config says to retry on all except specific exceptions
-            for (Class<? extends Exception> exceptionInSet : this.config.getRetryOnAnyExceptionExcluding()) {
-                if (!exceptionInSet.isAssignableFrom(e.getClass())) {
-                    return false;
+            if (!this.config.getRetryOnAnyExceptionExcluding().isEmpty()) {
+                for (Class<? extends Exception> exceptionToNotRetryOn : this.config.getRetryOnAnyExceptionExcluding()) {
+                    if (exceptionToNotRetryOn.isAssignableFrom(e.getClass())) {
+                        return true;
+                    }
                 }
+                return false;
             }
 
             return true;
