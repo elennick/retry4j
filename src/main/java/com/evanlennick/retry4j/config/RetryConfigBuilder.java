@@ -36,6 +36,8 @@ public class RetryConfigBuilder {
             = "Number of tries can only be specified once!";
     public final static String CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG
             = "You cannot use built in exception logic and custom exception logic in the same config!";
+    public final static String MUST_SPECIFY_MAX_TRIES_ABOVE_0__ERROR_MSG
+            = "Cannot specify a maximum number of tries less than 1!";
 
     public RetryConfigBuilder() {
         this.config = new RetryConfig();
@@ -110,6 +112,10 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfigBuilder withMaxNumberOfTries(int max) {
+        if (max < 1) {
+            throw new InvalidRetryConfigException(MUST_SPECIFY_MAX_TRIES_ABOVE_0__ERROR_MSG);
+        }
+
         if (config.getMaxNumberOfTries() != null) {
             throw new InvalidRetryConfigException(ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
         }

@@ -131,6 +131,21 @@ public class RetryConfigBuilderTest_WithValidationTest {
     }
 
     @Test
+    public void verifyZeroMaxTriesThrowsException() {
+        try {
+            retryConfigBuilder
+                    .withDelayBetweenTries(1, ChronoUnit.SECONDS)
+                    .withExponentialBackoff()
+                    .withMaxNumberOfTries(0)
+                    .build();
+            fail("Expected InvalidRetryConfigException but one wasn't thrown!");
+        } catch (InvalidRetryConfigException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo(RetryConfigBuilder.MUST_SPECIFY_MAX_TRIES_ABOVE_0__ERROR_MSG);
+        }
+    }
+
+    @Test
     public void verifyTwoExceptionStrategiesThrowsException_anyAndSpecific() {
         try {
             retryConfigBuilder
