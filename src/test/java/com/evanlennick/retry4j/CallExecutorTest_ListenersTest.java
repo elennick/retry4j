@@ -2,6 +2,7 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
+import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
@@ -194,10 +195,29 @@ public class CallExecutorTest_ListenersTest {
     }
 
     @Test
-    public void verifyOnSuccessListener_resultHasTypeOfCallExecutor() {
-        executor.onSuccess(status -> {
-                    String result = status.getResult(); //compile time check
-                }).execute(callable);
+    public void verifyOnListener_resultHasTypeOfCallExecutor() {
+        when(dummyMock.callableCallThis())
+                .thenThrow(new RuntimeException())
+                .thenThrow(new RuntimeException())
+                .thenThrow(new RuntimeException())
+                .thenReturn("success!");
+
+        executor
+                .onSuccess(status -> {
+                    dummyMock.listenersCallThis();
+                    Assertions.assertThat(status.getResult()).isInstanceOf(String.class);
+                })
+                .onFailure(status -> dummyMock.listenersCallThis())
+                .onCompletion(status -> {
+                    dummyMock.listenersCallThis();
+                    Assertions.assertThat(status.getResult()).isInstanceOf(String.class);
+                })
+                .afterFailedTry(status -> dummyMock.listenersCallThis())
+                .beforeNextTry(status -> dummyMock.listenersCallThis())
+                .execute(callable);
+
+        //only calls success once, completion once and the retry listeners 3 times each
+        verify(dummyMock, timeout(1000).times(8)).listenersCallThis();
     }
 
     private class DummyMock {
