@@ -193,6 +193,13 @@ public class CallExecutorTest_ListenersTest {
         verify(dummyMock, timeout(1000)).listenersCallThis(isA(IllegalArgumentException.class));
     }
 
+    @Test
+    public void verifyOnSuccessListener_resultHasTypeOfCallExecutor() {
+        executor.onSuccess(status -> {
+                    String result = status.getResult(); //compile time check
+                }).execute(callable);
+    }
+
     private class DummyMock {
 
         public String listenersCallThis() {

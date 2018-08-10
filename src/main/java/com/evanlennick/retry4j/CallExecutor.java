@@ -25,15 +25,15 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
     private RetryConfig config;
 
-    private RetryListener afterFailedTryListener;
+    private RetryListener<T> afterFailedTryListener;
 
-    private RetryListener beforeNextTryListener;
+    private RetryListener<T> beforeNextTryListener;
 
-    private RetryListener onFailureListener;
+    private RetryListener<T> onFailureListener;
 
-    private RetryListener onSuccessListener;
+    private RetryListener<T> onSuccessListener;
 
-    private RetryListener onCompletionListener;
+    private RetryListener<T> onCompletionListener;
 
     private Exception lastKnownExceptionThatCausedRetry;
 
@@ -218,27 +218,27 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         this.config = config;
     }
 
-    public CallExecutor<T> afterFailedTry(RetryListener listener) {
+    public CallExecutor<T> afterFailedTry(RetryListener<T> listener) {
         this.afterFailedTryListener = listener;
         return this;
     }
 
-    public CallExecutor<T> beforeNextTry(RetryListener listener) {
+    public CallExecutor<T> beforeNextTry(RetryListener<T> listener) {
         this.beforeNextTryListener = listener;
         return this;
     }
 
-    public CallExecutor<T> onCompletion(RetryListener listener) {
+    public CallExecutor<T> onCompletion(RetryListener<T> listener) {
         this.onCompletionListener = listener;
         return this;
     }
 
-    public CallExecutor<T> onSuccess(RetryListener listener) {
+    public CallExecutor<T> onSuccess(RetryListener<T> listener) {
         this.onSuccessListener = listener;
         return this;
     }
 
-    public CallExecutor<T> onFailure(RetryListener listener) {
+    public CallExecutor<T> onFailure(RetryListener<T> listener) {
         this.onFailureListener = listener;
         return this;
     }
