@@ -2,13 +2,14 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.listener.RetryListener;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -197,20 +198,18 @@ public class CallExecutorTest_ListenersTest {
 
     @Test
     public void verifyOnListener_resultHasTypeOfCallExecutor() {
-        when(dummyMock.callableCallThis())
-                .thenReturn("success!");
-
-        RetryListener<String> listener = status -> {
-            dummyMock.listenersCallThis();
-            assertThat(status.getResult()).isInstanceOf(String.class);
-        };
+        List<String> methodCalls = new ArrayList<>();
         executor
-                .onSuccess(listener)
-                .onCompletion(listener)
-                .execute(callable);
-
-        // ensure both listeners are called
-        verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
+                .onSuccess(status -> {
+                    methodCalls.add("onSuccess");
+                    assertThat(status.getResult()).isInstanceOf(String.class);
+                })
+                .onCompletion(status -> {
+                    methodCalls.add("onCompletion");
+                    assertThat(status.getResult()).isInstanceOf(String.class);
+                })
+                .execute(() -> "");
+        assertThat(methodCalls).contains("onSuccess", "onCompletion");
     }
 
     private class DummyMock {
