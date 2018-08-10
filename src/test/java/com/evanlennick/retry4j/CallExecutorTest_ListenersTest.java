@@ -2,7 +2,7 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import org.assertj.core.api.Assertions;
+import com.evanlennick.retry4j.listener.RetryListener;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.timeout;
@@ -197,27 +198,19 @@ public class CallExecutorTest_ListenersTest {
     @Test
     public void verifyOnListener_resultHasTypeOfCallExecutor() {
         when(dummyMock.callableCallThis())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new RuntimeException())
                 .thenReturn("success!");
 
+        RetryListener<String> listener = status -> {
+            dummyMock.listenersCallThis();
+            assertThat(status.getResult()).isInstanceOf(String.class);
+        };
         executor
-                .onSuccess(status -> {
-                    dummyMock.listenersCallThis();
-                    Assertions.assertThat(status.getResult()).isInstanceOf(String.class);
-                })
-                .onFailure(status -> dummyMock.listenersCallThis())
-                .onCompletion(status -> {
-                    dummyMock.listenersCallThis();
-                    Assertions.assertThat(status.getResult()).isInstanceOf(String.class);
-                })
-                .afterFailedTry(status -> dummyMock.listenersCallThis())
-                .beforeNextTry(status -> dummyMock.listenersCallThis())
+                .onSuccess(listener)
+                .onCompletion(listener)
                 .execute(callable);
 
-        //only calls success once, completion once and the retry listeners 3 times each
-        verify(dummyMock, timeout(1000).times(8)).listenersCallThis();
+        // ensure both listeners are called
+        verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
     }
 
     private class DummyMock {

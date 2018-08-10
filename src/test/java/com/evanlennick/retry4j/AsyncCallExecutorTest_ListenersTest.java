@@ -2,7 +2,7 @@ package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import org.assertj.core.api.Assertions;
+import com.evanlennick.retry4j.listener.RetryListener;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
@@ -10,7 +10,6 @@ import org.testng.annotations.Test;
 
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,12 +18,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class AsyncCallExecutorTest_ListenersTest {
-
     @Mock
     private DummyMock dummyMock;
-
     private AsyncCallExecutor<String> executor;
-
     private Callable<String> callable;
 
     @BeforeMethod
@@ -44,60 +40,24 @@ public class AsyncCallExecutorTest_ListenersTest {
     }
 
     @Test
-    public void verifyAfterFailedListener() throws Exception {
+    public void verifyOnListener_resultHasTypeOfCallExecutor() throws Exception {
         when(dummyMock.callableCallThis())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new IllegalStateException())
                 .thenReturn("success!");
 
-        executor.afterFailedTry(status -> dummyMock.listenersCallThis());
-        CompletableFuture<Status<String>> future = executor.execute(callable);
+        RetryListener<String> listener = status -> {
+            dummyMock.listenersCallThis();
+            assertThat(status.getResult()).isInstanceOf(String.class);
+        };
+        executor
+                .onSuccess(listener)
+                .onCompletion(listener)
+                .execute(callable).get();
 
-        Status<String> status = future.get();
-        assertThat(future).isDone();
-        assertThat(status.getLastExceptionThatCausedRetry()).isInstanceOf(IllegalStateException.class);
-        assertThat(status.wasSuccessful()).isTrue();
-        assertThat(status.getTotalTries()).isEqualTo(3);
-        assertThat(status.getResult()).isEqualTo("success!");
+        // ensure both listeners are called
         verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
     }
 
-    @Test
-    public void verifyOnListener_resultHasTypeOfCallExecutor() throws Exception {
-        when(dummyMock.callableCallThis())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new RuntimeException())
-                .thenThrow(new IllegalStateException())
-                .thenReturn("success!");
-
-        executor
-                .onSuccess(status -> {
-                    dummyMock.listenersCallThis();
-                    Assertions.assertThat(status.getResult()).isInstanceOf(String.class);
-                })
-                .onFailure(status -> dummyMock.listenersCallThis())
-                .onCompletion(status -> {
-                    dummyMock.listenersCallThis();
-                    Assertions.assertThat(status.getResult()).isInstanceOf(String.class);
-                })
-                .afterFailedTry(status -> dummyMock.listenersCallThis())
-                .beforeNextTry(status -> dummyMock.listenersCallThis());
-
-        CompletableFuture<Status<String>> future = executor.execute(callable);
-
-        Status<String> status = future.get();
-        assertThat(future).isDone();
-        assertThat(status.getLastExceptionThatCausedRetry()).isInstanceOf(IllegalStateException.class);
-        assertThat(status.wasSuccessful()).isTrue();
-        assertThat(status.getTotalTries()).isEqualTo(4);
-        assertThat(status.getResult()).isEqualTo("success!");
-
-        //only calls success once, completion once and the retry listeners 3 times each
-        verify(dummyMock, timeout(1000).times(8)).listenersCallThis();
-    }
-
     private class DummyMock {
-
         public String listenersCallThis() {
             return "this is to use to verify listeners call the mock";
         }
