@@ -19,15 +19,15 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
 
     private ExecutorService executorService;
 
-    private RetryListener afterFailedTryListener;
+    private RetryListener<T> afterFailedTryListener;
 
-    private RetryListener beforeNextTryListener;
+    private RetryListener<T> beforeNextTryListener;
 
-    private RetryListener onFailureListener;
+    private RetryListener<T> onFailureListener;
 
-    private RetryListener onSuccessListener;
+    private RetryListener<T> onSuccessListener;
 
-    private RetryListener onCompletionListener;
+    private RetryListener<T> onCompletionListener;
 
     public AsyncCallExecutor(RetryConfig config) {
         this(config, null);
@@ -75,27 +75,27 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
         }
     }
 
-    public AsyncCallExecutor<T> afterFailedTry(RetryListener listener) {
+    public AsyncCallExecutor<T> afterFailedTry(RetryListener<T> listener) {
         this.afterFailedTryListener = listener;
         return this;
     }
 
-    public AsyncCallExecutor<T> beforeNextTry(RetryListener listener) {
+    public AsyncCallExecutor<T> beforeNextTry(RetryListener<T> listener) {
         this.beforeNextTryListener = listener;
         return this;
     }
 
-    public AsyncCallExecutor<T> onCompletion(RetryListener listener) {
+    public AsyncCallExecutor<T> onCompletion(RetryListener<T> listener) {
         this.onCompletionListener = listener;
         return this;
     }
 
-    public AsyncCallExecutor<T> onSuccess(RetryListener listener) {
+    public AsyncCallExecutor<T> onSuccess(RetryListener<T> listener) {
         this.onSuccessListener = listener;
         return this;
     }
 
-    public AsyncCallExecutor<T> onFailure(RetryListener listener) {
+    public AsyncCallExecutor<T> onFailure(RetryListener<T> listener) {
         this.onFailureListener = listener;
         return this;
     }

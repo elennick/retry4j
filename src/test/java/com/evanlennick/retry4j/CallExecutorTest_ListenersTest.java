@@ -8,8 +8,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.timeout;
@@ -191,6 +194,22 @@ public class CallExecutorTest_ListenersTest {
         executor.execute(callable);
 
         verify(dummyMock, timeout(1000)).listenersCallThis(isA(IllegalArgumentException.class));
+    }
+
+    @Test
+    public void verifyOnListener_resultHasTypeOfCallExecutor() {
+        List<String> methodCalls = new ArrayList<>();
+        executor
+                .onSuccess(status -> {
+                    methodCalls.add("onSuccess");
+                    assertThat(status.getResult()).isInstanceOf(String.class);
+                })
+                .onCompletion(status -> {
+                    methodCalls.add("onCompletion");
+                    assertThat(status.getResult()).isInstanceOf(String.class);
+                })
+                .execute(() -> "");
+        assertThat(methodCalls).contains("onSuccess", "onCompletion");
     }
 
     private class DummyMock {
