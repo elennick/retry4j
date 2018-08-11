@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -178,7 +178,8 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         logger.trace("Retry4j executor sleeping for {} ms", millisToSleep);
         try {
             TimeUnit.MILLISECONDS.sleep(millisToSleep);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private boolean shouldThrowException(Exception e) {
@@ -191,25 +192,45 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
                 return false;
             }
 
-            //config says to retry only on specific exceptions
-            for (Class<? extends Exception> exceptionToRetryOn : this.config.getRetryOnSpecificExceptions()) {
-                if (exceptionToRetryOn.isAssignableFrom(e.getClass())) {
+            Set<Class<?>> exceptionsToMatch = new HashSet<>();
+            exceptionsToMatch.add(e.getClass());
+            if (this.config.shouldRetryOnCausedBy()) {
+                exceptionsToMatch.clear();
+                exceptionsToMatch.addAll(getExceptionCauses(e));
+            }
+
+            return !exceptionsToMatch.stream().anyMatch(ex -> matchesException(ex));
+        }
+    }
+
+    private boolean matchesException(Class<?> thrownExceptionClass) {
+        //config says to retry only on specific exceptions
+        for (Class<? extends Exception> exceptionToRetryOn : this.config.getRetryOnSpecificExceptions()) {
+            if (exceptionToRetryOn.isAssignableFrom(thrownExceptionClass)) {
+                return true;
+            }
+        }
+
+        //config says to retry on all except specific exceptions
+        if (!this.config.getRetryOnAnyExceptionExcluding().isEmpty()) {
+            for (Class<? extends Exception> exceptionToNotRetryOn : this.config.getRetryOnAnyExceptionExcluding()) {
+                if (exceptionToNotRetryOn.isAssignableFrom(thrownExceptionClass)) {
                     return false;
                 }
             }
-
-            //config says to retry on all except specific exceptions
-            if (!this.config.getRetryOnAnyExceptionExcluding().isEmpty()) {
-                for (Class<? extends Exception> exceptionToNotRetryOn : this.config.getRetryOnAnyExceptionExcluding()) {
-                    if (exceptionToNotRetryOn.isAssignableFrom(e.getClass())) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
             return true;
         }
+        return false;
+    }
+
+    private Set<Class<?>> getExceptionCauses(Exception exception) {
+        Throwable parent = exception;
+        Set<Class<?>> causes = new HashSet<>();
+        while (parent.getCause() != null) {
+            causes.add(parent.getCause().getClass());
+            parent = parent.getCause();
+        }
+        return causes;
     }
 
     @Override

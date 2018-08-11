@@ -23,6 +23,7 @@ public class RetryConfigBuilder {
     private boolean builtInExceptionStrategySpecified;
     private RetryConfig config;
     private boolean validationEnabled;
+    private boolean matchAgainstExceptionCause;
 
     public final static String MUST_SPECIFY_BACKOFF__ERROR_MSG
             = "Retry config must specify a backoff strategy!";
@@ -74,6 +75,11 @@ public class RetryConfigBuilder {
         config.setRetryOnSpecificExceptions(new HashSet<>());
 
         builtInExceptionStrategySpecified = true;
+        return this;
+    }
+
+    public RetryConfigBuilder retryOnCausedBy(){
+        config.setRetryOnCausedBy(true);
         return this;
     }
 

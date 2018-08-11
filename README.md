@@ -149,6 +149,14 @@ RetryConfig config = new RetryConfigBuilder()
         .build();
 ```
 
+If you want the executor to continue to retry when encountered exception's cause is among a list of exceptions, then specify **retryOnCausedBy()** config option
+```java
+RetryConfig config = new RetryConfigBuilder()
+        .retryOnCausedBy()
+        .retryOnSpecificExceptions(ConnectException.class, TimeoutException.class)
+        .build();
+```
+
 If you want the executor to continue to retry on all encountered exceptions EXCEPT for a few specific ones, specify this using the **retryOnAnyExceptionExcluding()** config option. If this exception strategy is chosen, only the exceptions specified or their subclasses will interupt the executor and throw an **UnexpectedException**.
 
 ```java
