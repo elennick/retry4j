@@ -68,6 +68,63 @@ public class CallExecutorTest {
         new CallExecutor(retryConfig).execute(callable);
     }
 
+    @Test(expectedExceptions = {RetriesExhaustedException.class})
+    public void shouldMatchExceptionCauseAndRetry() throws Exception {
+        Callable<Boolean> callable = () -> {
+            throw new Exception(new CustomTestException("message", 3));
+        };
+
+        RetryConfig retryConfig = retryConfigBuilder
+                .retryOnCausedBy()
+                .retryOnSpecificExceptions(CustomTestException.class)
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+                .withFixedBackoff()
+                .build();
+
+        new CallExecutor(retryConfig).execute(callable);
+    }
+
+
+    @Test(expectedExceptions = {RetriesExhaustedException.class})
+    public void shouldMatchExceptionCauseAtGreaterThanALevelDeepAndRetry() throws Exception {
+        class CustomException extends Exception {
+            CustomException(Throwable cause){
+                super(cause);
+            }
+        }
+        Callable<Boolean> callable = () -> {
+            throw new Exception(new CustomException(new RuntimeException(new IOException())));
+        };
+
+        RetryConfig retryConfig = retryConfigBuilder
+                .retryOnCausedBy()
+                .retryOnSpecificExceptions(IOException.class)
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+                .withFixedBackoff()
+                .build();
+
+        new CallExecutor(retryConfig).execute(callable);
+    }
+
+    @Test(expectedExceptions = {UnexpectedException.class})
+    public void shouldThrowUnexpectedIfThrownExceptionCauseDoesNotMatchRetryExceptions() throws Exception {
+        Callable<Boolean> callable = () -> {
+            throw new Exception(new CustomTestException("message", 3));
+        };
+
+        RetryConfig retryConfig = retryConfigBuilder
+                .retryOnCausedBy()
+                .retryOnSpecificExceptions(IOException.class)
+                .withMaxNumberOfTries(1)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+                .withFixedBackoff()
+                .build();
+
+        new CallExecutor(retryConfig).execute(callable);
+    }
+
     @Test(expectedExceptions = {UnexpectedException.class})
     public void verifySpecificSuperclassExceptionThrowsUnexpectedException() throws Exception {
         Callable<Boolean> callable = () -> {
@@ -153,7 +210,9 @@ public class CallExecutorTest {
 
     @Test
     public void verifyStatusIsPopulatedOnFailedCall() throws Exception {
-        Callable<Boolean> callable = () -> { throw new FileNotFoundException(); };
+        Callable<Boolean> callable = () -> {
+            throw new FileNotFoundException();
+        };
 
         RetryConfig retryConfig = retryConfigBuilder
                 .withMaxNumberOfTries(5)
@@ -252,7 +311,8 @@ public class CallExecutorTest {
         final long before = System.currentTimeMillis();
         try {
             new CallExecutor<>(retryConfig).execute(callable);
-        } catch (RetriesExhaustedException ignored) {}
+        } catch (RetriesExhaustedException ignored) {
+        }
 
         assertThat(System.currentTimeMillis() - before).isGreaterThan(5000);
         verify(mockBackOffStrategy).getDurationToWait(1, delayBetweenTriesDuration);

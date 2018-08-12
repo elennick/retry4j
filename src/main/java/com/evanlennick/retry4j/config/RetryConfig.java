@@ -18,6 +18,7 @@ public class RetryConfig {
     private Object valueToRetryOn;
     private Boolean retryOnValue = false;
     private Function<Exception, Boolean> customRetryOnLogic;
+    private boolean retryOnCausedBy;
 
     public Object getValueToRetryOn() {
         return valueToRetryOn;
@@ -57,6 +58,14 @@ public class RetryConfig {
 
     public void setRetryOnAnyExceptionExcluding(Set<Class<? extends Exception>> retryOnAnyExceptionExcluding) {
         this.retryOnAnyExceptionExcluding = retryOnAnyExceptionExcluding;
+    }
+
+    public void setRetryOnCausedBy(boolean retryOnCausedBy){
+        this.retryOnCausedBy = retryOnCausedBy;
+    }
+
+    public boolean shouldRetryOnCausedBy() {
+        return retryOnCausedBy;
     }
 
     public Integer getMaxNumberOfTries() {

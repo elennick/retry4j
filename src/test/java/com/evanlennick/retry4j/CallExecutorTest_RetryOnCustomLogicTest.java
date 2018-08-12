@@ -83,17 +83,4 @@ public class CallExecutorTest_RetryOnCustomLogicTest {
                 });
     }
 
-    private class CustomTestException extends RuntimeException {
-
-        private int someValue;
-
-        public CustomTestException(String message, int someValue) {
-            super(message);
-            this.someValue = someValue;
-        }
-
-        public int getSomeValue() {
-            return someValue;
-        }
-    }
 }
