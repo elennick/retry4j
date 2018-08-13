@@ -48,7 +48,8 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        Status status = new CallExecutor(retryConfig).execute(callable);
+        Status status = new CallExecutorBuilder().config(retryConfig).build()
+            .execute(callable);
         assertThat(status.wasSuccessful());
     }
 
@@ -65,7 +66,8 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build()
+            .execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -82,7 +84,7 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
 
@@ -105,7 +107,7 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -122,7 +124,7 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -138,7 +140,7 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -154,7 +156,7 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -170,7 +172,7 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -186,7 +188,7 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test
@@ -199,7 +201,8 @@ public class CallExecutorTest {
                 .withFixedBackoff()
                 .build();
 
-        Status status = new CallExecutor(retryConfig).execute(callable);
+        Status<Boolean> status = new CallExecutorBuilder().config(retryConfig).build()
+            .execute(callable);
 
         assertThat(status.getResult()).isNotNull();
         assertThat(status.wasSuccessful());
@@ -222,7 +225,8 @@ public class CallExecutorTest {
                 .build();
 
         try {
-            new CallExecutor(retryConfig).execute(callable, "TestCall");
+            CallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryConfig).build();
+            executor.execute(callable, "TestCall");
             fail("RetriesExhaustedException wasn't thrown!");
         } catch (RetriesExhaustedException e) {
             Status status = e.getStatus();
@@ -244,7 +248,8 @@ public class CallExecutorTest {
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .build();
 
-        Status status = new CallExecutor(retryConfig).execute(callable);
+        Status status = new CallExecutorBuilder().config(retryConfig).build()
+            .execute(callable);
 
         assertThat(status.getResult()).isEqualTo("test");
     }
@@ -259,7 +264,8 @@ public class CallExecutorTest {
                 .build();
 
         try {
-            new CallExecutor(retryConfig).execute(callable);
+            new CallExecutorBuilder().config(retryConfig).build()
+                .execute(callable);
         } catch (RetriesExhaustedException e) {
             Status status = e.getStatus();
             assertThat(status.getResult()).isNull();
@@ -285,8 +291,8 @@ public class CallExecutorTest {
                 .build();
 
         try {
-            CallExecutor executor = new CallExecutor(retryConfig);
-            executor.execute(callable);
+            new CallExecutorBuilder().config(retryConfig).build()
+                .execute(callable);
         } catch (RetriesExhaustedException e) {
             fail("Retries should never be exhausted!");
         }
@@ -310,7 +316,8 @@ public class CallExecutorTest {
 
         final long before = System.currentTimeMillis();
         try {
-            new CallExecutor<>(retryConfig).execute(callable);
+            CallExecutor executor = new CallExecutorBuilder().config(retryConfig).build();
+            executor.execute(callable);
         } catch (RetriesExhaustedException ignored) {
         }
 
@@ -327,7 +334,8 @@ public class CallExecutorTest {
                 .withNoWaitBackoff()
                 .build();
 
-        Status status = new CallExecutor(noWaitConfig).execute(callable);
+        CallExecutor executor = new CallExecutorBuilder().config(noWaitConfig).build();
+        Status status = executor.execute(callable);
 
         assertThat(status.getResult()).isEqualTo("test");
     }

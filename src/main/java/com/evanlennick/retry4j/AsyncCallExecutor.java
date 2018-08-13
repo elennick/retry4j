@@ -29,13 +29,19 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
 
     private RetryListener<T> onCompletionListener;
 
-    public AsyncCallExecutor(RetryConfig config) {
-        this(config, null);
-    }
-
-    public AsyncCallExecutor(RetryConfig config, ExecutorService executorService) {
+    /**
+     * Use {@link CallExecutorBuilder} to build AsyncCallExecutor
+     */
+    AsyncCallExecutor(RetryConfig config, ExecutorService executorService, RetryListener<T> afterFailedTryListener,
+                             RetryListener<T> beforeNextTryListener, RetryListener<T> onFailureListener,
+                             RetryListener<T> onSuccessListener, RetryListener<T> onCompletionListener) {
         this.config = config;
         this.executorService = executorService;
+        this.afterFailedTryListener = afterFailedTryListener;
+        this.beforeNextTryListener = beforeNextTryListener;
+        this.onFailureListener = onFailureListener;
+        this.onSuccessListener = onSuccessListener;
+        this.onCompletionListener = onCompletionListener;
     }
 
     @Override
@@ -45,13 +51,8 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
 
     @Override
     public CompletableFuture<Status<T>> execute(Callable<T> callable, String callName) {
-        CallExecutor<T> synchronousCallExecutor = new CallExecutor<>(config);
-
-        synchronousCallExecutor.afterFailedTry(afterFailedTryListener);
-        synchronousCallExecutor.beforeNextTry(beforeNextTryListener);
-        synchronousCallExecutor.onSuccess(onSuccessListener);
-        synchronousCallExecutor.onFailure(onFailureListener);
-        synchronousCallExecutor.onCompletion(onCompletionListener);
+        CallExecutor<T> synchronousCallExecutor = new CallExecutor<>(config, afterFailedTryListener,
+            beforeNextTryListener, onFailureListener, onSuccessListener, onCompletionListener);
 
         CompletableFuture<Status<T>> completableFuture = new CompletableFuture<>();
 
@@ -75,34 +76,28 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
         }
     }
 
-    public AsyncCallExecutor<T> afterFailedTry(RetryListener<T> listener) {
-        this.afterFailedTryListener = listener;
-        return this;
+    public RetryConfig getConfig() {
+        return config;
     }
 
-    public AsyncCallExecutor<T> beforeNextTry(RetryListener<T> listener) {
-        this.beforeNextTryListener = listener;
-        return this;
+    public RetryListener<T> getAfterFailedTryListener() {
+        return afterFailedTryListener;
     }
 
-    public AsyncCallExecutor<T> onCompletion(RetryListener<T> listener) {
-        this.onCompletionListener = listener;
-        return this;
+    public RetryListener<T> getBeforeNextTryListener() {
+        return beforeNextTryListener;
     }
 
-    public AsyncCallExecutor<T> onSuccess(RetryListener<T> listener) {
-        this.onSuccessListener = listener;
-        return this;
+    public RetryListener<T> getOnFailureListener() {
+        return onFailureListener;
     }
 
-    public AsyncCallExecutor<T> onFailure(RetryListener<T> listener) {
-        this.onFailureListener = listener;
-        return this;
+    public RetryListener<T> getOnSuccessListener() {
+        return onSuccessListener;
     }
 
-    @Override
-    public void setConfig(RetryConfig config) {
-        this.config = config;
+    public RetryListener<T> getOnCompletionListener() {
+        return onCompletionListener;
     }
 
     public void setExecutorService(ExecutorService executorService) {

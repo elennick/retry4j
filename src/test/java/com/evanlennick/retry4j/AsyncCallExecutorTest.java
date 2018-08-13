@@ -54,7 +54,7 @@ public class AsyncCallExecutorTest {
     public void verifyMultipleCalls_noExecutorService() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
+        AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig).buildAsync();
 
         CompletableFuture<Status<Boolean>> future1 = executor.execute(callable);
         CompletableFuture<Status<Boolean>> future2 = executor.execute(callable);
@@ -73,7 +73,7 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_success_noExecutorService() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
+        AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig).buildAsync();
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -86,7 +86,7 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_failDueToTooManyRetries_noExecutorService() throws Exception {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
+        AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig).buildAsync();
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -99,7 +99,7 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_failDueToUnexpectedException_noExecutorService() throws Exception {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(failOnAnyExceptionConfig);
+        AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(failOnAnyExceptionConfig).buildAsync();
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -112,9 +112,8 @@ public class AsyncCallExecutorTest {
     public void verifyMultipleCalls_withExecutorService() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(
-                retryOnAnyExceptionConfig,
-                executorService);
+        AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig)
+            .buildAsync(executorService);
 
         CompletableFuture<Status<Boolean>> future1 = executor.execute(callable);
         CompletableFuture<Status<Boolean>> future2 = executor.execute(callable);
@@ -133,9 +132,8 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_success_withExecutorService() throws Exception {
         Callable<Boolean> callable = () -> true;
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(
-                retryOnAnyExceptionConfig,
-                executorService);
+        AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig)
+            .buildAsync(executorService);
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -148,9 +146,8 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_failDueToTooManyRetries_withExecutorService() throws Exception {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(
-                retryOnAnyExceptionConfig,
-                executorService);
+        AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig)
+            .buildAsync(executorService);
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -163,9 +160,8 @@ public class AsyncCallExecutorTest {
     public void verifyOneCall_failDueToUnexpectedException_withExecutorService() throws Exception {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
-        AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(
-                failOnAnyExceptionConfig,
-                executorService);
+        AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(failOnAnyExceptionConfig)
+            .buildAsync(executorService);
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 

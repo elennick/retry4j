@@ -39,12 +39,18 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
 
     private Status<T> status = new Status<>();
 
-    public CallExecutor() {
-        this(new RetryConfigBuilder().fixedBackoff5Tries10Sec().build());
-    }
-
-    public CallExecutor(RetryConfig config) {
+    /**
+     * Use {@link CallExecutorBuilder} to build {@link CallExecutor}
+     */
+    CallExecutor(RetryConfig config, RetryListener<T> afterFailedTryListener,
+                        RetryListener<T> beforeNextTryListener, RetryListener<T> onFailureListener,
+                        RetryListener<T> onSuccessListener, RetryListener<T> onCompletionListener) {
         this.config = config;
+        this.afterFailedTryListener = afterFailedTryListener;
+        this.beforeNextTryListener = beforeNextTryListener;
+        this.onFailureListener = onFailureListener;
+        this.onSuccessListener = onSuccessListener;
+        this.onCompletionListener = onCompletionListener;
         this.status.setId(UUID.randomUUID().toString());
     }
 
@@ -232,36 +238,28 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         }
         return causes;
     }
-
-    @Override
-    public void setConfig(RetryConfig config) {
-        logger.trace("Set config on retry4j executor {}", config);
-        this.config = config;
+    public RetryConfig getConfig() {
+        return config;
     }
 
-    public CallExecutor<T> afterFailedTry(RetryListener<T> listener) {
-        this.afterFailedTryListener = listener;
-        return this;
+    public RetryListener<T> getAfterFailedTryListener() {
+        return afterFailedTryListener;
     }
 
-    public CallExecutor<T> beforeNextTry(RetryListener<T> listener) {
-        this.beforeNextTryListener = listener;
-        return this;
+    public RetryListener<T> getBeforeNextTryListener() {
+        return beforeNextTryListener;
     }
 
-    public CallExecutor<T> onCompletion(RetryListener<T> listener) {
-        this.onCompletionListener = listener;
-        return this;
+    public RetryListener<T> getOnFailureListener() {
+        return onFailureListener;
     }
 
-    public CallExecutor<T> onSuccess(RetryListener<T> listener) {
-        this.onSuccessListener = listener;
-        return this;
+    public RetryListener<T> getOnSuccessListener() {
+        return onSuccessListener;
     }
 
-    public CallExecutor<T> onFailure(RetryListener<T> listener) {
-        this.onFailureListener = listener;
-        return this;
+    public RetryListener<T> getOnCompletionListener() {
+        return onCompletionListener;
     }
 
     @Override

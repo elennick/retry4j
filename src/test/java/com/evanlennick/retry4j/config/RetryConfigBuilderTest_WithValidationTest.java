@@ -261,4 +261,21 @@ public class RetryConfigBuilderTest_WithValidationTest {
                     .isEqualTo(RetryConfigBuilder.CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG);
         }
     }
+
+    @Test(expectedExceptions = {InvalidRetryConfigException.class})
+    public void shouldNotAllowNegativeDelayBetweenRetries() {
+        retryConfigBuilder
+            .withFixedBackoff()
+            .retryIndefinitely()
+            .withDelayBetweenTries(Duration.of(-1, ChronoUnit.SECONDS))
+            .build();
+    }
+
+    @Test(expectedExceptions = {InvalidRetryConfigException.class})
+    public void shouldNotAllowNegativeMaxNumberOfTries() {
+        retryConfigBuilder
+            .withFixedBackoff()
+            .withMaxNumberOfTries(-1)
+            .build();
+    }
 }
