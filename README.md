@@ -326,10 +326,10 @@ new RetryConfigBuilder()
 
 ### CallExecutor
 
-Executing your code with retry logic is as simple as instantiating a **CallExecutor** with your configuration and then calling execute:
+Executing your code with retry logic is as simple as building a **CallExecutor** using **CallExecutorBuilder** with your configuration and then calling execute:
 
 ```java
-new CallExecutor(config).execute(callable);
+new CallExecutorBuilder.config(config).build().execute(callable);
 ``` 
 
 The CallExecutor expects that your logic is wrapped in a **java.util.concurrent.Callable**.
@@ -426,12 +426,14 @@ executor.onCompletion(s -> {
 Listeners can be chained together:
 
 ```java
-new CallExecutor<>(config)
+new CallExecutorBuilder<>()
+       .config(config)
        .onSuccess(s -> System.out.println("Success!"))
        .onCompletion(s -> System.out.println("Retry execution complete!"))
        .onFailure(s -> System.out.println("Failed! All retries exhausted..."))
        .afterFailedTry(s -> System.out.println("Try failed! Will try again in 0ms."))
        .beforeNextTry(s -> System.out.println("Trying again..."))
+       .build()
        .execute(callable);
 ```
 
@@ -442,7 +444,7 @@ Retry4j has some built in support for executing and retrying on one or more thre
 in action with a single call:
 
 ```java
-AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(config);
+AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(config).buildAsync();
 CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 Status<Boolean> status = future.get();
 ```
@@ -454,7 +456,7 @@ execution will not be blocked until `future.get()` is called (if it hasn't compl
 This executor can also be used to trigger several Callable's in parallel:
 
 ```java
-AsyncCallExecutor<Boolean> executor = new AsyncCallExecutor<>(retryOnAnyExceptionConfig);
+AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig).buildAsync();
 
 CompletableFuture<Status<Boolean>> future1 = executor.execute(callable1);
 CompletableFuture<Status<Boolean>> future2 = executor.execute(callable2);
@@ -470,7 +472,7 @@ up.
 
 ```java
 ExecutorService executorService = Executors.newFixedThreadPool(10);
-new AsyncCallExecutor<>(config, executorService);
+new CallExecutorBuilder().config(config).buildAsync(executorService);
 ```
 
 You can register retry listeners and configuration on an `AsyncCallExecutor` in the same fashion as the normal, 

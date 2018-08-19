@@ -24,9 +24,8 @@ public class CallExecutorTest_ListenersTest {
     @Mock
     private DummyMock dummyMock;
 
-    private CallExecutor<String> executor;
-
     private Callable<String> callable;
+    private RetryConfig config;
 
     @BeforeMethod
     public void setup() {
@@ -34,14 +33,12 @@ public class CallExecutorTest_ListenersTest {
 
         callable = () -> dummyMock.callableCallThis();
 
-        RetryConfig config = new RetryConfigBuilder()
+        config = new RetryConfigBuilder()
                 .retryOnAnyException()
                 .withMaxNumberOfTries(5)
                 .withDelayBetweenTries(0, ChronoUnit.SECONDS)
                 .withFixedBackoff()
                 .build();
-
-        executor = new CallExecutor<>(config);
     }
 
     @Test
@@ -51,8 +48,10 @@ public class CallExecutorTest_ListenersTest {
                 .thenThrow(new RuntimeException())
                 .thenReturn("success!");
 
-        executor.afterFailedTry(status -> dummyMock.listenersCallThis());
-        executor.execute(callable);
+        new CallExecutorBuilder().config(config)
+            .afterFailedTryListener(status -> dummyMock.listenersCallThis())
+            .build()
+            .execute(callable);
 
         verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
     }
@@ -63,8 +62,10 @@ public class CallExecutorTest_ListenersTest {
                 .thenThrow(new IllegalArgumentException())
                 .thenReturn("success!");
 
-        executor.afterFailedTry(status -> dummyMock.listenersCallThis(status.getLastExceptionThatCausedRetry()));
-        executor.execute(callable);
+        new CallExecutorBuilder().config(config)
+            .afterFailedTryListener(status -> dummyMock.listenersCallThis(status.getLastExceptionThatCausedRetry()))
+            .build()
+            .execute(callable);
 
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis(isA(IllegalArgumentException.class));
     }
@@ -76,8 +77,10 @@ public class CallExecutorTest_ListenersTest {
                 .thenThrow(new RuntimeException())
                 .thenReturn("success!");
 
-        executor.beforeNextTry(status -> dummyMock.listenersCallThis());
-        executor.execute(callable);
+        new CallExecutorBuilder().config(config)
+            .beforeNextTryListener(status -> dummyMock.listenersCallThis())
+            .build()
+            .execute(callable);
 
         verify(dummyMock, timeout(1000).times(2)).listenersCallThis();
     }
@@ -91,7 +94,9 @@ public class CallExecutorTest_ListenersTest {
                 .thenThrow(new NullPointerException())
                 .thenThrow(new IllegalArgumentException());
 
-        executor.beforeNextTry(status -> dummyMock.listenersCallThis(status.getLastExceptionThatCausedRetry()));
+        CallExecutor executor = new CallExecutorBuilder().config(config)
+            .beforeNextTryListener(status -> dummyMock.listenersCallThis(status.getLastExceptionThatCausedRetry()))
+            .build();
         try {
             executor.execute(callable);
         } catch (Exception e) {}
@@ -109,8 +114,10 @@ public class CallExecutorTest_ListenersTest {
                 .thenThrow(new RuntimeException())
                 .thenReturn("success!");
 
-        executor.onSuccess(status -> dummyMock.listenersCallThis());
-        executor.execute(callable);
+        new CallExecutorBuilder().config(config)
+            .onSuccessListener(status -> dummyMock.listenersCallThis())
+            .build()
+            .execute(callable);
 
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis();
     }
@@ -120,8 +127,10 @@ public class CallExecutorTest_ListenersTest {
         when(dummyMock.callableCallThis())
                 .thenThrow(new RuntimeException());
 
-        executor.onFailure(status -> dummyMock.listenersCallThis());
-        executor.execute(callable);
+        new CallExecutorBuilder().config(config)
+            .onFailureListener(status -> dummyMock.listenersCallThis())
+            .build()
+            .execute(callable);
 
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis();
     }
@@ -131,8 +140,10 @@ public class CallExecutorTest_ListenersTest {
         when(dummyMock.callableCallThis())
                 .thenReturn("success!");
 
-        executor.onCompletion(status -> dummyMock.listenersCallThis());
-        executor.execute(callable);
+        new CallExecutorBuilder().config(config)
+            .onCompletionListener(status -> dummyMock.listenersCallThis())
+            .build()
+            .execute(callable);
 
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis();
     }
@@ -142,9 +153,11 @@ public class CallExecutorTest_ListenersTest {
         when(dummyMock.callableCallThis())
                 .thenThrow(new RuntimeException());
 
-        executor.onCompletion(status -> dummyMock.listenersCallThis());
+        CallExecutor callExecutor = new CallExecutorBuilder().config(config)
+            .onCompletionListener(status -> dummyMock.listenersCallThis())
+            .build();
         try {
-            executor.execute(callable);
+            callExecutor.execute(callable);
         } catch (Exception e) {}
 
         verify(dummyMock, timeout(1000).times(1)).listenersCallThis();
@@ -152,12 +165,13 @@ public class CallExecutorTest_ListenersTest {
 
     @Test
     public void verifyChainedListeners_successImmediately() {
-        executor
-                .onSuccess(status -> dummyMock.listenersCallThis())
-                .onFailure(status -> dummyMock.listenersCallThis())
-                .onCompletion(status -> dummyMock.listenersCallThis())
-                .afterFailedTry(status -> dummyMock.listenersCallThis())
-                .beforeNextTry(status -> dummyMock.listenersCallThis())
+        new CallExecutorBuilder().config(config)
+                .onSuccessListener(status -> dummyMock.listenersCallThis())
+                .onFailureListener(status -> dummyMock.listenersCallThis())
+                .onCompletionListener(status -> dummyMock.listenersCallThis())
+                .afterFailedTryListener(status -> dummyMock.listenersCallThis())
+                .beforeNextTryListener(status -> dummyMock.listenersCallThis())
+                .build()
                 .execute(callable);
 
         //only success and completion should wind up being called
@@ -172,12 +186,13 @@ public class CallExecutorTest_ListenersTest {
                 .thenThrow(new RuntimeException())
                 .thenReturn("success!");
 
-        executor
-                .onSuccess(status -> dummyMock.listenersCallThis())
-                .onFailure(status -> dummyMock.listenersCallThis())
-                .onCompletion(status -> dummyMock.listenersCallThis())
-                .afterFailedTry(status -> dummyMock.listenersCallThis())
-                .beforeNextTry(status -> dummyMock.listenersCallThis())
+        new CallExecutorBuilder().config(config)
+                .onSuccessListener(status -> dummyMock.listenersCallThis())
+                .onFailureListener(status -> dummyMock.listenersCallThis())
+                .onCompletionListener(status -> dummyMock.listenersCallThis())
+                .afterFailedTryListener(status -> dummyMock.listenersCallThis())
+                .beforeNextTryListener(status -> dummyMock.listenersCallThis())
+                .build()
                 .execute(callable);
 
         //only calls success once, completion once and the retry listeners 3 times each
@@ -190,8 +205,9 @@ public class CallExecutorTest_ListenersTest {
                 .thenThrow(new RuntimeException())
                 .thenThrow(new IllegalArgumentException());
 
-        executor.onFailure(status -> dummyMock.listenersCallThis(status.getLastExceptionThatCausedRetry()));
-        executor.execute(callable);
+        new CallExecutorBuilder().config(config)
+            .onFailureListener(status -> dummyMock.listenersCallThis(status.getLastExceptionThatCausedRetry()))
+            .build().execute(callable);
 
         verify(dummyMock, timeout(1000)).listenersCallThis(isA(IllegalArgumentException.class));
     }
@@ -199,15 +215,16 @@ public class CallExecutorTest_ListenersTest {
     @Test
     public void verifyOnListener_resultHasTypeOfCallExecutor() {
         List<String> methodCalls = new ArrayList<>();
-        executor
-                .onSuccess(status -> {
+        new CallExecutorBuilder().config(config)
+                .onSuccessListener(status -> {
                     methodCalls.add("onSuccess");
                     assertThat(status.getResult()).isInstanceOf(String.class);
                 })
-                .onCompletion(status -> {
+                .onCompletionListener(status -> {
                     methodCalls.add("onCompletion");
                     assertThat(status.getResult()).isInstanceOf(String.class);
                 })
+                .build()
                 .execute(() -> "");
         assertThat(methodCalls).contains("onSuccess", "onCompletion");
     }

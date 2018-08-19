@@ -1,6 +1,7 @@
 package com.evanlennick.retry4j.config;
 
 import com.evanlennick.retry4j.CallExecutor;
+import com.evanlennick.retry4j.CallExecutorBuilder;
 import com.evanlennick.retry4j.Status;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,7 +28,8 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
             .exponentialBackoff5Tries5Sec()
             .build();
 
-        Status results = new CallExecutor(retryConfig).execute(callable);
+        CallExecutor callExecutor = new CallExecutorBuilder().config(retryConfig).build();
+        Status results = callExecutor.execute(callable);
         assertThat(results.wasSuccessful());
     }
 
@@ -39,7 +41,8 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
             .fiboBackoff7Tries5Sec()
             .build();
 
-        Status results = new CallExecutor(retryConfig).execute(callable);
+        CallExecutor callExecutor = new CallExecutorBuilder().config(retryConfig).build();
+        Status results = callExecutor.execute(callable);
         assertThat(results.wasSuccessful());
     }
 
@@ -51,7 +54,8 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
             .randomExpBackoff10Tries60Sec()
             .build();
 
-        Status results = new CallExecutor(retryConfig).execute(callable);
+        CallExecutor callExecutor = new CallExecutorBuilder().config(retryConfig).build();
+        Status results = callExecutor.execute(callable);
         assertThat(results.wasSuccessful());
     }
 
@@ -63,7 +67,8 @@ public class RetryConfigBuilderTest_SimpleDefaultsTest {
             .fixedBackoff5Tries10Sec()
             .build();
 
-        Status results = new CallExecutor(retryConfig).execute(callable);
+        CallExecutor callExecutor = new CallExecutorBuilder().config(retryConfig).build();
+        Status results = callExecutor.execute(callable);
         assertThat(results.wasSuccessful());
     }
 }

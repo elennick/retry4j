@@ -35,7 +35,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -51,7 +51,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = UnexpectedException.class)
@@ -67,7 +67,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = RetriesExhaustedException.class)
@@ -83,7 +83,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
                 .withFixedBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -98,7 +98,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
                 .withNoWaitBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {UnexpectedException.class})
@@ -113,7 +113,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
                 .withNoWaitBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
     @Test(expectedExceptions = {RetriesExhaustedException.class})
@@ -128,7 +128,7 @@ public class CallExecutorTest_RetryOnAnyExcludingTest {
                 .withNoWaitBackoff()
                 .build();
 
-        new CallExecutor(retryConfig).execute(callable);
+        new CallExecutorBuilder().config(retryConfig).build().execute(callable);
     }
 
 }
