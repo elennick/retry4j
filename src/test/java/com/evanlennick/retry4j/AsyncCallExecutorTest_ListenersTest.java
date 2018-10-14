@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AsyncCallExecutorTest_ListenersTest {
+
     private AsyncCallExecutor<String> executor;
     private RetryConfig config;
 
@@ -22,28 +23,28 @@ public class AsyncCallExecutorTest_ListenersTest {
         MockitoAnnotations.initMocks(this);
 
         config = new RetryConfigBuilder()
-              .retryOnAnyException()
-              .withMaxNumberOfTries(5)
-              .withDelayBetweenTries(0, ChronoUnit.SECONDS)
-              .withFixedBackoff()
-              .build();
+                .retryOnAnyException()
+                .withMaxNumberOfTries(5)
+                .withDelayBetweenTries(0, ChronoUnit.SECONDS)
+                .withFixedBackoff()
+                .build();
     }
 
     @Test
     public void verifyOnListener_resultHasTypeOfCallExecutor() throws Exception {
         List<String> methodCalls = new ArrayList<>();
         new CallExecutorBuilder()
-            .config(config)
-            .onSuccessListener(status -> {
-                methodCalls.add("onSuccess");
-                assertThat(status.getResult()).isInstanceOf(String.class);
-            })
-            .onCompletionListener(status -> {
-                methodCalls.add("onCompletion");
-                assertThat(status.getResult()).isInstanceOf(String.class);
-            })
-            .buildAsync(Executors.newFixedThreadPool(5))
-            .execute(() -> "").get();
+                .config(config)
+                .onSuccessListener(status -> {
+                    methodCalls.add("onSuccess");
+                    assertThat(status.getResult()).isInstanceOf(String.class);
+                })
+                .onCompletionListener(status -> {
+                    methodCalls.add("onCompletion");
+                    assertThat(status.getResult()).isInstanceOf(String.class);
+                })
+                .buildAsync(Executors.newFixedThreadPool(5))
+                .execute(() -> "").get();
         assertThat(methodCalls).contains("onSuccess", "onCompletion");
     }
 }

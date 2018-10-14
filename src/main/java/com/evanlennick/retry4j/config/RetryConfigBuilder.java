@@ -20,20 +20,6 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class RetryConfigBuilder {
 
-    private boolean builtInExceptionStrategySpecified;
-    private boolean validationEnabled;
-
-    private Boolean retryOnAnyException = false;
-    private Set<Class<? extends Exception>> retryOnSpecificExceptions = new HashSet<>();
-    private Set<Class<? extends Exception>> retryOnAnyExceptionExcluding = new HashSet<>();
-    private Integer maxNumberOfTries;
-    private Duration delayBetweenRetries;
-    private BackoffStrategy backoffStrategy;
-    private Object valueToRetryOn;
-    private Boolean retryOnValue = false;
-    private Function<Exception, Boolean> customRetryOnLogic;
-    private boolean retryOnCausedBy;
-
     public final static String MUST_SPECIFY_BACKOFF__ERROR_MSG
             = "Retry config must specify a backoff strategy!";
     public final static String MUST_SPECIFY_MAX_TRIES__ERROR_MSG
@@ -52,6 +38,18 @@ public class RetryConfigBuilder {
             = "Max number of retries must be a non-negative number.";
     public static final String SHOULD_SPECIFY_DELAY_BETWEEN_RETRIES_AS_POSTIVE__ERROR_MSG
             = "Delay between retries must be a non-negative Duration.";
+    private boolean builtInExceptionStrategySpecified;
+    private boolean validationEnabled;
+    private Boolean retryOnAnyException = false;
+    private Set<Class<? extends Exception>> retryOnSpecificExceptions = new HashSet<>();
+    private Set<Class<? extends Exception>> retryOnAnyExceptionExcluding = new HashSet<>();
+    private Integer maxNumberOfTries;
+    private Duration delayBetweenRetries;
+    private BackoffStrategy backoffStrategy;
+    private Object valueToRetryOn;
+    private Boolean retryOnValue = false;
+    private Function<Exception, Boolean> customRetryOnLogic;
+    private boolean retryOnCausedBy;
 
     public RetryConfigBuilder() {
         this.builtInExceptionStrategySpecified = false;
@@ -90,11 +88,10 @@ public class RetryConfigBuilder {
         return this;
     }
 
-    public RetryConfigBuilder retryOnCausedBy(){
+    public RetryConfigBuilder retryOnCausedBy() {
         retryOnCausedBy = true;
         return this;
     }
-
 
     @SafeVarargs
     public final RetryConfigBuilder retryOnSpecificExceptions(Class<? extends Exception>... exceptions) {
@@ -145,11 +142,11 @@ public class RetryConfigBuilder {
 
         maxNumberOfTries = max;
         return this;
-      }
+    }
 
     public RetryConfigBuilder retryIndefinitely() {
         if (maxNumberOfTries != null) {
-          throw new InvalidRetryConfigException(ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
+            throw new InvalidRetryConfigException(ALREADY_SPECIFIED_NUMBER_OF_TRIES__ERROR_MSG);
         }
 
         maxNumberOfTries = Integer.MAX_VALUE;
@@ -157,12 +154,12 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfigBuilder withDelayBetweenTries(Duration duration) {
-      if (duration.isNegative()) {
-        throw new InvalidRetryConfigException(SHOULD_SPECIFY_DELAY_BETWEEN_RETRIES_AS_POSTIVE__ERROR_MSG);
-      }
+        if (duration.isNegative()) {
+            throw new InvalidRetryConfigException(SHOULD_SPECIFY_DELAY_BETWEEN_RETRIES_AS_POSTIVE__ERROR_MSG);
+        }
 
-      delayBetweenRetries = duration;
-      return this;
+        delayBetweenRetries = duration;
+        return this;
     }
 
     public RetryConfigBuilder withDelayBetweenTries(long amount, ChronoUnit time) {
@@ -213,10 +210,10 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfig build() {
-        RetryConfig retryConfig =  new RetryConfig(retryOnAnyException, retryOnSpecificExceptions,
-            retryOnAnyExceptionExcluding, maxNumberOfTries,
-            delayBetweenRetries, backoffStrategy, valueToRetryOn,
-            retryOnValue, customRetryOnLogic, retryOnCausedBy);
+        RetryConfig retryConfig = new RetryConfig(retryOnAnyException, retryOnSpecificExceptions,
+                retryOnAnyExceptionExcluding, maxNumberOfTries,
+                delayBetweenRetries, backoffStrategy, valueToRetryOn,
+                retryOnValue, customRetryOnLogic, retryOnCausedBy);
 
         validateConfig(retryConfig);
 
@@ -225,19 +222,19 @@ public class RetryConfigBuilder {
 
     private void validateConfig(RetryConfig retryConfig) {
         if (!validationEnabled) {
-          return;
+            return;
         }
 
         if (null == retryConfig.getBackoffStrategy()) {
-          throw new InvalidRetryConfigException(MUST_SPECIFY_BACKOFF__ERROR_MSG);
+            throw new InvalidRetryConfigException(MUST_SPECIFY_BACKOFF__ERROR_MSG);
         }
 
         if (null == retryConfig.getMaxNumberOfTries()) {
-          throw new InvalidRetryConfigException(MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
+            throw new InvalidRetryConfigException(MUST_SPECIFY_MAX_TRIES__ERROR_MSG);
         }
 
         if (null != retryConfig.getCustomRetryOnLogic() && builtInExceptionStrategySpecified) {
-          throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG);
+            throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_CUSTOM_EXCEPTION_STRAT__ERROR_MSG);
         }
 
         backoffStrategy.validateConfig(retryConfig);
@@ -254,13 +251,13 @@ public class RetryConfigBuilder {
     }
 
     private void validateExceptionStrategyAddition() {
-      if (!validationEnabled) {
-          return;
-      }
+        if (!validationEnabled) {
+            return;
+        }
 
-      if (builtInExceptionStrategySpecified) {
-          throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
-      }
+        if (builtInExceptionStrategySpecified) {
+            throw new InvalidRetryConfigException(CAN_ONLY_SPECIFY_ONE_EXCEPTION_STRAT__ERROR_MSG);
+        }
     }
 
     public RetryConfigBuilder fixedBackoff5Tries10Sec() {

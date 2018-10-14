@@ -33,8 +33,8 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
      * Use {@link CallExecutorBuilder} to build AsyncCallExecutor
      */
     AsyncCallExecutor(RetryConfig config, ExecutorService executorService, RetryListener<T> afterFailedTryListener,
-                             RetryListener<T> beforeNextTryListener, RetryListener<T> onFailureListener,
-                             RetryListener<T> onSuccessListener, RetryListener<T> onCompletionListener) {
+                      RetryListener<T> beforeNextTryListener, RetryListener<T> onFailureListener,
+                      RetryListener<T> onSuccessListener, RetryListener<T> onCompletionListener) {
         this.config = config;
         this.executorService = executorService;
         this.afterFailedTryListener = afterFailedTryListener;
@@ -52,7 +52,7 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
     @Override
     public CompletableFuture<Status<T>> execute(Callable<T> callable, String callName) {
         CallExecutor<T> synchronousCallExecutor = new CallExecutor<>(config, afterFailedTryListener,
-            beforeNextTryListener, onFailureListener, onSuccessListener, onCompletionListener);
+                beforeNextTryListener, onFailureListener, onSuccessListener, onCompletionListener);
 
         CompletableFuture<Status<T>> completableFuture = new CompletableFuture<>();
 
@@ -100,12 +100,12 @@ public class AsyncCallExecutor<T> implements RetryExecutor<T, CompletableFuture<
         return onCompletionListener;
     }
 
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
-
     public ExecutorService getExecutorService() {
         return executorService;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     @Deprecated

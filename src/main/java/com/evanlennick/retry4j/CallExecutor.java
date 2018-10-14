@@ -1,7 +1,6 @@
 package com.evanlennick.retry4j;
 
 import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
 import com.evanlennick.retry4j.listener.RetryListener;
@@ -10,7 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -43,8 +44,8 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
      * Use {@link CallExecutorBuilder} to build {@link CallExecutor}
      */
     CallExecutor(RetryConfig config, RetryListener<T> afterFailedTryListener,
-                        RetryListener<T> beforeNextTryListener, RetryListener<T> onFailureListener,
-                        RetryListener<T> onSuccessListener, RetryListener<T> onCompletionListener) {
+                 RetryListener<T> beforeNextTryListener, RetryListener<T> onFailureListener,
+                 RetryListener<T> onSuccessListener, RetryListener<T> onCompletionListener) {
         this.config = config;
         this.afterFailedTryListener = afterFailedTryListener;
         this.beforeNextTryListener = beforeNextTryListener;
@@ -238,6 +239,7 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         }
         return causes;
     }
+
     public RetryConfig getConfig() {
         return config;
     }

@@ -39,21 +39,17 @@ public class RetryConfig {
         return valueToRetryOn;
     }
 
-
     public boolean shouldRetryOnValue() {
         return retryOnValue;
     }
-
 
     public boolean isRetryOnAnyException() {
         return retryOnAnyException;
     }
 
-
     public Set<Class<? extends Exception>> getRetryOnSpecificExceptions() {
         return retryOnSpecificExceptions;
     }
-
 
     public Set<Class<? extends Exception>> getRetryOnAnyExceptionExcluding() {
         return retryOnAnyExceptionExcluding;
@@ -76,7 +72,7 @@ public class RetryConfig {
     }
 
     public Duration getDelayBetweenRetries() {
-      return delayBetweenRetries;
+        return delayBetweenRetries;
     }
 
     @Override

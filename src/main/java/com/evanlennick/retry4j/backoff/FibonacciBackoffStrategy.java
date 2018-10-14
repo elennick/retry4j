@@ -9,9 +9,8 @@ import java.util.List;
 
 public class FibonacciBackoffStrategy implements BackoffStrategy {
 
-    private List<Integer> fibonacciNumbers;
-
     public static final int MAX_NUM_OF_FIB_NUMBERS = 25;
+    private List<Integer> fibonacciNumbers;
 
     public FibonacciBackoffStrategy() {
         fibonacciNumbers = new ArrayList<>();

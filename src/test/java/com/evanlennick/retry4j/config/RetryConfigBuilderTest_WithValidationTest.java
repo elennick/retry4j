@@ -265,17 +265,17 @@ public class RetryConfigBuilderTest_WithValidationTest {
     @Test(expectedExceptions = {InvalidRetryConfigException.class})
     public void shouldNotAllowNegativeDelayBetweenRetries() {
         retryConfigBuilder
-            .withFixedBackoff()
-            .retryIndefinitely()
-            .withDelayBetweenTries(Duration.of(-1, ChronoUnit.SECONDS))
-            .build();
+                .withFixedBackoff()
+                .retryIndefinitely()
+                .withDelayBetweenTries(Duration.of(-1, ChronoUnit.SECONDS))
+                .build();
     }
 
     @Test(expectedExceptions = {InvalidRetryConfigException.class})
     public void shouldNotAllowNegativeMaxNumberOfTries() {
         retryConfigBuilder
-            .withFixedBackoff()
-            .withMaxNumberOfTries(-1)
-            .build();
+                .withFixedBackoff()
+                .withMaxNumberOfTries(-1)
+                .build();
     }
 }

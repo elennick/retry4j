@@ -23,7 +23,7 @@ public class CallExecutorTest_RetryOnCustomLogicTest {
                 .build();
 
         try {
-          new CallExecutorBuilder().config(config).build()
+            new CallExecutorBuilder().config(config).build()
                     .execute(() -> {
                         throw new RuntimeException("should retry!");
                     });
@@ -42,11 +42,11 @@ public class CallExecutorTest_RetryOnCustomLogicTest {
                 .withMaxNumberOfTries(3)
                 .build();
 
-      new CallExecutorBuilder().config(config)
-          .build()
-          .execute(() -> {
-              throw new RuntimeException("should NOT retry!");
-          });
+        new CallExecutorBuilder().config(config)
+                .build()
+                .execute(() -> {
+                    throw new RuntimeException("should NOT retry!");
+                });
     }
 
     @Test
@@ -59,7 +59,7 @@ public class CallExecutorTest_RetryOnCustomLogicTest {
                 .build();
 
         try {
-          new CallExecutorBuilder().config(config).build()
+            new CallExecutorBuilder().config(config).build()
                     .execute(() -> {
                         throw new CustomTestException("should retry!", 100);
                     });
@@ -78,7 +78,7 @@ public class CallExecutorTest_RetryOnCustomLogicTest {
                 .withMaxNumberOfTries(3)
                 .build();
 
-      new CallExecutorBuilder().config(config).build()
+        new CallExecutorBuilder().config(config).build()
                 .execute(() -> {
                     throw new CustomTestException("test message", -100);
                 });

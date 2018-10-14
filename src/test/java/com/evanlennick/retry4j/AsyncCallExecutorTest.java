@@ -113,7 +113,7 @@ public class AsyncCallExecutorTest {
         Callable<Boolean> callable = () -> true;
 
         AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig)
-            .buildAsync(executorService);
+                .buildAsync(executorService);
 
         CompletableFuture<Status<Boolean>> future1 = executor.execute(callable);
         CompletableFuture<Status<Boolean>> future2 = executor.execute(callable);
@@ -133,7 +133,7 @@ public class AsyncCallExecutorTest {
         Callable<Boolean> callable = () -> true;
 
         AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig)
-            .buildAsync(executorService);
+                .buildAsync(executorService);
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -147,7 +147,7 @@ public class AsyncCallExecutorTest {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
         AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(retryOnAnyExceptionConfig)
-            .buildAsync(executorService);
+                .buildAsync(executorService);
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
@@ -161,7 +161,7 @@ public class AsyncCallExecutorTest {
         Callable<Boolean> callable = () -> { throw new RuntimeException(); };
 
         AsyncCallExecutor<Boolean> executor = new CallExecutorBuilder().config(failOnAnyExceptionConfig)
-            .buildAsync(executorService);
+                .buildAsync(executorService);
 
         CompletableFuture<Status<Boolean>> future = executor.execute(callable);
 
