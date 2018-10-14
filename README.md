@@ -90,7 +90,9 @@ CallExecutor executor = new CallExecutorBuilder<>()
         .afterFailedTry(s -> { //do something after a failed try })
         .beforeNextTry(s -> { //do something before the next try })
         .onCompletion(s -> { //do some cleanup })
-        .build().execute(callable);
+        .build();
+        
+executor.execute(callable);
 ```
 
 ## Dependencies
