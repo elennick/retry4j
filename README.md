@@ -46,7 +46,10 @@ RetryConfig config = new RetryConfigBuilder()
         .build();
         
 try {  
-    Status<Object> status = new CallExecutor(config).execute(callable);
+    Status<Object> status = new CallExecutorBuilder()
+        .config(config)
+        .build()
+        .execute(callable);
     Object object = status.getResult(); //the result of the callable logic, if it returns one
 } catch(RetriesExhaustedException ree) {
     //the call exhausted all tries without succeeding
@@ -80,13 +83,14 @@ RetryConfig config = new RetryConfigBuilder()
         .exponentialBackoff5Tries5Sec()
         .build();
 
-CallExecutor executor = new CallExecutor<>(config)
+CallExecutor executor = new CallExecutorBuilder<>()
+        .config(config).
         .onSuccess(s -> { //do something on success })
         .onFailure(s -> { //do something on a failed try })
         .afterFailedTry(s -> { //do something after a failed try })
         .beforeNextTry(s -> { //do something before the next try })
         .onCompletion(s -> { //do some cleanup })
-        .execute(callable);
+        .build().execute(callable);
 ```
 
 ## Dependencies
@@ -339,7 +343,7 @@ The CallExecutor expects that your logic is wrapped in a **java.util.concurrent.
 After the executor successfully completes or throws a RetriesExhaustedException, a **Status** object will returned or included in the exception. This object will contain detailed information about the call execution including the number of total tries, the total elapsed time and whether or not the execution was considered successful upon completion.
 
 ```java
-Status status = new CallExecutor(config).execute(callable);
+Status status = new CallExecutorBuilder().config(config).build().execute(callable);
 System.out.println(status.getResult()); //this will be populated if your callable returns a value
 System.out.println(status.wasSuccessful());
 System.out.println(status.getCallName());
@@ -352,7 +356,7 @@ or
 
 ```java
     try {  
-        new CallExecutor(config).execute(callable);
+        new CallExecutorBuilder().config(config).build().execute(callable);
     } catch(RetriesExhaustedException cfe) {
         Status status = cfe.getStatus();
         System.out.println(status.wasSuccessful());
@@ -388,7 +392,7 @@ new RetryConfigBuilder(false);
 Listeners are offered in case you want to be able to add logic that will execute immediately after a failed try or immediately before the next retry (for example, you may want to log or output a statement when something is retrying). These listeners can be specified like so:
 
 ```java
-CallExecutor executor = new CallExecutor(config);
+CallExecutor executor = new CallExecutorBuilder().config(config).build();
 
 executor.afterFailedTry(s -> { 
     //whatever logic you want to execute immediately after each failed try
