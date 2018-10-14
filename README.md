@@ -69,7 +69,7 @@ RetryConfig config = new RetryConfigBuilder()
     .exponentialBackoff5Tries5Sec()
     .build();
 
-Status<Object> status = new CallExecutor(config).execute(callable);
+Status<Object> status = new CallExecutorBuilder().config(config).build().execute(callable);
 ```
 
 ### Handling All Results with Listeners
