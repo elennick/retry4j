@@ -10,57 +10,57 @@ public class CallExecutorBuilder<T> {
 
     public static final RetryConfig DEFAULT_RETRY_CONFIG = new RetryConfigBuilder().fixedBackoff5Tries10Sec().build();
     private RetryConfig retryConfig = DEFAULT_RETRY_CONFIG;
-    private RetryListener afterFailedTryListener;
-    private RetryListener beforeNextTryListener;
-    private RetryListener onSuccessListener;
-    private RetryListener onFailureListener;
-    private RetryListener onCompletionListener;
+    private RetryListener<T> afterFailedTryListener;
+    private RetryListener<T> beforeNextTryListener;
+    private RetryListener<T> onSuccessListener;
+    private RetryListener<T> onFailureListener;
+    private RetryListener<T> onCompletionListener;
 
     public CallExecutorBuilder() {
     }
 
-    public CallExecutorBuilder config(RetryConfig retryConfig) {
+    public CallExecutorBuilder<T> config(RetryConfig retryConfig) {
         this.retryConfig = retryConfig;
         return this;
     }
 
-    public CallExecutorBuilder onCompletionListener(RetryListener listener) {
+    public CallExecutorBuilder<T> onCompletionListener(RetryListener<T> listener) {
         this.onCompletionListener = listener;
         return this;
     }
 
-    public CallExecutorBuilder onSuccessListener(RetryListener listener) {
+    public CallExecutorBuilder<T> onSuccessListener(RetryListener<T> listener) {
         this.onSuccessListener = listener;
         return this;
     }
 
-    public CallExecutorBuilder onFailureListener(RetryListener listener) {
+    public CallExecutorBuilder<T> onFailureListener(RetryListener<T> listener) {
         this.onFailureListener = listener;
         return this;
     }
 
-    public CallExecutorBuilder beforeNextTryListener(RetryListener listener) {
+    public CallExecutorBuilder<T> beforeNextTryListener(RetryListener<T> listener) {
         this.beforeNextTryListener = listener;
         return this;
     }
 
-    public CallExecutorBuilder afterFailedTryListener(RetryListener listener) {
+    public CallExecutorBuilder<T> afterFailedTryListener(RetryListener<T> listener) {
         this.afterFailedTryListener = listener;
         return this;
     }
 
     public CallExecutor<T> build() {
-        return new CallExecutor(retryConfig, afterFailedTryListener, beforeNextTryListener,
+        return new CallExecutor<>(retryConfig, afterFailedTryListener, beforeNextTryListener,
                 onFailureListener, onSuccessListener, onCompletionListener);
     }
 
     public AsyncCallExecutor<T> buildAsync() {
-        return new AsyncCallExecutor(retryConfig, null, afterFailedTryListener, beforeNextTryListener,
+        return new AsyncCallExecutor<>(retryConfig, null, afterFailedTryListener, beforeNextTryListener,
                 onFailureListener, onSuccessListener, onCompletionListener);
     }
 
     public AsyncCallExecutor<T> buildAsync(ExecutorService executorService) {
-        return new AsyncCallExecutor(retryConfig, executorService, afterFailedTryListener, beforeNextTryListener,
+        return new AsyncCallExecutor<>(retryConfig, executorService, afterFailedTryListener, beforeNextTryListener,
                 onFailureListener, onSuccessListener, onCompletionListener);
     }
 }
