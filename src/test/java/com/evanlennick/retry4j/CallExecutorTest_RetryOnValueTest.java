@@ -117,6 +117,23 @@ public class CallExecutorTest_RetryOnValueTest {
     }
 
     @Test
+    public void verifyRetryOnReturnValues_shouldRetry() {
+        Callable<RetryOnValueTestObject> callable
+                        = () -> new RetryOnValueTestObject("500 ERROR");
+
+        RetryConfig config = retryConfigBuilder
+                        .retryOnAnyException()
+                        .retryOnReturnValues(new RetryOnValueTestObject("500 ERROR"),
+                                             new RetryOnValueTestObject("501 NOT IMPLEMENTED"))
+                        .withDelayBetweenTries(Duration.ZERO)
+                        .withMaxNumberOfTries(3)
+                        .withFixedBackoff()
+                        .build();
+
+        assertRetryOccurs(config, callable, 3);
+    }
+
+    @Test
     public void verifyRetryOnReturnValuesExcluding_shouldRetry() {
         Callable<RetryOnValueTestObject> callable
                         = () -> new RetryOnValueTestObject("500 ERROR");
