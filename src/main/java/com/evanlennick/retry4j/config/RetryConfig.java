@@ -3,6 +3,7 @@ package com.evanlennick.retry4j.config;
 import com.evanlennick.retry4j.backoff.BackoffStrategy;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -14,14 +15,16 @@ public class RetryConfig {
     private final Integer maxNumberOfTries;
     private final Duration delayBetweenRetries;
     private final BackoffStrategy backoffStrategy;
-    private final Object valueToRetryOn;
+    private final Object[] valuesToRetryOn;
+    private final Object[] valuesToExpect;
     private final boolean retryOnValue;
     private final Function<Exception, Boolean> customRetryOnLogic;
     private final boolean retryOnCausedBy;
 
     RetryConfig(boolean retryOnAnyException, Set<Class<? extends Exception>> retryOnSpecificExceptions,
                 Set<Class<? extends Exception>> retryOnAnyExceptionExcluding, Integer maxNumberOfTries,
-                Duration delayBetweenRetries, BackoffStrategy backoffStrategy, Object valueToRetryOn,
+                Duration delayBetweenRetries, BackoffStrategy backoffStrategy,
+                Object[] valuesToRetryOn, Object[] valuesToExpect,
                 boolean retryOnValue, Function<Exception, Boolean> customRetryOnLogic, boolean retryOnCausedBy) {
         this.retryOnAnyException = retryOnAnyException;
         this.retryOnSpecificExceptions = retryOnSpecificExceptions;
@@ -29,14 +32,19 @@ public class RetryConfig {
         this.maxNumberOfTries = maxNumberOfTries;
         this.delayBetweenRetries = delayBetweenRetries;
         this.backoffStrategy = backoffStrategy;
-        this.valueToRetryOn = valueToRetryOn;
+        this.valuesToRetryOn = valuesToRetryOn;
+        this.valuesToExpect = valuesToExpect;
         this.retryOnValue = retryOnValue;
         this.customRetryOnLogic = customRetryOnLogic;
         this.retryOnCausedBy = retryOnCausedBy;
     }
 
-    public Object getValueToRetryOn() {
-        return valueToRetryOn;
+    public Object[] getValuesToRetryOn() {
+        return valuesToRetryOn;
+    }
+
+    public Object[] getValuesToExpect() {
+        return valuesToExpect;
     }
 
     public boolean shouldRetryOnValue() {
@@ -84,7 +92,7 @@ public class RetryConfig {
         sb.append(", maxNumberOfTries=").append(maxNumberOfTries);
         sb.append(", delayBetweenRetries=").append(delayBetweenRetries);
         sb.append(", backoffStrategy=").append(backoffStrategy);
-        sb.append(", valueToRetryOn=").append(valueToRetryOn);
+        sb.append(", valuesToRetryOn=").append( valuesToRetryOn == null ? "null" : Arrays.asList( valuesToRetryOn ));
         sb.append(", retryOnValue=").append(retryOnValue);
         sb.append(", customRetryOnLogic=").append(customRetryOnLogic);
         sb.append('}');

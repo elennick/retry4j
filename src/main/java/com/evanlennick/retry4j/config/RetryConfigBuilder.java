@@ -46,7 +46,8 @@ public class RetryConfigBuilder {
     private Integer maxNumberOfTries;
     private Duration delayBetweenRetries;
     private BackoffStrategy backoffStrategy;
-    private Object valueToRetryOn;
+    private Object[] valuesToRetryOn;
+    private Object[] valuesToExpect;
     private Boolean retryOnValue = false;
     private Function<Exception, Boolean> customRetryOnLogic;
     private boolean retryOnCausedBy;
@@ -117,7 +118,23 @@ public class RetryConfigBuilder {
 
     public final RetryConfigBuilder retryOnReturnValue(Object value) {
         retryOnValue = true;
-        valueToRetryOn = value;
+        valuesToRetryOn = new Object[] { value };
+
+        return this;
+    }
+
+    @SafeVarargs
+    public final RetryConfigBuilder retryOnReturnValues(Object... values) {
+        retryOnValue = true;
+        valuesToRetryOn = values;
+
+        return this;
+    }
+
+    @SafeVarargs
+    public final RetryConfigBuilder retryOnReturnValuesExcluding(Object... values) {
+        retryOnValue = true;
+        valuesToExpect = values;
 
         return this;
     }
@@ -210,10 +227,11 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfig build() {
-        RetryConfig retryConfig = new RetryConfig(retryOnAnyException, retryOnSpecificExceptions,
-                retryOnAnyExceptionExcluding, maxNumberOfTries,
-                delayBetweenRetries, backoffStrategy, valueToRetryOn,
-                retryOnValue, customRetryOnLogic, retryOnCausedBy);
+        RetryConfig retryConfig = new RetryConfig( retryOnAnyException, retryOnSpecificExceptions,
+                                                   retryOnAnyExceptionExcluding, maxNumberOfTries,
+                                                   delayBetweenRetries, backoffStrategy, valuesToRetryOn,
+                                                   valuesToExpect,
+                                                   retryOnValue, customRetryOnLogic, retryOnCausedBy);
 
         validateConfig(retryConfig);
 

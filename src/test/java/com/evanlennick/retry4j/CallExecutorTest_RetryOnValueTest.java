@@ -117,6 +117,38 @@ public class CallExecutorTest_RetryOnValueTest {
     }
 
     @Test
+    public void verifyRetryOnReturnValuesExcluding_shouldRetry() {
+        Callable<RetryOnValueTestObject> callable
+                        = () -> new RetryOnValueTestObject("500 ERROR");
+
+        RetryConfig config = retryConfigBuilder
+                        .retryOnAnyException()
+                        .retryOnReturnValuesExcluding(new RetryOnValueTestObject("200 OK"))
+                        .withDelayBetweenTries(Duration.ZERO)
+                        .withMaxNumberOfTries(3)
+                        .withFixedBackoff()
+                        .build();
+
+        assertRetryOccurs(config, callable, 3);
+    }
+
+    @Test
+    public void verifyRetryOnReturnValuesExcluding_shouldNotRetry() {
+        Callable<RetryOnValueTestObject> callable
+                        = () -> new RetryOnValueTestObject("201 CREATED");
+
+        RetryConfig config = retryConfigBuilder
+                        .retryOnAnyException()
+                        .retryOnReturnValuesExcluding(new RetryOnValueTestObject("200 OK"),new RetryOnValueTestObject("201 CREATED"))
+                        .withDelayBetweenTries(Duration.ZERO)
+                        .withMaxNumberOfTries(3)
+                        .withFixedBackoff()
+                        .build();
+
+        assertRetryDoesNotOccur(config, callable);
+    }
+
+    @Test
     public void verifyRetryOnValueAndExceptionInSameCall() {
         final Random random = new Random();
         Callable<Boolean> callable = () -> {
