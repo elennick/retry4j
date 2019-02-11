@@ -11,9 +11,7 @@ import com.evanlennick.retry4j.exception.InvalidRetryConfigException;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -46,8 +44,8 @@ public class RetryConfigBuilder {
     private Integer maxNumberOfTries;
     private Duration delayBetweenRetries;
     private BackoffStrategy backoffStrategy;
-    private Object[] valuesToRetryOn;
-    private Object[] valuesToExpect;
+    private Collection<Object> valuesToRetryOn;
+    private Collection<Object> valuesToExpect;
     private Boolean retryOnValue = false;
     private Function<Exception, Boolean> customRetryOnLogic;
     private boolean retryOnCausedBy;
@@ -118,7 +116,7 @@ public class RetryConfigBuilder {
 
     public final RetryConfigBuilder retryOnReturnValue(Object value) {
         retryOnValue = true;
-        valuesToRetryOn = new Object[] { value };
+        valuesToRetryOn = Arrays.asList(value);
 
         return this;
     }
@@ -126,7 +124,7 @@ public class RetryConfigBuilder {
     @SafeVarargs
     public final RetryConfigBuilder retryOnReturnValues(Object... values) {
         retryOnValue = true;
-        valuesToRetryOn = values;
+        valuesToRetryOn = Arrays.asList(values);
 
         return this;
     }
@@ -134,7 +132,7 @@ public class RetryConfigBuilder {
     @SafeVarargs
     public final RetryConfigBuilder retryOnReturnValuesExcluding(Object... values) {
         retryOnValue = true;
-        valuesToExpect = values;
+        valuesToExpect = Arrays.asList(values);
 
         return this;
     }
@@ -227,11 +225,11 @@ public class RetryConfigBuilder {
     }
 
     public RetryConfig build() {
-        RetryConfig retryConfig = new RetryConfig( retryOnAnyException, retryOnSpecificExceptions,
-                                                   retryOnAnyExceptionExcluding, maxNumberOfTries,
-                                                   delayBetweenRetries, backoffStrategy, valuesToRetryOn,
-                                                   valuesToExpect,
-                                                   retryOnValue, customRetryOnLogic, retryOnCausedBy);
+        RetryConfig retryConfig = new RetryConfig(retryOnAnyException, retryOnSpecificExceptions,
+                retryOnAnyExceptionExcluding, maxNumberOfTries,
+                delayBetweenRetries, backoffStrategy, valuesToRetryOn,
+                valuesToExpect,
+                retryOnValue, customRetryOnLogic, retryOnCausedBy);
 
         validateConfig(retryConfig);
 
