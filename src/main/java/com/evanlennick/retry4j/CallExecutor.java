@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -132,8 +133,9 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         try {
             T callResult = callable.call();
 
-            boolean shouldRetryOnThisResult
-                    = config.shouldRetryOnValue() && callResult.equals(config.getValueToRetryOn());
+            boolean shouldRetryOnThisResult = config.shouldRetryOnValue() && (
+                    (config.getValuesToExpect() != null && !isOneOfValuesToExpect(callResult))
+                            || isOneOfValuesToRetryOn(callResult));
             if (shouldRetryOnThisResult) {
                 attemptStatus.setSuccessful(false);
             } else {
@@ -151,6 +153,30 @@ public class CallExecutor<T> implements RetryExecutor<T, Status<T>> {
         }
 
         return attemptStatus;
+    }
+
+    private boolean isOneOfValuesToExpect(T callResult) {
+        Collection<Object> valuesToExpect = config.getValuesToExpect();
+        if (valuesToExpect != null) {
+            for (Object o : valuesToExpect) {
+                if (o.equals(callResult)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isOneOfValuesToRetryOn(T callResult) {
+        Collection<Object> valuesToRetryOn = config.getValuesToRetryOn();
+        if (valuesToRetryOn != null) {
+            for (Object o : valuesToRetryOn) {
+                if (o.equals(callResult)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void handleBeforeNextTry(final long millisBetweenTries, final int tries) {
