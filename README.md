@@ -86,7 +86,7 @@ RetryConfig config = new RetryConfigBuilder()
 CallExecutor executor = new CallExecutorBuilder<>()
         .config(config).
         .onSuccess(s -> { //do something on success })
-        .onFailure(s -> { //do something on a failed try })
+        .onFailure(s -> { //do something after all retries are exhausted })
         .afterFailedTry(s -> { //do something after a failed try })
         .beforeNextTry(s -> { //do something before the next try })
         .onCompletion(s -> { //do some cleanup })
