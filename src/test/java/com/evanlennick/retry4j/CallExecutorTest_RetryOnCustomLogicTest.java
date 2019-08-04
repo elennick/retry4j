@@ -4,7 +4,7 @@ import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.exception.UnexpectedException;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.time.Duration;
 
@@ -33,7 +33,7 @@ public class CallExecutorTest_RetryOnCustomLogicTest {
         }
     }
 
-    @Test(expected = UnexpectedException.class)
+    @Test(expectedExceptions = UnexpectedException.class)
     public void verifyShouldNotRetryOnExceptionMessage() {
         RetryConfig config = new RetryConfigBuilder()
                 .retryOnCustomExceptionLogic(ex -> ex.getMessage().contains("should retry!"))
@@ -69,7 +69,7 @@ public class CallExecutorTest_RetryOnCustomLogicTest {
         }
     }
 
-    @Test(expected = UnexpectedException.class)
+    @Test(expectedExceptions = UnexpectedException.class)
     public void verifyShouldNotRetryOnCustomException() {
         RetryConfig config = new RetryConfigBuilder()
                 .retryOnCustomExceptionLogic(ex -> ((CustomTestException) ex).getSomeValue() > 0)
