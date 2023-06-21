@@ -1,4 +1,12 @@
-![Build Status](https://travis-ci.org/elennick/retry4j.svg?branch=master&link=https://travis-ci.org/elennick/retry4j&link=https://travis-ci.org/elennick/retry4j) [![Coverage Status](https://coveralls.io/repos/github/elennick/retry4j/badge.svg?branch=master)](https://coveralls.io/github/elennick/retry4j?branch=master) ![Maven Central](https://img.shields.io/maven-central/v/com.evanlennick/retry4j.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Coverage Status](https://coveralls.io/repos/github/elennick/retry4j/badge.svg?branch=master)](https://coveralls.io/github/elennick/retry4j?branch=master) ![Maven Central](https://img.shields.io/maven-central/v/com.evanlennick/retry4j.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## DEPRECATED
+
+Retry4j is no longer maintained and has had no releases for several years. Please feel free to fork and make your own changes/releases if you want to build upon it. Also consider checking out more modern libraries such as:
+
+* Failsafe - https://github.com/jhalterman/failsafe
+* Spring Retry - https://github.com/spring-projects/spring-retry
+* resilience4j - https://github.com/resilience4j/resilience4j
 
 ## Retry4j
 
